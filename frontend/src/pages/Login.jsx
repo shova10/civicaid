@@ -45,6 +45,7 @@ const Login = () => {
       // Redirect by role
       if (user.role === 'admin') navigate('/admin')
       else if (user.role === 'staff') navigate('/staff')
+      else if (user.role === 'citizen') navigate('/citizen')
       else navigate('/')
     } catch (err) {
       console.error('Login error:', err.response?.data) // ← shows exact Django error
