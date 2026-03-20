@@ -2,6 +2,7 @@ import { useState, useRef } from 'react'
 import { useForm } from 'react-hook-form'
 import { MapPin, Upload, X, ImageIcon } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { submitIssue } from '../services/issues'
 
 const CATEGORIES = [
   'Road & Infrastructure',
@@ -76,19 +77,39 @@ const SubmitIssue = () => {
     )
   }
 
-  const handleFormSubmit = (data) => {
-    const payload = {
-      ...data,
-      image: imageFile,
-      location,
+ const handleFormSubmit = async (data) => {
+  try {
+    const formData = new FormData()
+
+    // Text fields
+    formData.append('title', data.title)
+    formData.append('description', data.description)
+    formData.append('category', data.category)
+
+    // Image — only append if user selected one
+    if (imageFile) {
+      formData.append('image', imageFile)
     }
-    // API not connected yet — just log
-    console.log('Form payload:', payload)
-    toast.success('Issue submitted! (UI test)')
+
+    // GPS — only append if user captured location
+    if (location) {
+      formData.append('latitude', location.latitude)
+      formData.append('longitude', location.longitude)
+    }
+
+    await submitIssue(formData)
+
+    toast.success('Issue submitted successfully!')
     reset()
     removeImage()
     setLocation(null)
+
+  } catch (err) {
+    const message = err.response?.data?.message || 'Submission failed. Try again.'
+    toast.error(message)
   }
+}
+  
 
   return (
     <div className="max-w-2xl mx-auto mt-5">

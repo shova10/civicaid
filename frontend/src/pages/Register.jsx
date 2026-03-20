@@ -24,16 +24,19 @@ const Register = () => {
   const onSubmit = async (data) => {
     try {
       await registerUser({
-        name: data.name,
+        username: data.email.split('@')[0],
+        full_name: data.name,
         email: data.email,
         password: data.password,
+        password2: data.confirmPassword,
+        phone: data.phone,
       })
 
       toast.success('Account created! Please log in.')
       navigate('/login')
-
     } catch (err) {
-      const message = err.response?.data?.message || 'Registration failed. Try again.'
+      const message =
+        err.response?.data?.message || 'Registration failed. Try again.'
       toast.error(message)
     }
   }
@@ -41,12 +44,12 @@ const Register = () => {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-50">
       <div className="w-full max-w-md p-8 bg-white rounded-xl shadow-md">
-
-        <h1 className="text-3xl font-bold text-gray-800 mb-2">Create account</h1>
+        <h1 className="text-3xl font-bold text-gray-800 mb-2">
+          Create account
+        </h1>
         <p className="text-gray-500 mb-8">Get started for free</p>
 
         <form onSubmit={handleSubmit(onSubmit)} noValidate>
-
           {/* Name */}
           <div className="mb-5">
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -70,6 +73,25 @@ const Register = () => {
               <p className="mt-1 text-sm text-red-500">{errors.name.message}</p>
             )}
           </div>
+          {/* Phone number */}
+          <div className='mb-5'>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+              Phone number
+            </label>
+          <input
+            type="tel"
+            placeholder="Phone number"
+            className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              errors.phone ? 'border-red-500' : 'border-gray-300'
+            }`}
+            {...register('phone', {
+              required: 'Phone number is required',
+            })}
+          />
+          {errors.phone && (
+            <p className="mt-1 text-sm text-red-500">{errors.phone.message}</p>
+          )}
+          </div>
 
           {/* Email */}
           <div className="mb-5">
@@ -91,7 +113,9 @@ const Register = () => {
               })}
             />
             {errors.email && (
-              <p className="mt-1 text-sm text-red-500">{errors.email.message}</p>
+              <p className="mt-1 text-sm text-red-500">
+                {errors.email.message}
+              </p>
             )}
           </div>
 
@@ -115,7 +139,9 @@ const Register = () => {
               })}
             />
             {errors.password && (
-              <p className="mt-1 text-sm text-red-500">{errors.password.message}</p>
+              <p className="mt-1 text-sm text-red-500">
+                {errors.password.message}
+              </p>
             )}
           </div>
 
@@ -137,7 +163,9 @@ const Register = () => {
               })}
             />
             {errors.confirmPassword && (
-              <p className="mt-1 text-sm text-red-500">{errors.confirmPassword.message}</p>
+              <p className="mt-1 text-sm text-red-500">
+                {errors.confirmPassword.message}
+              </p>
             )}
           </div>
 
@@ -149,16 +177,17 @@ const Register = () => {
           >
             {isSubmitting ? 'Creating account...' : 'Create Account'}
           </button>
-
         </form>
 
         <p className="mt-6 text-center text-sm text-gray-500">
           Already have an account?{' '}
-          <Link to="/login" className="text-blue-600 hover:underline font-medium">
+          <Link
+            to="/login"
+            className="text-blue-600 hover:underline font-medium"
+          >
             Sign in
           </Link>
         </p>
-
       </div>
     </div>
   )
