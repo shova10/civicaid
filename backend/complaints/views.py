@@ -24,7 +24,14 @@ class ComplaintListCreateView(generics.ListCreateAPIView):
         return Complaint.objects.filter(citizen=self.request.user)
 
     def perform_create(self, serializer):
-        serializer.save(citizen=self.request.user)
+        complaint = serializer.save(citizen=self.request.user)
+    
+        try:
+            from ai_engine.pipeline import analyze
+            analyze(complaint)
+        except Exception as e:
+            print(f"AI pipeline error: {e}")
+        
 
 class ComplaintDetailView(generics.RetrieveAPIView):
     permission_classes = [IsAuthenticated]

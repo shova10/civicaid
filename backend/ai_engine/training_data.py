@@ -1,0 +1,241 @@
+CATEGORY_TRAINING_DATA = [
+
+    # --------------------------------------------------------
+    # ROAD complaints
+    # Keywords the model should learn: pothole, road, street,
+    # pavement, crack, broken road, footpath, traffic, bridge
+    # --------------------------------------------------------
+    ("There is a large pothole on the main road near the market", "Road"),
+    ("The road in our neighborhood has not been repaired for months", "Road"),
+    ("A big crack has appeared on the highway causing accidents", "Road"),
+    ("The footpath near the school is completely broken", "Road"),
+    ("Our street is full of potholes and vehicles get damaged", "Road"),
+    ("The bridge near the river has cracks and feels unsafe", "Road"),
+    ("Road construction debris has been left blocking the street for weeks", "Road"),
+    ("The road surface is very uneven and causes accidents at night", "Road"),
+    ("After the rain the road collapsed and is now impassable", "Road"),
+    ("The main road near the temple has not been paved yet", "Road"),
+    ("There are dangerous potholes on the road to the hospital", "Road"),
+    ("The road is broken and muddy making it hard to walk", "Road"),
+    ("Street near my house has no pavement and is very dusty", "Road"),
+    ("The road divider is broken and causing traffic confusion", "Road"),
+    ("A large hole appeared on the road after the recent flooding", "Road"),
+    ("The road to the school is unpaved and children struggle daily", "Road"),
+    ("There is no proper road marking and accidents keep happening", "Road"),
+    ("The bridge connecting our village is damaged and dangerous", "Road"),
+    ("Construction workers left the road dug up without repairing it", "Road"),
+    ("The road near the bus park is full of deep potholes", "Road"),
+    ("Footpath bricks are broken and elderly people keep falling", "Road"),
+    ("The road is flooded because the drainage is blocked", "Road"),
+    ("Heavy vehicles have destroyed the road surface completely", "Road"),
+    ("The road near the river floods every rainy season", "Road"),
+    ("Speed breakers on the road are not painted and invisible at night", "Road"),
+
+    # --------------------------------------------------------
+    # WATER complaints
+    # Keywords: water, pipe, supply, tap, leakage, shortage,
+    # drinking water, contaminated, pressure, tank
+    # --------------------------------------------------------
+    ("There has been no water supply in our area for three days", "Water"),
+    ("The water pipe near our street is broken and leaking", "Water"),
+    ("Drinking water is contaminated and smells very bad", "Water"),
+    ("Water pressure in our taps is very low and we cannot use it", "Water"),
+    ("The main water pipe burst and flooded the street", "Water"),
+    ("We have not received water supply for over a week now", "Water"),
+    ("The water coming from the tap is yellowish and dirty", "Water"),
+    ("There is a water leakage from the pipe near the road", "Water"),
+    ("Our community water tank is damaged and needs urgent repair", "Water"),
+    ("Water supply is very irregular and sometimes we get nothing", "Water"),
+    ("The drinking water tastes bad and may be contaminated", "Water"),
+    ("A broken water pipe is wasting water and flooding the road", "Water"),
+    ("There is no water supply to our ward for the past five days", "Water"),
+    ("Water comes only for thirty minutes a day which is not enough", "Water"),
+    ("The overhead water tank in our area is leaking badly", "Water"),
+    ("Pipe joints are broken and clean water is mixing with sewage", "Water"),
+    ("Our tap has had no water pressure for two weeks", "Water"),
+    ("Water meter is broken and we are being charged incorrectly", "Water"),
+    ("The water supply pipe is too old and bursts frequently", "Water"),
+    ("We have been buying drinking water because the supply is off", "Water"),
+    ("Muddy water is coming from the tap after the recent rain", "Water"),
+    ("Water shortage is severe in our area especially in summer", "Water"),
+    ("The valve for our area water supply has been broken for days", "Water"),
+    ("Children are getting sick because the water is contaminated", "Water"),
+    ("Water supply schedule is not being followed by the authority", "Water"),
+
+    # --------------------------------------------------------
+    # ELECTRICITY complaints
+    # Keywords: power, electricity, light, outage, transformer,
+    # wire, pole, voltage, load shedding, blackout
+    # --------------------------------------------------------
+    ("There has been no electricity in our area since yesterday evening", "Electricity"),
+    ("The electric pole near our house is leaning dangerously", "Electricity"),
+    ("Power cuts are happening every few hours without any schedule", "Electricity"),
+    ("The transformer in our ward blew up and power is still out", "Electricity"),
+    ("Street lights in our area have not been working for a month", "Electricity"),
+    ("Electricity voltage is very low and appliances keep getting damaged", "Electricity"),
+    ("A live electric wire is hanging on the road and is very dangerous", "Electricity"),
+    ("Power outage has been going on for two days without any update", "Electricity"),
+    ("The electricity meter is broken and giving wrong readings", "Electricity"),
+    ("Street light pole is broken and the area is very dark at night", "Electricity"),
+    ("There is frequent load shedding affecting businesses and homes", "Electricity"),
+    ("Sparks are coming from the electric pole near the market", "Electricity"),
+    ("Power supply is very unstable and fluctuates constantly", "Electricity"),
+    ("The main power line to our area was damaged in the storm", "Electricity"),
+    ("We have had no electricity for three days after the landslide", "Electricity"),
+    ("Electric wires are too low and touching tree branches dangerously", "Electricity"),
+    ("Power disruption is happening every night in our locality", "Electricity"),
+    ("The fuse box on the pole keeps blowing and nobody fixes it", "Electricity"),
+    ("Electricity bills are very high compared to what we consume", "Electricity"),
+    ("Night lighting in the park is broken and the area is unsafe", "Electricity"),
+    ("Unscheduled power cuts are affecting students and their studies", "Electricity"),
+    ("The electricity pole in the street is rusted and about to fall", "Electricity"),
+    ("There is a short circuit issue in our neighborhood power supply", "Electricity"),
+    ("Power restoration after outage takes too long in our area", "Electricity"),
+    ("Our area experiences blackouts every time it rains heavily", "Electricity"),
+
+    # --------------------------------------------------------
+    # SANITATION complaints
+    # Keywords: garbage, waste, trash, drainage, sewer, smell,
+    # dirty, clean, toilet, hygiene, dump, littering
+    # --------------------------------------------------------
+    ("Garbage has not been collected from our area for two weeks", "Sanitation"),
+    ("There is a large pile of trash near the school gate", "Sanitation"),
+    ("The drainage near our house is completely blocked and overflowing", "Sanitation"),
+    ("Sewage water is flowing on the road due to blocked drain", "Sanitation"),
+    ("People are dumping garbage on the roadside openly", "Sanitation"),
+    ("The public toilet near the market is very dirty and unusable", "Sanitation"),
+    ("There is a very bad smell coming from the open drain nearby", "Sanitation"),
+    ("Waste is being burned near the residential area causing smoke", "Sanitation"),
+    ("The garbage collection vehicle has not come in over a week", "Sanitation"),
+    ("There is no proper waste disposal facility in our ward", "Sanitation"),
+    ("Stray animals are spreading garbage all over the street", "Sanitation"),
+    ("Open defecation is happening near the river by the settlement", "Sanitation"),
+    ("The drain is clogged and sewage is entering homes during rain", "Sanitation"),
+    ("Hospital waste is being dumped in the open near our community", "Sanitation"),
+    ("The public dustbin is overflowing and nobody is clearing it", "Sanitation"),
+    ("Dirty water from the drain is spreading disease in the area", "Sanitation"),
+    ("No sanitation workers have visited our area this entire month", "Sanitation"),
+    ("The sewer line is broken and waste is coming up on the road", "Sanitation"),
+    ("Children are playing near open waste which is a health hazard", "Sanitation"),
+    ("Market area waste is never properly cleaned causing hygiene issues", "Sanitation"),
+    ("Dead animals are lying on the road and nobody is removing them", "Sanitation"),
+    ("The community toilet has no water supply and is not maintained", "Sanitation"),
+    ("Plastic waste is being thrown into the river near our area", "Sanitation"),
+    ("The drain cleaning was promised months ago but never happened", "Sanitation"),
+    ("Our neighborhood smells very bad due to rotting uncollected waste", "Sanitation"),
+
+    # --------------------------------------------------------
+    # PUBLIC PROPERTY complaints
+    # Keywords: park, bench, wall, building, sign, government,
+    # playground, vandalism, broken, public space, fence
+    # --------------------------------------------------------
+    ("The park bench near our house is completely broken", "Public Property"),
+    ("Someone has vandalized the public wall with graffiti", "Public Property"),
+    ("The community hall roof is leaking and needs repair", "Public Property"),
+    ("The playground equipment for children is broken and dangerous", "Public Property"),
+    ("The boundary wall of the public park has collapsed", "Public Property"),
+    ("Government office building has broken windows and looks neglected", "Public Property"),
+    ("The public water fountain in the park is not working", "Public Property"),
+    ("Street signs in our area are damaged and hard to read", "Public Property"),
+    ("The public library building has a damaged roof and leaks inside", "Public Property"),
+    ("Vandals have destroyed the lights in the public garden", "Public Property"),
+    ("The gate to the public park is broken and does not close", "Public Property"),
+    ("The notice board outside the ward office is damaged", "Public Property"),
+    ("Children playground swings are rusted and broken", "Public Property"),
+    ("The public toilet building wall has collapsed on one side", "Public Property"),
+    ("Benches in the public garden are all broken or missing", "Public Property"),
+    ("The bus shelter near the school is completely destroyed", "Public Property"),
+    ("Public stairs near the river are cracked and dangerous", "Public Property"),
+    ("The government school boundary fence has been broken for months", "Public Property"),
+    ("Dustbins placed by the municipality have been vandalized", "Public Property"),
+    ("The public clock on the main street stopped working long ago", "Public Property"),
+    ("The community notice board is broken and falling apart", "Public Property"),
+    ("The public garden has no lights and is unsafe at night", "Public Property"),
+    ("Someone removed the road sign near the intersection", "Public Property"),
+    ("The parking area managed by the municipality is in poor condition", "Public Property"),
+    ("The public swimming pool facility has been closed for months", "Public Property"),
+]
+
+
+
+PRIORITY_TRAINING_DATA = [
+
+    # --------------------------------------------------------
+    # HIGH priority
+    # Signal words: dangerous, emergency, accident, injured,
+    # collapsing, no water for days, live wire, contaminated,
+    # children sick, urgent, flooding, blackout
+    # --------------------------------------------------------
+    ("A live electric wire is hanging on the road and people could die", "High"),
+    ("The bridge is cracking and may collapse any moment it is very dangerous", "High"),
+    ("Drinking water is contaminated and children in our area are getting sick", "High"),
+    ("There has been no water supply for five days and it is an emergency", "High"),
+    ("Sewage water is entering homes and families cannot live there", "High"),
+    ("An electric pole is leaning on the road and sparks are visible", "High"),
+    ("The road completely collapsed after the rain and no vehicle can pass", "High"),
+    ("There is no electricity for three days and patients at home need power", "High"),
+    ("The drain burst and sewage is flooding inside houses right now", "High"),
+    ("A large tree fell on the road and is blocking emergency vehicles", "High"),
+    ("The water pipe burst and water is flooding the street dangerously", "High"),
+    ("Children fell into a broken manhole on the road yesterday", "High"),
+    ("Hospital waste is dumped openly near homes causing serious health risk", "High"),
+    ("People have been injured due to the broken road near the market", "High"),
+    ("The building wall is cracking and may fall on passing pedestrians", "High"),
+    ("Water supply has been completely cut off for an entire week", "High"),
+    ("Electrical short circuit caused a small fire near the transformer", "High"),
+    ("A massive pothole caused a motorcycle accident last night", "High"),
+    ("Sewage smell is so strong people are getting respiratory problems", "High"),
+    ("The footpath collapsed and an elderly person fell into the ditch", "High"),
+
+    # --------------------------------------------------------
+    # MEDIUM priority
+    # Signal words: not working, irregular, damaged, broken,
+    # inconvenient, needs repair, bad condition, incomplete
+    # --------------------------------------------------------
+    ("The road near our house has potholes that damage vehicles regularly", "Medium"),
+    ("Water supply is very irregular and comes only for one hour a day", "Medium"),
+    ("Street lights are not working and the area is dark at night", "Medium"),
+    ("Garbage has not been collected for one week and is piling up", "Medium"),
+    ("The water pressure is too low and we cannot use it properly", "Medium"),
+    ("Power cuts are happening frequently without any notice", "Medium"),
+    ("The drainage is partially blocked and water flows slowly", "Medium"),
+    ("Road construction is incomplete and has been left for two months", "Medium"),
+    ("The public toilet is very dirty and needs urgent cleaning", "Medium"),
+    ("Water meter is broken and we are getting wrong bills", "Medium"),
+    ("The electricity transformer makes loud noise at night", "Medium"),
+    ("Park equipment is broken and needs replacement soon", "Medium"),
+    ("Road markings have faded and are not visible during rain", "Medium"),
+    ("Water comes with bad smell and we cannot drink it", "Medium"),
+    ("The community hall roof leaks during rain and damages property", "Medium"),
+    ("Garbage collection schedule is not being followed consistently", "Medium"),
+    ("Electricity voltage fluctuates and damages household appliances", "Medium"),
+    ("The road to the market is always muddy and very inconvenient", "Medium"),
+    ("Sewage drain is partially clogged and overflows during heavy rain", "Medium"),
+    ("Street sign is damaged and difficult to read", "Medium"),
+
+    # --------------------------------------------------------
+    # LOW priority
+    # Signal words: minor, small, cosmetic, suggestion, faded,
+    # slightly, could be better, not urgent, over time
+    # --------------------------------------------------------
+    ("The paint on the public wall has faded and looks old", "Low"),
+    ("A small crack appeared on the footpath but it is still walkable", "Low"),
+    ("The park bench has a loose screw and wobbles slightly", "Low"),
+    ("The road sign is slightly tilted but still readable", "Low"),
+    ("The public garden could use more trees and plants", "Low"),
+    ("Street light turns on a little late every evening", "Low"),
+    ("The bus shelter paint is peeling off slowly", "Low"),
+    ("A minor pothole appeared on a side road rarely used", "Low"),
+    ("The community notice board needs a fresh coat of paint", "Low"),
+    ("Water supply timing could be more regular but it is manageable", "Low"),
+    ("The playground grass area needs mowing and looks overgrown", "Low"),
+    ("The dustbin near the park is getting full every few days", "Low"),
+    ("The road shoulder has minor erosion but main road is fine", "Low"),
+    ("Public garden benches could use repainting they look worn", "Low"),
+    ("The drainage grate has a small gap but functions normally", "Low"),
+    ("A streetlight flickers occasionally but mostly works fine", "Low"),
+    ("The ward office entrance steps have minor wear on edges", "Low"),
+    ("Minor water discoloration occasionally but clears after running tap", "Low"),
+    ("The public clock is running a few minutes slow", "Low"),
+    ("Electricity meter box cover is slightly broken but meter works fine", "Low"),
+]
