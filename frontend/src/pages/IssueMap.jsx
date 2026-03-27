@@ -4,10 +4,11 @@ import { CircleMarker, Popup } from 'react-leaflet'
 import { AlertCircle, RefreshCw, Map } from 'lucide-react'
 import toast from 'react-hot-toast'
 import NepalMap from '../components/NepalMap'
+import MapFilters from '../components/MapFilters'
 import StatusBadge from '../components/StatusBadge'
 import PriorityBadge from '../components/PriorityBadge'
+import useMapFilters from '../hooks/useMapFilters'
 import { getHeatmapData } from '../services/issues'
-
 
 const PRIORITY_STYLE = {
   critical: { color: '#ef4444', fillColor: '#ef4444', radius: 14 },
@@ -24,11 +25,10 @@ const LEGEND_ITEMS = [
   { priority: 'low', label: 'Low', color: '#64748b' },
 ]
 
-
 function Legend() {
   return (
     <div
-      className="absolute bottom-8 left-4 z-[1000] bg-white/90 backdrop-blur-sm
+      className="absolute bottom-8 left-4 z-1000 bg-white/90 backdrop-blur-sm
       rounded-xl border border-slate-200 shadow-md px-3 py-2.5 flex flex-col gap-1.5"
     >
       <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">
@@ -53,7 +53,6 @@ function Legend() {
     </div>
   )
 }
-
 
 function StatsBar({ issues }) {
   const counts = issues.reduce((acc, i) => {
@@ -87,12 +86,21 @@ function StatsBar({ issues }) {
   )
 }
 
-
 export default function IssueMap() {
   const navigate = useNavigate()
   const [issues, setIssues] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
+
+  const {
+    filters,
+    setCategory,
+    setPriority,
+    setStatus,
+    filtered,
+    reset,
+    activeCount,
+  } = useMapFilters(issues)
 
   useEffect(() => {
     async function fetchData() {
@@ -114,7 +122,6 @@ export default function IssueMap() {
   return (
     <div className="min-h-screen bg-slate-50">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
-      
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
           <div>
             <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
@@ -127,7 +134,19 @@ export default function IssueMap() {
           {!loading && !error && <StatsBar issues={issues} />}
         </div>
 
-       
+        {!loading && !error && (
+          <MapFilters
+            filters={filters}
+            setCategory={setCategory}
+            setPriority={setPriority}
+            setStatus={setStatus}
+            reset={reset}
+            activeCount={activeCount}
+            total={issues.length}
+            showing={filtered.length}
+          />
+        )}
+
         {error ? (
           <div
             className="flex flex-col items-center justify-center h-96 rounded-2xl
@@ -153,7 +172,6 @@ export default function IssueMap() {
           </div>
         ) : (
           <div className="relative">
-          
             {loading && (
               <div
                 className="absolute inset-0 z-[1001] flex items-center justify-center
@@ -189,23 +207,19 @@ export default function IssueMap() {
                   >
                     <Popup className="civicaid-popup">
                       <div className="p-1 min-w-[200px]">
-                      
                         <p className="text-sm font-semibold text-slate-800 leading-snug mb-2">
                           {issue.title}
                         </p>
 
-                       
                         <div className="flex items-center gap-1.5 mb-3">
                           <StatusBadge status={issue.status} size="sm" />
                           <PriorityBadge priority={issue.priority} size="sm" />
                         </div>
 
-                        
                         <p className="text-xs text-slate-400 mb-3">
                           {issue.category}
                         </p>
 
-                        
                         <button
                           onClick={() => navigate(`/issues/${issue.id}`)}
                           className="w-full text-xs font-semibold text-white bg-blue-600
