@@ -1,5 +1,5 @@
 import { MapPin, Clock, ChevronRight, ImageOff } from 'lucide-react'
-// import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import StatusBadge from './StatusBadge'
 import PriorityBadge from './PriorityBadge'
 import UpvoteButton from './UpvoteButton'
@@ -34,12 +34,12 @@ function truncate(str, n) {
  * @param {function} onClick - optional override for click handler
  */
 export default function IssueCard({ issue, onClick }) {
-  // const navigate = useNavigate();
+  const navigate = useNavigate()
   const catStyle = CATEGORY_COLORS[issue.category] ?? CATEGORY_COLORS['Other']
 
   function handleClick() {
     if (onClick) return onClick(issue)
-    // navigate(`/issues/${issue.id}`);
+    navigate(`/issues/${issue.id}`)
   }
 
   return (

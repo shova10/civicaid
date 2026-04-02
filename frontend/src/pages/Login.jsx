@@ -22,11 +22,13 @@ const Login = () => {
   const onSubmit = async (data) => {
     try {
       const res = await loginUser(data)
-      console.log('Raw login response:', res.data) // ← remove after confirming shape
+      console.log('Raw login response:', res.data)
 
       // Adjust these based on what Django actually returns
-      const accessToken = res.data.access || res.data.accessToken
-      const refreshToken = res.data.refresh || res.data.refreshToken
+      const accessToken =
+        res.data.access || res.data.accessToken || res.data.token
+      const refreshToken =
+        res.data.refresh || res.data.refreshToken || res.data.token
 
       // Save tokens first so getMe() request carries Authorization header
       localStorage.setItem('accessToken', accessToken)

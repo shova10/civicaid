@@ -6,15 +6,16 @@ import MainLayout from './layouts/MainLayout'
 import Home from './pages/Home'
 import Login from './pages/Login'
 import NotFound from './pages/NotFound'
-import Admin from './pages/Admin'
 import Register from './pages/Register'
 import Staff from './pages/Staff'
 import SubmitIssue from './pages/SubmitIssue'
 import MyIssues from './pages/MyIssues'
 import IssueDetail from './pages/IssueDetail'
-import MapTest from './pages/MapTest'
 import IssueMap from './pages/IssueMap'
-// import axios from 'axios'
+import AdminLayout from './layouts/AdminLayout'
+import AdminDashboard from './pages/admin/AdminDashboard'
+import AdminIssues from './pages/admin/AdminIssues'
+import AdminMap from './pages/admin/AdminMap'
 
 const App = () => {
   return (
@@ -26,14 +27,44 @@ const App = () => {
         <Route path="/register" element={<Register />} />
 
         <Route element={<PrivateRoute />}>
+          {/* Admin — dark sidebar layout */}
+          <Route element={<AdminLayout />}>
+            <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/admin/issues" element={<AdminIssues />} />
+            <Route path="/admin/map" element={<AdminMap />} />
+            <Route
+              path="/admin/users"
+              element={
+                <div className="p-8">
+                  <h1 className="text-2xl font-bold">Users</h1>
+                </div>
+              }
+            />
+            <Route
+              path="/admin/analytics"
+              element={
+                <div className="p-8">
+                  <h1 className="text-2xl font-bold">Analytics</h1>
+                </div>
+              }
+            />
+            <Route
+              path="/admin/settings"
+              element={
+                <div className="p-8">
+                  <h1 className="text-2xl font-bold">Settings</h1>
+                </div>
+              }
+            />
+          </Route>
+
+          {/* Citizen + Staff — top navbar layout */}
           <Route element={<MainLayout />}>
             <Route path="/" element={<Home />} />
-            <Route path="/admin" element={<Admin />} />
             <Route path="/staff" element={<Staff />} />
             <Route path="/submit" element={<SubmitIssue />} />
-            <Route path="/issues" element={<MyIssues />} />
+            <Route path="/my-issues" element={<MyIssues />} />
             <Route path="/issues/:id" element={<IssueDetail />} />
-            <Route path="/map-test" element={<MapTest />} />
             <Route path="/map" element={<IssueMap />} />
           </Route>
         </Route>

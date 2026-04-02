@@ -8,7 +8,7 @@ import {
   User,
   Menu,
   X,
-  icons,
+  
 } from 'lucide-react'
 import { useState } from 'react'
 import useAuth from '../hooks/useAuth'
@@ -102,7 +102,7 @@ const Navbar = () => {
 
       {menuOpen && (
         <div className="md:hidden border-t border-gray-100 px-4 py-3 flex flex-col gap-1">
-          // eslint-disable-next-line no-unused-vars
+          // eslint-disable-next-line no-unused-vars, no-unused-vars
           {allLinks.map(({ label, path, icon: LinkIcon }) => (
             <Link
               key={path}

@@ -426,7 +426,6 @@ const MOCK_ISSUES = [
 const upvotedIds = new Set()
 
 export const handlers = [
-  // ── Auth ────────────────────────────────────────────────────────────────────
   http.post('http://localhost:8000/api/auth/login/', async ({ request }) => {
     const body = await request.json()
     const { email, password } = body
@@ -454,6 +453,17 @@ export const handlers = [
         },
       })
     }
+    if (email === 'admin@test.com' && password === 'password') {
+      return HttpResponse.json({
+        token: 'fake-admin-token',
+        user: {
+          id: 3,
+          name: 'Admin',
+          email: 'admin@test.com',
+          role: 'admin',
+        },
+      })
+    }
 
     return HttpResponse.json(
       { message: 'Invalid email or password' },
@@ -463,6 +473,16 @@ export const handlers = [
 
   http.get('http://localhost:8000/api/auth/profile/', ({ request }) => {
     const authHeader = request.headers.get('Authorization')
+
+    if (authHeader?.includes('admin')) {
+      return HttpResponse.json({
+        id: 3,
+        name: 'Admin User',
+        email: 'admin@test.com',
+        role: 'admin',
+      })
+    }
+
     if (authHeader?.includes('staff')) {
       return HttpResponse.json({
         id: 2,
