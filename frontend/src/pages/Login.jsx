@@ -22,11 +22,13 @@ const Login = () => {
   const onSubmit = async (data) => {
     try {
       const res = await loginUser(data)
-      console.log('Raw login response:', res.data) // ← remove after confirming shape
+      console.log('Raw login response:', res.data)
 
       // Adjust these based on what Django actually returns
-      const accessToken = res.data.access || res.data.accessToken
-      const refreshToken = res.data.refresh || res.data.refreshToken
+      const accessToken =
+        res.data.access || res.data.accessToken || res.data.token
+      const refreshToken =
+        res.data.refresh || res.data.refreshToken || res.data.token
 
       // Save tokens first so getMe() request carries Authorization header
       localStorage.setItem('accessToken', accessToken)
@@ -45,6 +47,7 @@ const Login = () => {
       // Redirect by role
       if (user.role === 'admin') navigate('/admin')
       else if (user.role === 'staff') navigate('/staff')
+      else if (user.role === 'citizen') navigate('/citizen')
       else navigate('/')
     } catch (err) {
       console.error('Login error:', err.response?.data) // ← shows exact Django error
