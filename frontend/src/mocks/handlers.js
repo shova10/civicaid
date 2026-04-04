@@ -426,52 +426,55 @@ const MOCK_ISSUES = [
 const upvotedIds = new Set()
 
 export const handlers = [
-  http.post('http://localhost:8000/api/auth/login/', async ({ request }) => {
-    const body = await request.json()
-    const { email, password } = body
+  http.post(
+    'http://192.168.100.167:8000/api/auth/login/',
+    async ({ request }) => {
+      const body = await request.json()
+      const { email, password } = body
 
-    if (email === 'citizen@test.com' && password === 'password') {
-      return HttpResponse.json({
-        token: 'fake-citizen-token',
-        user: {
-          id: 1,
-          name: 'Citizen User',
-          email: 'citizen@test.com',
-          role: 'citizen',
-        },
-      })
+      if (email === 'citizen@test.com' && password === 'password') {
+        return HttpResponse.json({
+          token: 'fake-citizen-token',
+          user: {
+            id: 1,
+            name: 'Citizen User',
+            email: 'citizen@test.com',
+            role: 'citizen',
+          },
+        })
+      }
+
+      if (email === 'staff@test.com' && password === 'password') {
+        return HttpResponse.json({
+          token: 'fake-staff-token',
+          user: {
+            id: 2,
+            name: 'Staff User',
+            email: 'staff@test.com',
+            role: 'staff',
+          },
+        })
+      }
+      if (email === 'admin@test.com' && password === 'password') {
+        return HttpResponse.json({
+          token: 'fake-admin-token',
+          user: {
+            id: 3,
+            name: 'Admin',
+            email: 'admin@test.com',
+            role: 'admin',
+          },
+        })
+      }
+
+      return HttpResponse.json(
+        { message: 'Invalid email or password' },
+        { status: 401 }
+      )
     }
+  ),
 
-    if (email === 'staff@test.com' && password === 'password') {
-      return HttpResponse.json({
-        token: 'fake-staff-token',
-        user: {
-          id: 2,
-          name: 'Staff User',
-          email: 'staff@test.com',
-          role: 'staff',
-        },
-      })
-    }
-    if (email === 'admin@test.com' && password === 'password') {
-      return HttpResponse.json({
-        token: 'fake-admin-token',
-        user: {
-          id: 3,
-          name: 'Admin',
-          email: 'admin@test.com',
-          role: 'admin',
-        },
-      })
-    }
-
-    return HttpResponse.json(
-      { message: 'Invalid email or password' },
-      { status: 401 }
-    )
-  }),
-
-  http.get('http://localhost:8000/api/auth/profile/', ({ request }) => {
+  http.get('http://192.168.100.167:8000/api/auth/profile/', ({ request }) => {
     const authHeader = request.headers.get('Authorization')
 
     if (authHeader?.includes('admin')) {
@@ -500,12 +503,12 @@ export const handlers = [
   }),
 
   // ── Issues ──────────────────────────────────────────────────────────────────
-  http.get('http://localhost:8000/api/issues/', () => {
+  http.get('http://192.168.100.167:8000/api/complaints/', () => {
     return HttpResponse.json(MOCK_ISSUES, { status: 200 })
   }),
 
   // ⚠️ heatmap MUST be before :id/ — otherwise :id matches "heatmap"
-  http.get('http://localhost:8000/api/issues/heatmap/', () => {
+  http.get('http://192.168.100.167:8000/api/issues/heatmap/', () => {
     return HttpResponse.json(
       [
         {
@@ -648,7 +651,7 @@ export const handlers = [
     )
   }),
 
-  http.get('http://localhost:8000/api/issues/:id/', ({ params }) => {
+  http.get('http://192.168.100.167:8000/api/complaint/:id/', ({ params }) => {
     const issue = MOCK_ISSUES.find((i) => i.id === Number(params.id))
     if (!issue) {
       return HttpResponse.json({ message: 'Issue not found' }, { status: 404 })
@@ -672,4 +675,145 @@ export const handlers = [
     const newCount = (issue?.upvote_count ?? 0) + 1
     return HttpResponse.json({ upvote_count: newCount }, { status: 200 })
   }),
+
+  http.get('http://localhost:8000/api/admin/summary/', () => {
+    return HttpResponse.json(
+      {
+        total_issues: 15,
+        open_issues: 6,
+        in_progress: 3,
+        resolved_issues: 3,
+        critical_issues: 3,
+        total_users: 142,
+        new_users_today: 4,
+        total_upvotes: 118,
+        resolution_rate: 40, // percentage
+        avg_resolve_days: 5.2,
+        by_category: [
+          { category: 'Road & Transport', count: 5 },
+          { category: 'Water & Drainage', count: 4 },
+          { category: 'Electricity', count: 3 },
+          { category: 'Waste Management', count: 2 },
+          { category: 'Parks & Green', count: 1 },
+        ],
+        by_priority: [
+          { priority: 'critical', count: 3 },
+          { priority: 'high', count: 5 },
+          { priority: 'medium', count: 4 },
+          { priority: 'low', count: 3 },
+        ],
+      },
+      { status: 200 }
+    )
+  }),
+
+  // ── Staff list ────────────────────────────────────────────────────────────────
+  http.get('http://localhost:8000/api/admin/staff/', () => {
+    return HttpResponse.json(
+      [
+        {
+          id: 10,
+          name: 'Ramesh Shrestha',
+          email: 'ramesh@civicaid.np',
+          department: 'Road & Transport',
+        },
+        {
+          id: 11,
+          name: 'Sita Karki',
+          email: 'sita@civicaid.np',
+          department: 'Water & Drainage',
+        },
+        {
+          id: 12,
+          name: 'Bikram Thapa',
+          email: 'bikram@civicaid.np',
+          department: 'Electricity',
+        },
+        {
+          id: 13,
+          name: 'Anita Maharjan',
+          email: 'anita@civicaid.np',
+          department: 'Waste Management',
+        },
+        {
+          id: 14,
+          name: 'Suresh Pandey',
+          email: 'suresh@civicaid.np',
+          department: 'Parks & Green',
+        },
+      ],
+      { status: 200 }
+    )
+  }),
+
+  // ── Admin update issue ────────────────────────────────────────────────────────
+  http.patch(
+    'http://localhost:8000/api/admin/issues/:id/',
+    async ({ request, params }) => {
+      const body = await request.json()
+      const id = Number(params.id)
+      const issue = MOCK_ISSUES.find((i) => i.id === id)
+      if (!issue) {
+        return HttpResponse.json(
+          { message: 'Issue not found' },
+          { status: 404 }
+        )
+      }
+      // Apply updates to mock (in-memory only)
+      if (body.status) issue.status = body.status
+      if (body.assigned_staff) issue.assigned_staff = body.assigned_staff
+      if (body.remark) issue.remark = body.remark
+      issue.updated_at = new Date().toISOString()
+      return HttpResponse.json(issue, { status: 200 })
+    }
+  ),
+
+  // ── Bulk update ───────────────────────────────────────────────────────────────
+  http.post(
+    'http://localhost:8000/api/admin/issues/bulk-update/',
+    async ({ request }) => {
+      const { ids, status } = await request.json()
+      let updated = 0
+      ids.forEach((id) => {
+        const issue = MOCK_ISSUES.find((i) => i.id === id)
+        if (issue) {
+          issue.status = status
+          updated++
+        }
+      })
+      return HttpResponse.json(
+        { updated, message: `${updated} issues updated.` },
+        { status: 200 }
+      )
+    }
+  ),
+
+  // ── Staff assigned issues ─────────────────────────────────────────────────────
+  http.get('http://localhost:8000/api/staff/issues/', () => {
+    // Return a subset simulating issues assigned to this staff member
+    return HttpResponse.json(
+      MOCK_ISSUES.filter((i) =>
+        ['open', 'in_progress', 'pending'].includes(i.status)
+      ).slice(0, 5),
+      { status: 200 }
+    )
+  }),
+
+  // ── Staff quick status update ─────────────────────────────────────────────────
+  http.patch(
+    'http://localhost:8000/api/staff/issues/:id/status/',
+    async ({ request, params }) => {
+      const { status } = await request.json()
+      const issue = MOCK_ISSUES.find((i) => i.id === Number(params.id))
+      if (!issue) {
+        return HttpResponse.json(
+          { message: 'Issue not found' },
+          { status: 404 }
+        )
+      }
+      issue.status = status
+      issue.updated_at = new Date().toISOString()
+      return HttpResponse.json(issue, { status: 200 })
+    }
+  ),
 ]

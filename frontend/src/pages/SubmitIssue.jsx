@@ -5,13 +5,13 @@ import toast from 'react-hot-toast'
 import { submitIssue } from '../services/issues'
 
 const CATEGORIES = [
-  'Road & Infrastructure',
-  'Water & Drainage',
-  'Electricity',
-  'Waste & Sanitation',
-  'Public Safety',
-  'Parks & Recreation',
-  'Other',
+  'road',
+  'water',
+  'electricity',
+  'sanitation',
+  'safety',
+  'parks',
+  'other',
 ]
 
 const SubmitIssue = () => {
@@ -77,39 +77,38 @@ const SubmitIssue = () => {
     )
   }
 
- const handleFormSubmit = async (data) => {
-  try {
-    const formData = new FormData()
+  const handleFormSubmit = async (data) => {
+    try {
+      const formData = new FormData()
 
-    // Text fields
-    formData.append('title', data.title)
-    formData.append('description', data.description)
-    formData.append('category', data.category)
+      // Text fields
+      formData.append('title', data.title)
+      formData.append('description', data.description)
+      formData.append('category', data.category)
 
-    // Image — only append if user selected one
-    if (imageFile) {
-      formData.append('image', imageFile)
+      // Image — only append if user selected one
+      if (imageFile) {
+        formData.append('image', imageFile)
+      }
+
+      // GPS — only append if user captured location
+      if (location) {
+        formData.append('latitude', location.latitude)
+        formData.append('longitude', location.longitude)
+      }
+
+      await submitIssue(formData)
+
+      toast.success('Issue submitted successfully!')
+      reset()
+      removeImage()
+      setLocation(null)
+    } catch (err) {
+      const message =
+        err.response?.data?.message || 'Submission failed. Try again.'
+      toast.error(message)
     }
-
-    // GPS — only append if user captured location
-    if (location) {
-      formData.append('latitude', location.latitude)
-      formData.append('longitude', location.longitude)
-    }
-
-    await submitIssue(formData)
-
-    toast.success('Issue submitted successfully!')
-    reset()
-    removeImage()
-    setLocation(null)
-
-  } catch (err) {
-    const message = err.response?.data?.message || 'Submission failed. Try again.'
-    toast.error(message)
   }
-}
-  
 
   return (
     <div className="max-w-2xl mx-auto mt-5">
@@ -143,7 +142,7 @@ const SubmitIssue = () => {
               minLength: {
                 value: 5,
                 message: 'Title must be at least 5 characters',
-              },    
+              },
               maxLength: {
                 value: 100,
                 message: 'Title must be under 100 characters',
