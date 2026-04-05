@@ -27,9 +27,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '192.168.1.247', 'https://civicaid-backend-mwrq.onrender.com/']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '192.168.1.247', '.onrender.com', 'civicaid-backend-mwrq.onrender.com']
 
 
 # Application definition
