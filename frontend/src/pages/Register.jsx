@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { useNavigate, Link } from 'react-router-dom'
 import toast from 'react-hot-toast'
@@ -8,7 +8,6 @@ import { registerUser } from '../services/auth'
 const Register = () => {
   const { isAuthenticated } = useAuth()
   const navigate = useNavigate()
-  const [showInviteCode, setShowInviteCode] = useState(false)
 
   const {
     register,
@@ -30,20 +29,13 @@ const Register = () => {
         password: data.password,
         password2: data.confirmPassword,
         phone: data.phone,
-        invite_code: data.inviteCode || '', // ← new
       })
 
       toast.success('Account created! Please log in.')
       navigate('/login')
     } catch (err) {
       const errors = err.response?.data
-      if (errors?.invite_code) {
-        toast.error('Invalid invite code')
-      } else {
-        toast.error(
-          err.response?.data?.message || 'Registration failed. Try again.'
-        )
-      }
+      toast.error(errors?.detail || 'Registration failed. Please try again.')
     }
   }
 
@@ -163,33 +155,6 @@ const Register = () => {
               <p className="mt-1 text-sm text-red-500">
                 {errors.confirmPassword.message}
               </p>
-            )}
-          </div>
-
-          {/* Invite Code — hidden by default */}
-          <div className="mb-6">
-            <button
-              type="button"
-              onClick={() => setShowInviteCode(!showInviteCode)}
-              className="text-sm text-blue-600 hover:underline font-medium"
-            >
-              {showInviteCode
-                ? 'Remove invite code'
-                : 'Have an invite code? (staff/admin only)'}
-            </button>
-
-            {showInviteCode && (
-              <div className="mt-3">
-                <input
-                  type="text"
-                  placeholder="Enter invite code"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  {...register('inviteCode')}
-                />
-                <p className="mt-1 text-xs text-gray-400">
-                  Leave blank to register as a citizen
-                </p>
-              </div>
             )}
           </div>
 

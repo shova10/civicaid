@@ -21,7 +21,7 @@ export async function upvoteIssue(id) {
 }
 
 export async function getHeatmapData() {
-  const response = await api.get('/api/issues/heatmap/') // ← fixed
+  const response = await api.get('/api/issues/heatmap/')
   return response.data
 }
 
@@ -39,24 +39,27 @@ export async function adminUpdateIssue(id, payload) {
 }
 
 export async function getStaffList() {
-  const response = await api.get('/api/admin/staff/') // ⚠️ ask her if this exists
+  const response = await api.get('/api/admin/staff/')
   return response.data
 }
 
 export async function bulkUpdateIssues(payload) {
-  const response = await api.post('/api/admin/complaints/bulk-update/', payload) // ← fixed
+  const response = await api.post('/api/admin/complaints/bulk-update/', payload)
   return response.data
 }
 
 export async function getStaffIssues() {
-  const response = await api.get('/api/staff/complaints/') // ← fixed
+  const response = await api.get('/api/staff/complaints/')
   return response.data
 }
 
 export async function staffUpdateStatus(id, status) {
   const response = await api.patch(`/api/staff/complaints/${id}/status/`, {
     status,
-  }) // ← fixed
+  })
   return response.data
 }
-export const getAllIssues = () => api.get('/api/complaints/')
+export async function getAllIssues() {
+  const response = await api.get('/api/complaints/')
+  return response.data
+}
