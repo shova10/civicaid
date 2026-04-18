@@ -123,7 +123,7 @@ class StaffIssueListView(generics.ListAPIView):
     serializer_class = ComplaintListSerializer
 
     def get_queryset(self):
-        return Complaint.objects.filter(assignments__staff=self.request.user)
+    return Complaint.objects.filter(assignment__staff=self.request.user)
 
 class StaffStatusUpdateView(APIView):
     permission_classes = [IsAuthenticated, IsStaff]
@@ -131,7 +131,7 @@ class StaffStatusUpdateView(APIView):
     def patch(self, request, pk):
         complaint = get_object_or_404(Complaint, id=pk)
         
-        if not complaint.assignments.filter(staff=request.user).exists():
+        if not hasattr(complaint, 'assignment') or complaint.assignment.staff != request.user:
             raise PermissionDenied("This complaint is not assigned to you.")
         
         previous_status = complaint.status
