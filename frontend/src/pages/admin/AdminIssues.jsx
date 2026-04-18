@@ -18,8 +18,7 @@ import toast from 'react-hot-toast'
 import StatusBadge from '../../components/StatusBadge'
 import PriorityBadge from '../../components/PriorityBadge'
 import useIssueTable from '../../hooks/useIssueTable'
-import { getMyIssues } from '../../services/issues'
-
+import { getAdminIssues } from '../../services/issues'
 // ─── Constants ────────────────────────────────────────────────────────────────
 const STATUSES = [
   'pending',
@@ -255,8 +254,8 @@ export default function AdminIssues() {
     setLoading(true)
     setError(false)
     try {
-      const data = await getMyIssues()
-      setIssues(data)
+      const data = await getAdminIssues()
+      setIssues(Array.isArray(data) ? data : (data.results ?? []))
     } catch (err) {
       setError(true)
       toast.error(err?.response?.data?.message ?? 'Could not load issues.')

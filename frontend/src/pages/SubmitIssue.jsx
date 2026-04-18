@@ -91,9 +91,17 @@ const SubmitIssue = () => {
         formData.append('longitude', location.longitude)
       }
 
-      await submitIssue(formData)
+      const result = await submitIssue(formData)
 
-      toast.success('Issue submitted!')
+      if (result.is_duplicate) {
+        toast('Issue submitted — but AI detected it may be a duplicate.', {
+          icon: '⚠️',
+          duration: 5000,
+        })
+      } else {
+        toast.success('Issue submitted successfully!')
+      }
+
       reset()
       removeImage()
       setLocation(null)

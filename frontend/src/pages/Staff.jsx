@@ -161,7 +161,7 @@ export default function Staff() {
     setIssues((prev) => prev.map((i) => (i.id === updated.id ? updated : i)))
   }
 
-  const open = issues.filter((i) => i.status === 'open').length
+  const reported = issues.filter((i) => i.status === 'reported').length
   const inProgress = issues.filter((i) => i.status === 'in_progress').length
   const resolved = issues.filter((i) => i.status === 'resolved').length
 
@@ -194,7 +194,7 @@ export default function Staff() {
         {!loading && !error && (
           <div className="grid grid-cols-3 gap-3 mb-6">
             {[
-              { label: 'Open', value: open, color: 'text-blue-600' },
+              { label: 'Reported', value: reported, color: 'text-blue-600' },
               {
                 label: 'In Progress',
                 value: inProgress,

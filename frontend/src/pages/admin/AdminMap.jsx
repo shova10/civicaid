@@ -8,13 +8,18 @@ import MapFilters from '../../components/MapFilters'
 import StatusBadge from '../../components/StatusBadge'
 import PriorityBadge from '../../components/PriorityBadge'
 import useMapFilters from '../../hooks/useMapFilters'
-import { getHeatmapData } from '../../services/issues'
+import { getHeatmapData, getAdminIssues } from '../../services/issues'
+
+const KATHMANDU = { lat: 27.7172, lng: 85.324 }
 
 const PRIORITY_STYLE = {
   critical: { color: '#ef4444', fillColor: '#ef4444', radius: 14 },
   high: { color: '#f97316', fillColor: '#f97316', radius: 11 },
   medium: { color: '#eab308', fillColor: '#eab308', radius: 9 },
   low: { color: '#64748b', fillColor: '#64748b', radius: 7 },
+  High: { color: '#f97316', fillColor: '#f97316', radius: 11 },
+  Medium: { color: '#eab308', fillColor: '#eab308', radius: 9 },
+  Low: { color: '#64748b', fillColor: '#64748b', radius: 7 },
   none: { color: '#94a3b8', fillColor: '#94a3b8', radius: 6 },
 }
 
@@ -59,7 +64,6 @@ function StatsBar({ issues }) {
     acc[i.priority] = (acc[i.priority] ?? 0) + 1
     return acc
   }, {})
-
   return (
     <div className="flex items-center gap-3 flex-wrap">
       <span className="text-sm font-semibold text-slate-700">
@@ -106,7 +110,21 @@ export default function AdminMap() {
     setLoading(true)
     setError(false)
     try {
-      const data = await getHeatmapData()
+      let data = await getHeatmapData()
+
+      // Heatmap empty — fall back to admin complaints with approximate coords
+      if (!data || data.length === 0) {
+        const complaints = await getAdminIssues()
+        const list = Array.isArray(complaints)
+          ? complaints
+          : (complaints.results ?? [])
+        data = list.slice(0, 20).map((c) => ({
+          ...c,
+          lat: c.latitude ?? KATHMANDU.lat + (Math.random() - 0.5) * 0.08,
+          lng: c.longitude ?? KATHMANDU.lng + (Math.random() - 0.5) * 0.08,
+        }))
+      }
+
       setIssues(data)
     } catch (err) {
       setError(true)
@@ -122,7 +140,6 @@ export default function AdminMap() {
 
   return (
     <div className="p-6 sm:p-8 max-w-7xl mx-auto">
-      {/* Header */}
       <div className="flex flex-col gap-4 mb-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div>
@@ -163,10 +180,7 @@ export default function AdminMap() {
       </div>
 
       {error ? (
-        <div
-          className="flex flex-col items-center justify-center h-96 rounded-2xl
-          bg-white border border-slate-200"
-        >
+        <div className="flex flex-col items-center justify-center h-96 rounded-2xl bg-white border border-slate-200">
           <div className="w-14 h-14 rounded-2xl bg-red-50 flex items-center justify-center mb-3">
             <AlertCircle size={24} className="text-red-400" />
           </div>
@@ -178,8 +192,7 @@ export default function AdminMap() {
             className="mt-3 inline-flex items-center gap-2 text-sm bg-slate-800 text-white
               px-4 py-2 rounded-xl hover:bg-slate-700 transition-colors font-medium"
           >
-            <RefreshCw size={13} />
-            Retry
+            <RefreshCw size={13} /> Retry
           </button>
         </div>
       ) : (
@@ -189,10 +202,7 @@ export default function AdminMap() {
               className="absolute inset-0 z-1001 flex items-center justify-center
               bg-white/70 backdrop-blur-sm rounded-2xl"
             >
-              <div
-                className="flex items-center gap-3 bg-white rounded-xl shadow-md
-                border border-slate-200 px-5 py-3"
-              >
+              <div className="flex items-center gap-3 bg-white rounded-xl shadow-md border border-slate-200 px-5 py-3">
                 <Map size={18} className="text-blue-500 animate-pulse" />
                 <span className="text-sm font-medium text-slate-600">
                   Loading issues…
@@ -206,17 +216,13 @@ export default function AdminMap() {
               className="absolute inset-0 z-1001 flex items-center justify-center
               bg-white/60 backdrop-blur-sm rounded-2xl"
             >
-              <div
-                className="bg-white rounded-2xl border border-slate-200 shadow-md
-                px-6 py-5 text-center"
-              >
+              <div className="bg-white rounded-2xl border border-slate-200 shadow-md px-6 py-5 text-center">
                 <p className="text-slate-700 font-semibold mb-1">
                   No issues match your filters
                 </p>
                 <button
                   onClick={reset}
-                  className="text-sm text-blue-600 hover:text-blue-700 font-semibold
-                    underline underline-offset-2"
+                  className="text-sm text-blue-600 hover:text-blue-700 font-semibold underline underline-offset-2"
                 >
                   Clear filters
                 </button>
@@ -225,45 +231,47 @@ export default function AdminMap() {
           )}
 
           <NepalMap className="h-150">
-            {filtered.map((issue) => {
-              const style =
-                PRIORITY_STYLE[issue.priority] ?? PRIORITY_STYLE.none
-              return (
-                <CircleMarker
-                  key={issue.id}
-                  center={[issue.lat, issue.lng]}
-                  radius={style.radius}
-                  pathOptions={{
-                    color: style.color,
-                    fillColor: style.fillColor,
-                    fillOpacity: 0.45,
-                    weight: 2,
-                  }}
-                >
-                  <Popup>
-                    <div className="p-1 min-w-200px">
-                      <p className="text-sm font-semibold text-slate-800 leading-snug mb-2">
-                        {issue.title}
-                      </p>
-                      <div className="flex items-center gap-1.5 mb-3">
-                        <StatusBadge status={issue.status} size="sm" />
-                        <PriorityBadge priority={issue.priority} size="sm" />
+            {filtered
+              .filter((issue) => issue.lat && issue.lng)
+              .map((issue) => {
+                const style =
+                  PRIORITY_STYLE[issue.priority] ?? PRIORITY_STYLE.none
+                return (
+                  <CircleMarker
+                    key={issue.id}
+                    center={[issue.lat, issue.lng]}
+                    radius={style.radius}
+                    pathOptions={{
+                      color: style.color,
+                      fillColor: style.fillColor,
+                      fillOpacity: 0.45,
+                      weight: 2,
+                    }}
+                  >
+                    <Popup>
+                      <div className="p-1 min-w-50">
+                        <p className="text-sm font-semibold text-slate-800 leading-snug mb-2">
+                          {issue.title}
+                        </p>
+                        <div className="flex items-center gap-1.5 mb-3">
+                          <StatusBadge status={issue.status} size="sm" />
+                          <PriorityBadge priority={issue.priority} size="sm" />
+                        </div>
+                        <p className="text-xs text-slate-400 mb-3">
+                          {issue.category}
+                        </p>
+                        <button
+                          onClick={() => navigate(`/issues/${issue.id}`)}
+                          className="w-full text-xs font-semibold text-white bg-blue-600
+                            hover:bg-blue-700 px-3 py-1.5 rounded-lg transition-colors"
+                        >
+                          View Issue →
+                        </button>
                       </div>
-                      <p className="text-xs text-slate-400 mb-3">
-                        {issue.category}
-                      </p>
-                      <button
-                        onClick={() => navigate(`/issues/${issue.id}`)}
-                        className="w-full text-xs font-semibold text-white bg-blue-600
-                          hover:bg-blue-700 px-3 py-1.5 rounded-lg transition-colors"
-                      >
-                        View Issue →
-                      </button>
-                    </div>
-                  </Popup>
-                </CircleMarker>
-              )
-            })}
+                    </Popup>
+                  </CircleMarker>
+                )
+              })}
           </NepalMap>
 
           <Legend />

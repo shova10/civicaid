@@ -31,10 +31,7 @@ export async function getAdminSummary() {
 }
 
 export async function adminUpdateIssue(id, payload) {
-  const response = await api.patch(
-    `/api/admin/complaints/${id}/status/`,
-    payload
-  ) // ← fixed
+  const response = await api.patch(`/api/admin/complaints/:id/status/`, payload)
   return response.data
 }
 
@@ -44,22 +41,26 @@ export async function getStaffList() {
 }
 
 export async function bulkUpdateIssues(payload) {
-  const response = await api.post('/api/admin/complaints/bulk-update/', payload)
+  const response = await api.post('/api/admin/issues/bulk-update/', payload)
   return response.data
 }
 
 export async function getStaffIssues() {
-  const response = await api.get('/api/staff/complaints/')
+  const response = await api.get('/api/staff/issues/')
   return response.data
 }
 
 export async function staffUpdateStatus(id, status) {
-  const response = await api.patch(`/api/staff/complaints/${id}/status/`, {
+  const response = await api.patch(`/api/staff/issues/:id/status/`, {
     status,
   })
   return response.data
 }
 export async function getAllIssues() {
   const response = await api.get('/api/complaints/')
+  return response.data
+}
+export async function getAdminIssues() {
+  const response = await api.get('/api/admin/complaints/')
   return response.data
 }

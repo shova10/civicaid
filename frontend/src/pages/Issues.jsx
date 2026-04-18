@@ -6,8 +6,7 @@ import { getAllIssues } from '../services/issues'
 
 const STATUS_FILTERS = [
   { value: 'all', label: 'All' },
-  { value: 'pending', label: 'Pending' },
-  { value: 'open', label: 'Open' },
+  { value: 'reported', label: 'Reported' }, 
   { value: 'in_progress', label: 'In Progress' },
   { value: 'resolved', label: 'Resolved' },
   { value: 'closed', label: 'Closed' },

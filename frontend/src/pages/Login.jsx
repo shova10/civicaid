@@ -26,7 +26,6 @@ const Login = () => {
   const onSubmit = async (data) => {
     try {
       const res = await loginUser(data)
-      console.log('Raw login response:', res.data)
 
       // Adjust these based on what Django actually returns
       const accessToken =
@@ -40,7 +39,7 @@ const Login = () => {
 
       // Fetch full user profile
       const meRes = await getMe()
-      console.log('Raw me response:', meRes.data)
+
       const user = meRes.data
 
       login(user, accessToken, refreshToken)
