@@ -123,7 +123,7 @@ class StaffIssueListView(generics.ListAPIView):
     serializer_class = ComplaintListSerializer
 
     def get_queryset(self):
-    return Complaint.objects.filter(assignment__staff=self.request.user)
+        return Complaint.objects.filter(assignment__staff=self.request.user)
 
 class StaffStatusUpdateView(APIView):
     permission_classes = [IsAuthenticated, IsStaff]
