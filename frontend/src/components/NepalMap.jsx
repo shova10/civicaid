@@ -40,6 +40,7 @@ export default function NepalMap({
   return (
     <div
       className={`rounded-2xl overflow-hidden border border-slate-200 shadow-sm ${className}`}
+      style={{ isolation: 'isolate' }}
     >
       <MapContainer
         center={center}

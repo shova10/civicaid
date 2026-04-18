@@ -1,26 +1,43 @@
-// src/components/StatusTimeline.jsx
 import { CheckCircle2, Circle, Clock, XCircle } from 'lucide-react'
 
 // The canonical order statuses flow through
 const TIMELINE_STEPS = [
-  { key: 'pending',     label: 'Submitted',    description: 'Your issue has been received.' },
-  { key: 'open',        label: 'Reviewed',      description: 'Issue reviewed by our team.' },
-  { key: 'in_progress', label: 'In Progress',   description: 'A team is working on this.' },
-  { key: 'resolved',    label: 'Resolved',      description: 'The issue has been resolved.' },
+  {
+    key: 'pending',
+    label: 'Submitted',
+    description: 'Your issue has been received.',
+  },
+  {
+    key: 'open',
+    label: 'Reviewed',
+    description: 'Issue reviewed by our team.',
+  },
+  {
+    key: 'in_progress',
+    label: 'In Progress',
+    description: 'A team is working on this.',
+  },
+  {
+    key: 'resolved',
+    label: 'Resolved',
+    description: 'The issue has been resolved.',
+  },
 ]
 
 const STEP_INDEX = {
-  pending:     0,
-  open:        1,
+  pending: 0,
+  open: 1,
   in_progress: 2,
-  resolved:    3,
-  closed:      3,
-  rejected:   -1,
+  resolved: 3,
+  closed: 3,
+  rejected: -1,
 }
 
 function StepIcon({ state }) {
   if (state === 'complete')
-    return <CheckCircle2 size={18} className="text-emerald-500" strokeWidth={2} />
+    return (
+      <CheckCircle2 size={18} className="text-emerald-500" strokeWidth={2} />
+    )
   if (state === 'active')
     return (
       <span className="relative flex items-center justify-center">
@@ -58,7 +75,11 @@ export default function StatusTimeline({ status, history = [] }) {
     <ol className="relative flex flex-col gap-0">
       {TIMELINE_STEPS.map((step, idx) => {
         const state =
-          idx < currentIndex ? 'complete' : idx === currentIndex ? 'active' : 'upcoming'
+          idx < currentIndex
+            ? 'complete'
+            : idx === currentIndex
+              ? 'active'
+              : 'upcoming'
 
         // Find matching history entry if provided
         const historyEntry = history.find((h) => h.status === step.key)
@@ -87,28 +108,38 @@ export default function StatusTimeline({ status, history = [] }) {
                   state === 'active'
                     ? 'text-blue-600'
                     : state === 'complete'
-                    ? 'text-slate-700'
-                    : 'text-slate-400'
+                      ? 'text-slate-700'
+                      : 'text-slate-400'
                 }`}
               >
                 {step.label}
                 {state === 'active' && (
-                  <span className="ml-2 text-[10px] font-bold uppercase tracking-widest
-                    text-blue-500 bg-blue-50 px-1.5 py-0.5 rounded-full">
+                  <span
+                    className="ml-2 text-[10px] font-bold uppercase tracking-widest
+                    text-blue-500 bg-blue-50 px-1.5 py-0.5 rounded-full"
+                  >
                     Current
                   </span>
                 )}
               </p>
-              <p className={`text-xs mt-0.5 ${state === 'upcoming' ? 'text-slate-300' : 'text-slate-400'}`}>
+              <p
+                className={`text-xs mt-0.5 ${state === 'upcoming' ? 'text-slate-300' : 'text-slate-400'}`}
+              >
                 {historyEntry?.note ?? step.description}
               </p>
               {historyEntry?.timestamp && (
                 <p className="text-[10px] text-slate-300 mt-0.5 flex items-center gap-1">
                   <Clock size={9} />
-                  {new Date(historyEntry.timestamp).toLocaleDateString('en-US', {
-                    day: 'numeric', month: 'short', year: 'numeric',
-                    hour: '2-digit', minute: '2-digit',
-                  })}
+                  {new Date(historyEntry.timestamp).toLocaleDateString(
+                    'en-US',
+                    {
+                      day: 'numeric',
+                      month: 'short',
+                      year: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    }
+                  )}
                 </p>
               )}
             </div>

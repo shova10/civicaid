@@ -1,19 +1,5 @@
 import api from './api'
 
-// export const submitIssue = (formData) => {
-//   return api.post('/issues', formData)
-// }
-
-// export const getIssues = () => {
-//   return api.get('/issues')
-// }
-
-// export const getIssueById = (id) => {
-//   return api.get(`/issues/${id}`)
-// }
-
-// src/services/issues.js
-
 export async function getMyIssues() {
   const response = await api.get('/api/complaints/')
   return response.data
@@ -33,17 +19,19 @@ export async function upvoteIssue(id) {
   const response = await api.post(`/api/complaints/${id}/upvote/`)
   return response.data
 }
+
 export async function getHeatmapData() {
-  const response = await api.get('/api/complaints/heatmap/')
+  const response = await api.get('/api/issues/heatmap/')
   return response.data
 }
+
 export async function getAdminSummary() {
   const response = await api.get('/api/admin/summary/')
   return response.data
 }
 
 export async function adminUpdateIssue(id, payload) {
-  const response = await api.patch(`/api/admin/complaints/${id}/`, payload)
+  const response = await api.patch(`/api/admin/complaints/:id/status/`, payload)
   return response.data
 }
 
@@ -53,18 +41,26 @@ export async function getStaffList() {
 }
 
 export async function bulkUpdateIssues(payload) {
-  const response = await api.post('/api/admin/complaints/bulk-update/', payload)
+  const response = await api.post('/api/admin/issues/bulk-update/', payload)
   return response.data
 }
 
 export async function getStaffIssues() {
-  const response = await api.get('/api/staff/complaints/')
+  const response = await api.get('/api/staff/issues/')
   return response.data
 }
 
 export async function staffUpdateStatus(id, status) {
-  const response = await api.patch(`/api/staff/complaints/${id}/status/`, {
+  const response = await api.patch(`/api/staff/issues/:id/status/`, {
     status,
   })
+  return response.data
+}
+export async function getAllIssues() {
+  const response = await api.get('/api/complaints/')
+  return response.data
+}
+export async function getAdminIssues() {
+  const response = await api.get('/api/admin/complaints/')
   return response.data
 }

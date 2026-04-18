@@ -4,18 +4,25 @@ import {
   CheckCircle2,
   Loader2,
   AlertTriangle,
-  Users,
-  ThumbsUp,
-  TrendingUp,
-  Clock,
+  Copy,
   RefreshCw,
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import StatCard from '../../components/admin/StatCard'
 import { getAdminSummary } from '../../services/issues'
 
+function objectToArray(obj, keyName) {
+  if (!obj || typeof obj !== 'object') return []
+  return Object.entries(obj).map(([key, value]) => ({
+    [keyName]: key,
+    count: value,
+  }))
+}
+
+// ─── Category breakdown ───────────────────────────────────────────────────────
 function CategoryBreakdown({ data = [], loading }) {
-  const max = Math.max(...data.map((d) => d.count), 1)
+  const safeData = Array.isArray(data) ? data : []
+  const max = Math.max(...safeData.map((d) => d.count), 1)
 
   return (
     <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
@@ -24,7 +31,7 @@ function CategoryBreakdown({ data = [], loading }) {
       </h2>
       {loading ? (
         <div className="space-y-3">
-          {Array.from({ length: 5 }).map((_, i) => (
+          {Array.from({ length: 4 }).map((_, i) => (
             <div key={i} className="flex items-center gap-3 animate-pulse">
               <div className="w-28 h-3 bg-slate-100 rounded-full shrink-0" />
               <div className="flex-1 h-5 bg-slate-100 rounded-full" />
@@ -32,11 +39,13 @@ function CategoryBreakdown({ data = [], loading }) {
             </div>
           ))}
         </div>
+      ) : safeData.length === 0 ? (
+        <p className="text-xs text-slate-400">No category data available.</p>
       ) : (
         <div className="space-y-2.5">
-          {data.map((item) => (
+          {safeData.map((item) => (
             <div key={item.category} className="flex items-center gap-3">
-              <span className="text-xs text-slate-500 font-medium w-28 shrink-0 truncate">
+              <span className="text-xs text-slate-500 font-medium w-28 shrink-0 truncate capitalize">
                 {item.category}
               </span>
               <div className="flex-1 bg-slate-100 rounded-full h-5 overflow-hidden">
@@ -56,23 +65,27 @@ function CategoryBreakdown({ data = [], loading }) {
   )
 }
 
-// ─── Priority breakdown ───────────────────────────────────────────────────────
-const PRIORITY_CONFIG = {
-  critical: { color: 'bg-red-500', label: 'Critical' },
-  high: { color: 'bg-orange-400', label: 'High' },
-  medium: { color: 'bg-yellow-400', label: 'Medium' },
-  low: { color: 'bg-slate-300', label: 'Low' },
+// ─── Status breakdown ─────────────────────────────────────────────────────────
+const STATUS_COLORS = {
+  reported: 'bg-amber-400',
+  open: 'bg-blue-500',
+  in_progress: 'bg-violet-500',
+  resolved: 'bg-emerald-500',
+  closed: 'bg-slate-400',
+  rejected: 'bg-red-400',
 }
 
-function PriorityBreakdown({ data = [], total = 0, loading }) {
+function StatusBreakdown({ data = [], total = 0, loading }) {
+  const safeData = Array.isArray(data) ? data : []
+
   return (
     <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
       <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-4">
-        Issues by Priority
+        Issues by Status
       </h2>
       {loading ? (
         <div className="space-y-3 animate-pulse">
-          {Array.from({ length: 4 }).map((_, i) => (
+          {Array.from({ length: 3 }).map((_, i) => (
             <div key={i} className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <div className="w-2.5 h-2.5 rounded-full bg-slate-100" />
@@ -82,41 +95,39 @@ function PriorityBreakdown({ data = [], total = 0, loading }) {
             </div>
           ))}
         </div>
+      ) : safeData.length === 0 ? (
+        <p className="text-xs text-slate-400">No status data available.</p>
       ) : (
         <>
-          {/* Stacked bar */}
           <div className="flex rounded-full overflow-hidden h-3 mb-4 gap-0.5">
-            {data.map((item) => {
-              const cfg = PRIORITY_CONFIG[item.priority]
+            {safeData.map((item) => {
+              const color = STATUS_COLORS[item.status] ?? 'bg-slate-300'
               const pct = total > 0 ? (item.count / total) * 100 : 0
               return (
                 <div
-                  key={item.priority}
-                  className={`${cfg.color} transition-all duration-500`}
+                  key={item.status}
+                  className={`${color} transition-all duration-500`}
                   style={{ width: `${pct}%` }}
-                  title={`${cfg.label}: ${item.count}`}
+                  title={`${item.status}: ${item.count}`}
                 />
               )
             })}
           </div>
           <div className="space-y-2">
-            {data.map((item) => {
-              const cfg = PRIORITY_CONFIG[item.priority] ?? {
-                color: 'bg-slate-300',
-                label: item.priority,
-              }
+            {safeData.map((item) => {
+              const color = STATUS_COLORS[item.status] ?? 'bg-slate-300'
               const pct = total > 0 ? Math.round((item.count / total) * 100) : 0
               return (
                 <div
-                  key={item.priority}
+                  key={item.status}
                   className="flex items-center justify-between"
                 >
                   <div className="flex items-center gap-2">
                     <span
-                      className={`w-2.5 h-2.5 rounded-full shrink-0 ${cfg.color}`}
+                      className={`w-2.5 h-2.5 rounded-full shrink-0 ${color}`}
                     />
-                    <span className="text-xs text-slate-600 font-medium">
-                      {cfg.label}
+                    <span className="text-xs text-slate-600 font-medium capitalize">
+                      {item.status.replace('_', ' ')}
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
@@ -161,16 +172,19 @@ export default function AdminDashboard() {
     fetchSummary()
   }, [])
 
+  const categoryData = objectToArray(summary?.by_category, 'category')
+  const statusData = objectToArray(summary?.by_status, 'status')
+
   return (
     <div className="p-6 sm:p-8 max-w-6xl mx-auto">
-      {/* ── Header ─────────────────────────────────────────────────────────── */}
+      {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-2xl font-black text-slate-900 tracking-tight">
             Dashboard
           </h1>
           <p className="text-sm text-slate-400 mt-0.5">
-            System overview — all issues across Nepal
+            System overview — all issues
           </p>
         </div>
         <button
@@ -191,12 +205,9 @@ export default function AdminDashboard() {
           <p className="text-slate-700 font-semibold mb-1">
             Failed to load dashboard
           </p>
-          <p className="text-slate-400 text-sm mb-4">
-            Check your connection and try again.
-          </p>
           <button
             onClick={fetchSummary}
-            className="text-sm bg-slate-800 text-white px-4 py-2 rounded-xl
+            className="mt-4 text-sm bg-slate-800 text-white px-4 py-2 rounded-xl
               hover:bg-slate-700 transition-colors font-medium"
           >
             Retry
@@ -204,83 +215,47 @@ export default function AdminDashboard() {
         </div>
       ) : (
         <>
-          {/* ── Stat cards grid ───────────────────────────────────────────── */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
             <StatCard
               icon={ClipboardList}
               label="Total Issues"
-              value={summary?.total_issues}
+              value={summary?.total}
               sub="All time"
               accent="blue"
               loading={loading}
             />
             <StatCard
               icon={Loader2}
-              label="In Progress"
-              value={summary?.in_progress}
-              sub={`${summary?.open_issues ?? '—'} open`}
+              label="Reported"
+              value={summary?.by_status?.reported}
+              sub="Currently reported"
               accent="amber"
               loading={loading}
             />
             <StatCard
               icon={CheckCircle2}
               label="Resolved"
-              value={summary?.resolved_issues}
-              sub={`${summary?.resolution_rate ?? '—'}% resolution rate`}
-              accent="emerald"
-              loading={loading}
-            />
-            <StatCard
-              icon={AlertTriangle}
-              label="Critical"
-              value={summary?.critical_issues}
-              sub="Need urgent action"
-              accent="red"
-              loading={loading}
-            />
-          </div>
-
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-            <StatCard
-              icon={Users}
-              label="Total Users"
-              value={summary?.total_users}
-              sub={`+${summary?.new_users_today ?? 0} today`}
-              accent="violet"
-              loading={loading}
-            />
-            <StatCard
-              icon={ThumbsUp}
-              label="Total Upvotes"
-              value={summary?.total_upvotes}
-              sub="Across all issues"
-              accent="blue"
-              loading={loading}
-            />
-            <StatCard
-              icon={TrendingUp}
-              label="Resolution Rate"
-              value={summary ? `${summary.resolution_rate}%` : null}
+              value={summary?.by_status?.resolved ?? 0}
               sub="Issues resolved"
               accent="emerald"
               loading={loading}
             />
             <StatCard
-              icon={Clock}
-              label="Avg Resolve"
-              value={summary ? `${summary.avg_resolve_days}d` : null}
-              sub="Average days to resolve"
-              accent="slate"
+              icon={Copy}
+              label="Duplicates"
+              value={summary?.duplicates}
+              sub="Duplicate issues found"
+              accent="red"
               loading={loading}
             />
           </div>
 
-          {/* ── Breakdown charts ──────────────────────────────────────────── */}
+          {/* Breakdown charts */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <CategoryBreakdown data={summary?.by_category} loading={loading} />
-            <PriorityBreakdown
-              data={summary?.by_priority}
-              total={summary?.total_issues}
+            <CategoryBreakdown data={categoryData} loading={loading} />
+            <StatusBreakdown
+              data={statusData}
+              total={summary?.total ?? 0}
               loading={loading}
             />
           </div>

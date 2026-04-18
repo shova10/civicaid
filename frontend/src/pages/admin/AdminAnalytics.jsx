@@ -1,4 +1,3 @@
-// src/pages/admin/AdminAnalytics.jsx
 import { useEffect, useState } from 'react'
 import { RefreshCw, AlertTriangle } from 'lucide-react'
 import toast from 'react-hot-toast'
@@ -19,14 +18,15 @@ import {
 } from 'recharts'
 import { getAdminSummary } from '../../services/issues'
 
-// ─── Colour palette ───────────────────────────────────────────────────────────
 const CATEGORY_COLORS = ['#3b82f6', '#f97316', '#10b981', '#eab308', '#8b5cf6']
 
-const PRIORITY_COLORS = {
-  critical: '#ef4444',
-  high: '#f97316',
-  medium: '#eab308',
-  low: '#64748b',
+const STATUS_COLORS = {
+  reported: '#eab308',
+  open: '#3b82f6',
+  in_progress: '#8b5cf6',
+  resolved: '#10b981',
+  closed: '#64748b',
+  rejected: '#ef4444',
 }
 
 const TREND_DATA = [
@@ -38,7 +38,6 @@ const TREND_DATA = [
   { month: 'Mar', submitted: 15, resolved: 12 },
 ]
 
-// ─── Custom tooltip ───────────────────────────────────────────────────────────
 function ChartTooltip({ active, payload, label }) {
   if (!active || !payload?.length) return null
   return (
@@ -59,7 +58,6 @@ function ChartTooltip({ active, payload, label }) {
   )
 }
 
-// ─── Chart card wrapper ───────────────────────────────────────────────────────
 function ChartCard({ title, subtitle, children, loading }) {
   return (
     <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
@@ -78,7 +76,6 @@ function ChartCard({ title, subtitle, children, loading }) {
   )
 }
 
-// ─── Custom pie label ─────────────────────────────────────────────────────────
 function PieLabel({ cx, cy, midAngle, innerRadius, outerRadius, percent }) {
   if (percent < 0.07) return null
   const RADIAN = Math.PI / 180
@@ -100,7 +97,6 @@ function PieLabel({ cx, cy, midAngle, innerRadius, outerRadius, percent }) {
   )
 }
 
-// ─── Main page ────────────────────────────────────────────────────────────────
 export default function AdminAnalytics() {
   const [summary, setSummary] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -112,8 +108,7 @@ export default function AdminAnalytics() {
     try {
       const data = await getAdminSummary()
       setSummary(data)
-    } catch (err) {
-      console.error('Admin summary error:', err)
+    } catch {
       setError(true)
       toast.error('Could not load analytics data.')
     } finally {
@@ -125,23 +120,32 @@ export default function AdminAnalytics() {
     fetchData()
   }, [])
 
-  // Shape data for recharts
-  const categoryData =
-    summary?.by_category?.map((d) => ({
-      name: d.category.replace(' & ', ' &\n'),
-      count: d.count,
-    })) ?? []
+ 
+  const categoryData = summary?.by_category
+    ? Object.entries(summary.by_category).map(([key, value]) => ({
+        name: key,
+        count: value,
+      }))
+    : []
 
-  const priorityData =
-    summary?.by_priority?.map((d) => ({
-      name: d.priority.charAt(0).toUpperCase() + d.priority.slice(1),
-      value: d.count,
-      color: PRIORITY_COLORS[d.priority],
-    })) ?? []
+  const statusData = summary?.by_status
+    ? Object.entries(summary.by_status).map(([key, value]) => ({
+        name: key.charAt(0).toUpperCase() + key.slice(1).replace('_', ' '),
+        value,
+        color: STATUS_COLORS[key] ?? '#94a3b8',
+      }))
+    : []
+
+  const statusBarData = summary?.by_status
+    ? Object.entries(summary.by_status).map(([key, value]) => ({
+        name: key.charAt(0).toUpperCase() + key.slice(1).replace('_', ' '),
+        count: value,
+        color: STATUS_COLORS[key] ?? '#94a3b8',
+      }))
+    : []
 
   return (
     <div className="p-6 sm:p-8 max-w-6xl mx-auto">
-      {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-2xl font-black text-slate-900 tracking-tight">
@@ -179,10 +183,10 @@ export default function AdminAnalytics() {
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-          {/* ── Bar chart — issues by category ─────────────────────────── */}
+          {/* Bar chart - categories */}
           <ChartCard
             title="Issues by Category"
-            subtitle="Total reported per department"
+            subtitle="Total reported per category"
             loading={loading}
           >
             <ResponsiveContainer width="100%" height={220}>
@@ -197,7 +201,6 @@ export default function AdminAnalytics() {
                   tickLine={false}
                   axisLine={false}
                   interval={0}
-                  width={60}
                 />
                 <YAxis
                   tick={{ fontSize: 10, fill: '#94a3b8' }}
@@ -226,16 +229,16 @@ export default function AdminAnalytics() {
             </ResponsiveContainer>
           </ChartCard>
 
-          {/* ── Pie chart — issues by priority ─────────────────────────── */}
+          {/* Pie chart - status */}
           <ChartCard
-            title="Priority Distribution"
-            subtitle="Share of issues by urgency level"
+            title="Status Distribution"
+            subtitle="Share of issues by current status"
             loading={loading}
           >
             <ResponsiveContainer width="100%" height={220}>
               <PieChart>
                 <Pie
-                  data={priorityData}
+                  data={statusData}
                   dataKey="value"
                   nameKey="name"
                   cx="50%"
@@ -244,7 +247,7 @@ export default function AdminAnalytics() {
                   labelLine={false}
                   label={PieLabel}
                 >
-                  {priorityData.map((entry, i) => (
+                  {statusData.map((entry, i) => (
                     <Cell key={i} fill={entry.color} />
                   ))}
                 </Pie>
@@ -268,10 +271,10 @@ export default function AdminAnalytics() {
             </ResponsiveContainer>
           </ChartCard>
 
-          {/* ── Line chart — submission vs resolution trend ─────────────── */}
+          {/* Line chart - trend */}
           <ChartCard
             title="Submission vs Resolution Trend"
-            subtitle="Last 6 months — issues submitted vs resolved"
+            subtitle="Last 6 months"
             loading={loading}
           >
             <ResponsiveContainer width="100%" height={220}>
@@ -330,7 +333,7 @@ export default function AdminAnalytics() {
             </ResponsiveContainer>
           </ChartCard>
 
-          {/* ── Bar chart — resolution rate by status ───────────────────── */}
+          {/* Horizontal bar chart - status breakdown */}
           <ChartCard
             title="Current Status Breakdown"
             subtitle="Live count of issues per status"
@@ -339,32 +342,7 @@ export default function AdminAnalytics() {
             <ResponsiveContainer width="100%" height={220}>
               <BarChart
                 layout="vertical"
-                data={[
-                  {
-                    name: 'Pending',
-                    count:
-                      (summary?.total_issues ?? 0) -
-                      (summary?.open_issues ?? 0) -
-                      (summary?.in_progress ?? 0) -
-                      (summary?.resolved_issues ?? 0),
-                    fill: '#eab308',
-                  },
-                  {
-                    name: 'Open',
-                    count: summary?.open_issues ?? 0,
-                    fill: '#3b82f6',
-                  },
-                  {
-                    name: 'In Progress',
-                    count: summary?.in_progress ?? 0,
-                    fill: '#8b5cf6',
-                  },
-                  {
-                    name: 'Resolved',
-                    count: summary?.resolved_issues ?? 0,
-                    fill: '#10b981',
-                  },
-                ]}
+                data={statusBarData}
                 margin={{ top: 4, right: 16, left: 4, bottom: 0 }}
               >
                 <CartesianGrid
@@ -382,10 +360,10 @@ export default function AdminAnalytics() {
                 <YAxis
                   type="category"
                   dataKey="name"
+                  width={72}
                   tick={{ fontSize: 10, fill: '#94a3b8', fontWeight: 600 }}
                   tickLine={false}
                   axisLine={false}
-                  width={72}
                 />
                 <Tooltip
                   content={<ChartTooltip />}
@@ -397,11 +375,8 @@ export default function AdminAnalytics() {
                   radius={[0, 6, 6, 0]}
                   maxBarSize={24}
                 >
-                  {[0, 1, 2, 3].map((i) => (
-                    <Cell
-                      key={i}
-                      fill={['#eab308', '#3b82f6', '#8b5cf6', '#10b981'][i]}
-                    />
+                  {statusBarData.map((entry, i) => (
+                    <Cell key={i} fill={entry.color} />
                   ))}
                 </Bar>
               </BarChart>

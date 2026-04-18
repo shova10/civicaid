@@ -6,7 +6,7 @@ import useAuth from '../hooks/useAuth'
 import { loginUser, getMe } from '../services/auth'
 
 const Login = () => {
-  const { login, isAuthenticated } = useAuth()
+  const { login, isAuthenticated, user } = useAuth()
   const navigate = useNavigate()
 
   const {
@@ -16,13 +16,16 @@ const Login = () => {
   } = useForm()
 
   useEffect(() => {
-    if (isAuthenticated) navigate('/', { replace: true })
-  }, [isAuthenticated, navigate])
+    if (isAuthenticated && user) {
+      if (user.role === 'admin') navigate('/admin', { replace: true })
+      else if (user.role === 'staff') navigate('/staff', { replace: true })
+      else navigate('/', { replace: true })
+    }
+  }, [isAuthenticated, user, navigate])
 
   const onSubmit = async (data) => {
     try {
       const res = await loginUser(data)
-      console.log('Raw login response:', res.data)
 
       // Adjust these based on what Django actually returns
       const accessToken =
@@ -36,7 +39,7 @@ const Login = () => {
 
       // Fetch full user profile
       const meRes = await getMe()
-      console.log('Raw me response:', meRes.data) // ← remove after confirming shape
+
       const user = meRes.data
 
       login(user, accessToken, refreshToken)
@@ -50,7 +53,7 @@ const Login = () => {
       else if (user.role === 'citizen') navigate('/citizen')
       else navigate('/')
     } catch (err) {
-      console.error('Login error:', err.response?.data) // ← shows exact Django error
+      console.error('Login error:', err.response?.data)
       const message =
         err.response?.data?.detail ||
         err.response?.data?.message ||

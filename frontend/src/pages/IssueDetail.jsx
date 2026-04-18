@@ -188,9 +188,7 @@ export default function IssueDetail() {
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-         
             <div className="lg:col-span-2 flex flex-col gap-5">
-             
               <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6">
                 <div className="flex items-center gap-2 mb-3">
                   <span className="text-xs font-mono font-bold text-slate-400">
@@ -218,7 +216,6 @@ export default function IssueDetail() {
                   </div>
                 </div>
               </div>
-
               {/* Image */}
               <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
                 <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">
@@ -226,7 +223,6 @@ export default function IssueDetail() {
                 </h2>
                 <IssueImage src={issue.image} title={issue.title} />
               </div>
-
               {/* Description */}
               <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6">
                 <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">
@@ -236,11 +232,78 @@ export default function IssueDetail() {
                   {issue.description}
                 </p>
               </div>
+              {/* AI Analysis  */}
+              {(issue.ai_category ||
+                issue.ai_priority ||
+                issue.is_duplicate) && (
+                <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
+                  <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-4 flex items-center gap-1.5">
+                    <span className="text-blue-500">✦</span> AI Analysis
+                  </h2>
+
+                  <div className="space-y-3">
+                    {issue.ai_category && (
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs text-slate-500 font-medium">
+                          AI Category
+                        </span>
+                        <span
+                          className="text-xs font-bold text-blue-600 bg-blue-50
+                              px-2.5 py-1 rounded-full border border-blue-200"
+                        >
+                          {issue.ai_category}
+                        </span>
+                      </div>
+                    )}
+
+                    {issue.ai_priority && (
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs text-slate-500 font-medium">
+                          AI Priority
+                        </span>
+                        <PriorityBadge priority={issue.ai_priority} size="sm" />
+                      </div>
+                    )}
+
+                    {issue.ai_confidence && (
+                      <div className="flex items-start justify-between gap-3">
+                        <span className="text-xs text-slate-500 font-medium shrink-0">
+                          Confidence
+                        </span>
+                        <div className="flex items-center gap-2 min-w-0">
+                          <div className="w-20 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                            <div
+                              className="h-full bg-blue-500 rounded-full transition-all duration-500"
+                              style={{
+                                width: `${Math.round(issue.ai_confidence * 100)}%`,
+                              }}
+                            />
+                          </div>
+                          <span className="text-xs font-bold text-slate-600 shrink-0">
+                            {Math.round(issue.ai_confidence * 100)}%
+                          </span>
+                        </div>
+                      </div>
+                    )}
+
+                    {issue.is_duplicate && (
+                      <div
+                        className="flex items-start gap-2 p-2.5 bg-amber-50 rounded-xl
+                          border border-amber-200 mt-1"
+                      >
+                        <span className="text-amber-500 shrink-0">⚠️</span>
+                        <p className="text-xs text-amber-700 font-medium">
+                          AI detected this may be a duplicate of an existing
+                          issue.
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
 
-           
             <div className="flex flex-col gap-5">
-              
               <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
                 <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">
                   Details
@@ -278,7 +341,6 @@ export default function IssueDetail() {
                 </div>
               </div>
 
-            
               <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
                 <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-4">
                   Progress

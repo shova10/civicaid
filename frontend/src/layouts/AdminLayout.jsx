@@ -1,5 +1,4 @@
 /* eslint-disable no-unused-vars */
-// src/layouts/AdminLayout.jsx
 import { useState } from 'react'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import {
@@ -16,7 +15,6 @@ import {
   ChevronRight,
 } from 'lucide-react'
 import useAuth from '../hooks/useAuth'
-
 const NAV_ITEMS = [
   {
     section: 'Overview',

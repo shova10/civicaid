@@ -11,13 +11,16 @@ import NotFound from './pages/NotFound'
 import Register from './pages/Register'
 import Staff from './pages/Staff'
 import SubmitIssue from './pages/SubmitIssue'
-import MyIssues from './pages/MyIssues'
+import Issues from './pages/Issues'
 import IssueDetail from './pages/IssueDetail'
 import IssueMap from './pages/IssueMap'
 import AdminDashboard from './pages/admin/AdminDashboard'
 import AdminIssues from './pages/admin/AdminIssues'
 import AdminMap from './pages/admin/AdminMap'
 import AdminAnalytics from './pages/admin/AdminAnalytics'
+import AdminUsers from './pages/admin/AdminUsers'
+import AdminSettings from './pages/admin/AdminSettings'
+import Profile from './pages/Profile'
 
 const App = () => {
   return (
@@ -36,14 +39,7 @@ const App = () => {
               <Route path="/admin/issues" element={<AdminIssues />} />
               <Route path="/admin/map" element={<AdminMap />} />
               <Route path="/admin/analytics" element={<AdminAnalytics />} />
-              <Route
-                path="/admin/users"
-                element={
-                  <div className="p-8">
-                    <h1 className="text-2xl font-bold">Users</h1>
-                  </div>
-                }
-              />
+              <Route path="/admin/users" element={<AdminUsers />} />
               <Route
                 path="/admin/analytics"
                 element={
@@ -52,14 +48,7 @@ const App = () => {
                   </div>
                 }
               />
-              <Route
-                path="/admin/settings"
-                element={
-                  <div className="p-8">
-                    <h1 className="text-2xl font-bold">Settings</h1>
-                  </div>
-                }
-              />
+              <Route path="/admin/settings" element={<AdminSettings />} />
             </Route>
           </Route>
 
@@ -74,7 +63,8 @@ const App = () => {
           <Route element={<MainLayout />}>
             <Route path="/" element={<Home />} />
             <Route path="/submit" element={<SubmitIssue />} />
-            <Route path="/myissues" element={<MyIssues />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/issues" element={<Issues />} />
             <Route path="/issues/:id" element={<IssueDetail />} />
             <Route path="/map" element={<IssueMap />} />
           </Route>
