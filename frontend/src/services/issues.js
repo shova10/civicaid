@@ -31,7 +31,7 @@ export async function getAdminSummary() {
 }
 
 export async function adminUpdateIssue(id, payload) {
-  const response = await api.patch(`/api/admin/complaints/:id/status/`, payload)
+  const response = await api.patch(`/api/admin/complaints/${id}/status/`, payload)  
   return response.data
 }
 
@@ -51,15 +51,15 @@ export async function getStaffIssues() {
 }
 
 export async function staffUpdateStatus(id, status) {
-  const response = await api.patch(`/api/staff/issues/:id/status/`, {
-    status,
-  })
+  const response = await api.patch(`/api/staff/issues/${id}/status/`, { status })  // ← fixed
   return response.data
 }
+
 export async function getAllIssues() {
   const response = await api.get('/api/complaints/')
   return response.data
 }
+
 export async function getAdminIssues() {
   const response = await api.get('/api/admin/complaints/')
   return response.data
