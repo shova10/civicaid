@@ -323,7 +323,7 @@ export default function IssueDetail() {
                     <MetaItem
                       icon={MapPin}
                       label="Location"
-                      value={issue.location}
+                      value={issue.location_name}
                     />
                   )}
                   <MetaItem
