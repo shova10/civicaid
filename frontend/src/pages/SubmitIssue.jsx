@@ -1,10 +1,11 @@
-// src/pages/SubmitIssue.jsx
 import { useState, useRef } from 'react'
 import { useForm } from 'react-hook-form'
 import { MapPin, Upload, X, ImageIcon, AlertCircle } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
 import { submitIssue } from '../services/issues'
+import VoiceInputButton from '../components/VoiceInputButton'
+import LanguageSelector from '../components/LanguageSelector'
 
 const CATEGORIES = [
   'road',
@@ -23,12 +24,20 @@ const PRIORITIES = [
   { value: 'critical', label: 'Critical' },
 ]
 
+const LANG_TO_BCP47 = {
+  en: 'en-US',
+  ne: 'ne-NP',
+  hi: 'hi-IN',
+  mai: 'mai',
+}
+
 const SubmitIssue = () => {
   const [imagePreview, setImagePreview] = useState(null)
   const [imageFile, setImageFile] = useState(null)
   const [location, setLocation] = useState(null)
   const [locating, setLocating] = useState(false)
   const [locationError, setLocationError] = useState(null)
+  const [language, setLanguage] = useState('en')
   const fileInputRef = useRef(null)
 
   const {
@@ -36,37 +45,27 @@ const SubmitIssue = () => {
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
-  } = useForm({
-    defaultValues: { priority: 'low' },
-  })
+    setValue,
+    watch,
+  } = useForm({ defaultValues: { priority: 'low' } })
 
   const navigate = useNavigate()
 
-  // ── Image handling ──────────────────────────────────────────────────────────
+  // ── Image ───────────────────────────────────────────────────────────────────
   const handleImageChange = (e) => {
     const file = e.target.files[0]
     if (!file) return
-
     if (!file.type.startsWith('image/')) {
       toast.error('Please upload an image file')
       return
     }
-
     if (file.size > 5 * 1024 * 1024) {
       toast.error('Image must be under 5MB')
       return
     }
-
     setImageFile(file)
-
-    // Use FileReader to generate preview
     const reader = new FileReader()
-    reader.onload = (event) => {
-      setImagePreview(event.target.result)
-    }
-    reader.onerror = () => {
-      toast.error('Could not read image file')
-    }
+    reader.onload = (event) => setImagePreview(event.target.result)
     reader.readAsDataURL(file)
   }
 
@@ -76,16 +75,14 @@ const SubmitIssue = () => {
     if (fileInputRef.current) fileInputRef.current.value = ''
   }
 
-  // ── Location handling ───────────────────────────────────────────────────────
+  // ── Location ────────────────────────────────────────────────────────────────
   const handleGetLocation = () => {
     if (!navigator.geolocation) {
-      toast.error('Geolocation is not supported by your browser')
+      toast.error('Geolocation not supported')
       return
     }
-
     setLocating(true)
     setLocationError(null)
-
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         const { latitude, longitude } = pos.coords
@@ -98,31 +95,22 @@ const SubmitIssue = () => {
       (err) => {
         setLocating(false)
         let message = 'Could not get location'
-        switch (err.code) {
-          case err.PERMISSION_DENIED:
-            message =
-              'Location permission denied. Please allow location access in your browser settings.'
-            break
-          case err.POSITION_UNAVAILABLE:
-            message =
-              'Location unavailable. Try again or submit without location.'
-            break
-          case err.TIMEOUT:
-            message = 'Location request timed out. Try again.'
-            break
-        }
+        if (err.code === err.PERMISSION_DENIED)
+          message =
+            'Location permission denied. Please allow location access in browser settings.'
+        else if (err.code === err.POSITION_UNAVAILABLE)
+          message =
+            'Location unavailable. Try again or submit without location.'
+        else if (err.code === err.TIMEOUT)
+          message = 'Location request timed out. Try again.'
         setLocationError(message)
         toast.error(message)
       },
-      {
-        enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 0,
-      }
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
     )
   }
 
-  // ── Form submit ─────────────────────────────────────────────────────────────
+  // ── Submit ──────────────────────────────────────────────────────────────────
   const handleFormSubmit = async (data) => {
     try {
       const formData = new FormData()
@@ -130,11 +118,8 @@ const SubmitIssue = () => {
       formData.append('description', data.description)
       formData.append('category', data.category)
       formData.append('priority', data.priority)
-
-      if (imageFile) {
-        formData.append('image', imageFile)
-      }
-
+      formData.append('language', language)
+      if (imageFile) formData.append('image', imageFile)
       if (location) {
         formData.append('latitude', location.latitude)
         formData.append('longitude', location.longitude)
@@ -165,28 +150,34 @@ const SubmitIssue = () => {
     }
   }
 
+  const bcp47 = LANG_TO_BCP47[language] ?? 'en-US'
+
   return (
     <div className="min-h-screen bg-slate-50 py-8 px-4">
       <div className="max-w-2xl mx-auto">
-        {/* Header */}
         <div className="mb-8 text-center">
           <h1 className="text-3xl font-bold text-slate-800">Report an Issue</h1>
           <p className="text-slate-500 mt-1">Help improve your community</p>
         </div>
 
-        {/* Card */}
         <div className="bg-white rounded-2xl shadow-md p-6 sm:p-8">
           <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
             {/* Title */}
             <div>
-              <label className="text-sm font-medium text-slate-700">
-                Issue Title *
-              </label>
+              <div className="flex items-center justify-between mb-1">
+                <label className="text-sm font-medium text-slate-700">
+                  Issue Title *
+                </label>
+                <VoiceInputButton
+                  lang={bcp47}
+                  onTranscript={(text) => setValue('title', text)}
+                />
+              </div>
               <input
                 type="text"
                 placeholder="e.g. Broken streetlight on main road"
-                className={`mt-1 w-full px-4 py-2.5 border rounded-xl
-                  focus:ring-2 focus:ring-blue-500/20 focus:outline-none
+                className={`w-full px-4 py-2.5 border rounded-xl focus:ring-2
+                  focus:ring-blue-500/20 focus:outline-none
                   ${errors.title ? 'border-red-400' : 'border-slate-200'}`}
                 {...register('title', {
                   required: 'Title is required',
@@ -205,12 +196,12 @@ const SubmitIssue = () => {
 
             {/* Category */}
             <div>
-              <label className="text-sm font-medium text-slate-700">
+              <label className="text-sm font-medium text-slate-700 block mb-1">
                 Category *
               </label>
               <select
-                className={`mt-1 w-full px-4 py-2.5 border rounded-xl
-                  focus:ring-2 focus:ring-blue-500/20 focus:outline-none
+                className={`w-full px-4 py-2.5 border rounded-xl focus:ring-2
+                  focus:ring-blue-500/20 focus:outline-none
                   ${errors.category ? 'border-red-400' : 'border-slate-200'}`}
                 {...register('category', {
                   required: 'Please select a category',
@@ -232,12 +223,12 @@ const SubmitIssue = () => {
 
             {/* Priority */}
             <div>
-              <label className="text-sm font-medium text-slate-700">
+              <label className="text-sm font-medium text-slate-700 block mb-1">
                 Priority *
               </label>
               <select
-                className="mt-1 w-full px-4 py-2.5 border border-slate-200 rounded-xl
-                  focus:ring-2 focus:ring-blue-500/20 focus:outline-none"
+                className="w-full px-4 py-2.5 border border-slate-200 rounded-xl
+                focus:ring-2 focus:ring-blue-500/20 focus:outline-none"
                 {...register('priority', { required: true })}
               >
                 {PRIORITIES.map((p) => (
@@ -253,21 +244,35 @@ const SubmitIssue = () => {
 
             {/* Description */}
             <div>
-              <label className="text-sm font-medium text-slate-700">
-                Description *
-              </label>
+              <div className="flex items-center justify-between mb-1">
+                <label className="text-sm font-medium text-slate-700">
+                  Description *
+                </label>
+                <div className="flex items-center gap-2">
+                  <LanguageSelector value={language} onChange={setLanguage} />
+                  <VoiceInputButton
+                    lang={bcp47}
+                    onTranscript={(text) => {
+                      const current = watch('description') ?? ''
+                      setValue(
+                        'description',
+                        current ? `${current} ${text}` : text
+                      )
+                    }}
+                  />
+                </div>
+              </div>
               <textarea
                 rows={4}
                 placeholder="Describe the issue in detail — what happened, how severe it is, who is affected..."
-                className={`mt-1 w-full px-4 py-2.5 border rounded-xl
-                  focus:ring-2 focus:ring-blue-500/20 focus:outline-none resize-none
+                className={`w-full px-4 py-2.5 border rounded-xl focus:ring-2
+                  focus:ring-blue-500/20 focus:outline-none resize-none
                   ${errors.description ? 'border-red-400' : 'border-slate-200'}`}
                 {...register('description', {
                   required: 'Description is required',
                   minLength: {
                     value: 20,
-                    message:
-                      'Please describe the issue in at least 20 characters',
+                    message: 'Please describe in at least 20 characters',
                   },
                 })}
               />
@@ -283,13 +288,11 @@ const SubmitIssue = () => {
               <label className="text-sm font-medium text-slate-700 block mb-2">
                 Photo (optional)
               </label>
-
               {!imagePreview ? (
                 <div
                   onClick={() => fileInputRef.current?.click()}
-                  className="border-2 border-dashed border-slate-300 rounded-xl p-8
-                    text-center cursor-pointer hover:border-blue-400 hover:bg-blue-50
-                    transition-colors"
+                  className="border-2 border-dashed border-slate-300 rounded-xl p-8 text-center
+                    cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-colors"
                 >
                   <ImageIcon
                     className="mx-auto text-slate-400 mb-2"
@@ -325,7 +328,6 @@ const SubmitIssue = () => {
                   </div>
                 </div>
               )}
-
               <input
                 ref={fileInputRef}
                 type="file"
@@ -340,18 +342,17 @@ const SubmitIssue = () => {
               <label className="text-sm font-medium text-slate-700 block mb-2">
                 Location (optional)
               </label>
-
               <button
                 type="button"
                 onClick={handleGetLocation}
                 disabled={locating}
                 className={`inline-flex items-center gap-2 px-4 py-2.5 border rounded-xl
-                  text-sm font-medium transition-colors
+                  text-sm font-medium transition-colors disabled:opacity-60
                   ${
                     location
                       ? 'border-green-300 bg-green-50 text-green-700'
                       : 'border-slate-200 hover:bg-slate-50 text-slate-600'
-                  } disabled:opacity-60`}
+                  }`}
               >
                 <MapPin
                   size={16}
@@ -378,10 +379,7 @@ const SubmitIssue = () => {
               )}
 
               {locationError && (
-                <div
-                  className="mt-2 flex items-start gap-2 p-2.5 bg-red-50
-                  rounded-xl border border-red-200"
-                >
+                <div className="mt-2 flex items-start gap-2 p-2.5 bg-red-50 rounded-xl border border-red-200">
                   <AlertCircle
                     size={13}
                     className="text-red-400 mt-0.5 shrink-0"

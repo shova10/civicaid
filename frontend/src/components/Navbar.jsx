@@ -4,6 +4,7 @@ import { MapPin, LogOut, Home, Shield, User, Menu, X } from 'lucide-react'
 import { useState } from 'react'
 import useAuth from '../hooks/useAuth'
 import toast from 'react-hot-toast'
+import NotificationBell from './NotificationBell'
 
 const NAV_LINKS = {
   admin: [{ label: 'Admin', path: '/admin', icon: Shield }],
@@ -66,6 +67,7 @@ const Navbar = () => {
 
           {/* 👤 Right Section */}
           <div className="hidden md:flex items-center gap-4">
+            <NotificationBell />
             {/* User Info */}
             <div className="flex items-center gap-3 bg-gray-50 px-3 py-1.5 rounded-lg">
               <div className="w-8 h-8 bg-blue-400 text-white flex items-center justify-center rounded-full text-sm font-semibold">

@@ -21,6 +21,7 @@ import AdminAnalytics from './pages/admin/AdminAnalytics'
 import AdminUsers from './pages/admin/AdminUsers'
 import AdminSettings from './pages/admin/AdminSettings'
 import Profile from './pages/Profile'
+import VerifyOTP from './pages/VerifyOTP'
 
 const App = () => {
   return (
@@ -69,6 +70,7 @@ const App = () => {
             <Route path="/map" element={<IssueMap />} />
           </Route>
         </Route>
+        <Route path="/verify-otp" element={<VerifyOTP />} />
 
         <Route path="*" element={<NotFound />} />
       </Routes>
