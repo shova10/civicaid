@@ -1,11 +1,15 @@
 from rest_framework import generics, status
-from .models import Complaint, StatusHistory, ComplaintUpvote
-from .serializers import ComplaintCreateSerializer, ComplaintListSerializer, ComplaintDetailSerializer
+from .models import Complaint, StatusHistory, ComplaintUpvote, ComplaintAssignment
+from .serializers import ComplaintCreateSerializer, ComplaintListSerializer, ComplaintDetailSerializer, ComplaintHeatmapSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, BasePermission
 from django.shortcuts import get_object_or_404
 from rest_framework.exceptions import PermissionDenied
+from django.db.models import Count
+from django.db.models.functions import TruncWeek
+from datetime import timedelta
+from django.utils import timezone
 
 
 class IsAdminOrStaff(BasePermission):
@@ -23,15 +27,22 @@ class ComplaintListCreateView(generics.ListCreateAPIView):
     def get_queryset(self):
         return Complaint.objects.filter(citizen=self.request.user)
 
+    def create(self, request, *args, **kwargs):       
+        print("DATA:", request.data)
+        serializer = self.get_serializer(data=request.data)
+        if not serializer.is_valid():
+            print("ERRORS:", serializer.errors)
+            return Response(serializer.errors, status=400)
+        self.perform_create(serializer)
+        return Response(serializer.data, status=201)
+
     def perform_create(self, serializer):
         complaint = serializer.save(citizen=self.request.user)
-    
         try:
             from ai_engine.pipeline import analyze
             analyze(complaint)
         except Exception as e:
             print(f"AI pipeline error: {e}")
-        
 
 class ComplaintDetailView(generics.RetrieveAPIView):
     permission_classes = [IsAuthenticated]
@@ -104,3 +115,152 @@ class StatusUpdateView(APIView):
             "previous_status": previous_status,
             "new_status": new_status
         }, status=status.HTTP_200_OK)
+
+
+class IsStaff(BasePermission):
+    def has_permission(self, request, view):
+        return request.user.role == 'staff'
+
+class StaffIssueListView(generics.ListAPIView):
+    permission_classes = [IsAuthenticated, IsStaff]
+    serializer_class = ComplaintListSerializer
+
+    def get_queryset(self):
+        return Complaint.objects.filter(assignment__staff=self.request.user)
+
+class StaffStatusUpdateView(APIView):
+    permission_classes = [IsAuthenticated, IsStaff]
+
+    def patch(self, request, pk):
+        complaint = get_object_or_404(Complaint, id=pk)
+        
+        if not hasattr(complaint, 'assignment') or complaint.assignment.staff != request.user:
+            raise PermissionDenied("This complaint is not assigned to you.")
+        
+        previous_status = complaint.status
+        new_status = request.data.get("new_status")
+
+        complaint.status = new_status
+        complaint.save()
+
+        StatusHistory.objects.create(
+            complaint=complaint,
+            previous_status=previous_status,
+            new_status=new_status,
+            changed_by=request.user,
+            remark=""
+        )
+        return Response({
+            "message": f"Status updated to {new_status}",
+            "complaint_id": complaint.id,
+            "new_status": new_status
+        }, status=status.HTTP_200_OK)
+
+class HeatmapView(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = ComplaintHeatmapSerializer
+    queryset = Complaint.objects.exclude(
+        location_lat=None, 
+        location_lng=None
+    )
+
+
+
+class AdminSummaryView(APIView):
+    permission_classes = [IsAuthenticated, IsAdminOrStaff]
+
+    def get(self, request):
+        total = Complaint.objects.count()
+
+        by_status = {
+            item['status']: item['count']
+            for item in Complaint.objects.values('status').annotate(count=Count('id'))
+        }
+
+        by_priority = {
+            item['priority']: item['count']
+            for item in Complaint.objects.values('priority').annotate(count=Count('id'))
+        }
+
+        by_category = {
+            item['category']: item['count']
+            for item in Complaint.objects.values('category').annotate(count=Count('id'))
+        }
+
+        return Response({
+            "total_complaints": total,
+            "by_status": by_status,
+            "by_priority": by_priority,
+            "by_category": by_category,
+        })
+
+
+class AdminTrendsView(APIView):
+    permission_classes = [IsAuthenticated, IsAdminOrStaff]
+
+    def get(self, request):
+        eight_weeks_ago = timezone.now() - timedelta(weeks=8)
+
+        trends = (
+            Complaint.objects.filter(created_at__gte=eight_weeks_ago)
+            .annotate(week=TruncWeek('created_at'))
+            .values('week')
+            .annotate(count=Count('id'))
+            .order_by('week')
+        )
+
+        data = [
+            {
+                "week": entry['week'].strftime('%Y-%m-%d'),
+                "count": entry['count']
+            }
+            for entry in trends
+        ]
+        return Response(data)
+
+class BulkStatusUpdateView(APIView):
+    permission_classes = [IsAuthenticated, IsAdminOrStaff]
+
+    def post(self, request):
+        complaint_ids = request.data.get('complaint_ids', [])
+        new_status = request.data.get('new_status')
+        remark = request.data.get('remark', '')
+
+        if not complaint_ids or not new_status:
+            return Response(
+                {"error": "complaint_ids and new_status are required"},
+                status=400
+            )
+
+        complaints = Complaint.objects.filter(id__in=complaint_ids)
+        updated = []
+
+        for complaint in complaints:
+            previous = complaint.status
+            complaint.status = new_status
+            complaint.save()
+
+            StatusHistory.objects.create(
+                complaint=complaint,
+                previous_status=previous,
+                new_status=new_status,
+                changed_by=request.user,
+                remark=remark
+            )
+
+            if new_status in ['in_progress', 'resolved']:
+                Notification.objects.create(
+                    recipient=complaint.citizen,
+                    complaint=complaint,
+                    event='status_changed',
+                    message=f"Your complaint '{complaint.title}' has been {new_status.replace('_', ' ')}.",
+                    message_ne=f"तपाईंको उजुरी '{complaint.title}' को स्थिति {new_status} मा परिवर्तन भयो।"
+                )
+
+            updated.append(complaint.id)
+
+        return Response({
+            "updated_ids": updated,
+            "count": len(updated),
+            "new_status": new_status
+        })
