@@ -32,6 +32,7 @@ const Register = () => {
       })
 
       toast.success('Account created! Please log in.')
+      navigate('/verify-otp', { state: { email: data.email } })
       navigate('/login')
     } catch (err) {
       const errors = err.response?.data

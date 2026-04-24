@@ -20,14 +20,7 @@ import PriorityBadge from '../../components/PriorityBadge'
 import useIssueTable from '../../hooks/useIssueTable'
 import { getAdminIssues } from '../../services/issues'
 // ─── Constants ────────────────────────────────────────────────────────────────
-const STATUSES = [
-  'pending',
-  'open',
-  'in_progress',
-  'resolved',
-  'closed',
-  'rejected',
-]
+const STATUSES = ['reported', 'in_progress', 'resolved', 'closed', 'rejected']
 const PRIORITIES = ['critical', 'high', 'medium', 'low']
 const CATEGORIES = [
   'Road & Transport',
@@ -39,13 +32,13 @@ const CATEGORIES = [
   'Other',
 ]
 const STATUS_LABELS = {
-  pending: 'Pending',
-  open: 'Open',
+  reported: 'Reported',
   in_progress: 'In Progress',
   resolved: 'Resolved',
   closed: 'Closed',
   rejected: 'Rejected',
 }
+
 const PRIORITY_LABELS = {
   critical: 'Critical',
   high: 'High',

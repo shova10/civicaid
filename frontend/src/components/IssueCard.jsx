@@ -6,19 +6,19 @@ import UpvoteButton from './UpvoteButton'
 
 const CATEGORY_COLORS = {
   // Backend stored values (lowercase)
-  'road':            { bg: 'bg-orange-100',  text: 'text-orange-700'  },
-  'water':           { bg: 'bg-cyan-100',    text: 'text-cyan-700'    },
-  'electricity':     { bg: 'bg-yellow-100',  text: 'text-yellow-700'  },
-  'sanitation':      { bg: 'bg-lime-100',    text: 'text-lime-700'    },
-  'safety':          { bg: 'bg-red-100',     text: 'text-red-700'     },
-  'parks':           { bg: 'bg-emerald-100', text: 'text-emerald-700' },
-  'other':           { bg: 'bg-slate-100',   text: 'text-slate-600'   },
+  road: { bg: 'bg-orange-100', text: 'text-orange-700' },
+  water: { bg: 'bg-cyan-100', text: 'text-cyan-700' },
+  electricity: { bg: 'bg-yellow-100', text: 'text-yellow-700' },
+  sanitation: { bg: 'bg-lime-100', text: 'text-lime-700' },
+  safety: { bg: 'bg-red-100', text: 'text-red-700' },
+  parks: { bg: 'bg-emerald-100', text: 'text-emerald-700' },
+  other: { bg: 'bg-slate-100', text: 'text-slate-600' },
   // AI predicted values (title case)
-  'Road':            { bg: 'bg-orange-100',  text: 'text-orange-700'  },
-  'Water':           { bg: 'bg-cyan-100',    text: 'text-cyan-700'    },
-  'Electricity':     { bg: 'bg-yellow-100',  text: 'text-yellow-700'  },
-  'Sanitation':      { bg: 'bg-lime-100',    text: 'text-lime-700'    },
-  'Public Property': { bg: 'bg-purple-100',  text: 'text-purple-700'  },
+  Road: { bg: 'bg-orange-100', text: 'text-orange-700' },
+  Water: { bg: 'bg-cyan-100', text: 'text-cyan-700' },
+  Electricity: { bg: 'bg-yellow-100', text: 'text-yellow-700' },
+  Sanitation: { bg: 'bg-lime-100', text: 'text-lime-700' },
+  'Public Property': { bg: 'bg-purple-100', text: 'text-purple-700' },
 }
 
 function formatDate(dateStr) {
@@ -114,7 +114,7 @@ export default function IssueCard({ issue, onClick }) {
           {issue.location && (
             <span className="flex items-center gap-1">
               <MapPin size={11} />
-              <span className="truncate max-w-22">{issue.location}</span>
+              <span className="truncate max-w-22">{issue.location_name}</span>
             </span>
           )}
 

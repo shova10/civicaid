@@ -13,8 +13,7 @@ import PriorityBadge from '../PriorityBadge'
 import { adminUpdateIssue, getStaffList } from '../../services/issues'
 
 const STATUSES = [
-  { value: 'pending', label: 'Pending' },
-  { value: 'open', label: 'Open' },
+  { value: 'reported', label: 'Reported' },
   { value: 'in_progress', label: 'In Progress' },
   { value: 'resolved', label: 'Resolved' },
   { value: 'closed', label: 'Closed' },
