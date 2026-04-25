@@ -10,6 +10,8 @@ from django.db.models import Count
 from django.db.models.functions import TruncWeek
 from datetime import timedelta
 from django.utils import timezone
+from notifications.models import Notification
+
 
 
 class IsAdminOrStaff(BasePermission):
@@ -164,54 +166,7 @@ class HeatmapView(generics.ListAPIView):
         location_lng=None
     )
 
-class AdminSummaryView(APIView):
-    permission_classes = [IsAuthenticated, IsAdminOrStaff]
 
-    def get(self, request):
-        complaints = Complaint.objects.all()
-        summary = {
-            "total": complaints.count(),
-            "by_status": dict(
-                complaints.values_list('status')
-                .annotate(count=Count('id'))
-                .values_list('status', 'count')
-            ),
-            "by_category": dict(
-                complaints.values_list('category')
-                .annotate(count=Count('id'))
-                .values_list('category', 'count')
-            ),
-            "duplicates": complaints.filter(is_duplicate=True).count(),
-        }
-        return Response(summary)
-
-class BulkUpdateView(APIView):
-    permission_classes = [IsAuthenticated, IsAdminOrStaff]
-
-    def post(self, request):
-        ids = request.data.get('ids', [])
-        new_status = request.data.get('status')
-
-        if not ids or not new_status:
-            return Response(
-                {"error": "ids and status are required."},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
-        complaints = Complaint.objects.filter(id__in=ids)
-        for complaint in complaints:
-            previous_status = complaint.status
-            complaint.status = new_status
-            complaint.save()
-            StatusHistory.objects.create(
-                complaint=complaint,
-                previous_status=previous_status,
-                new_status=new_status,
-                changed_by=request.user,
-                remark="Bulk update"
-            )
-
-        return Response({"updated": complaints.count()})
 
 class AdminSummaryView(APIView):
     permission_classes = [IsAuthenticated, IsAdminOrStaff]
@@ -264,3 +219,50 @@ class AdminTrendsView(APIView):
             for entry in trends
         ]
         return Response(data)
+
+class BulkStatusUpdateView(APIView):
+    permission_classes = [IsAuthenticated, IsAdminOrStaff]
+
+    def post(self, request):
+        complaint_ids = request.data.get('complaint_ids', [])
+        new_status = request.data.get('new_status')
+        remark = request.data.get('remark', '')
+
+        if not complaint_ids or not new_status:
+            return Response(
+                {"error": "complaint_ids and new_status are required"},
+                status=400
+            )
+
+        complaints = Complaint.objects.filter(id__in=complaint_ids)
+        updated = []
+
+        for complaint in complaints:
+            previous = complaint.status
+            complaint.status = new_status
+            complaint.save()
+
+            StatusHistory.objects.create(
+                complaint=complaint,
+                previous_status=previous,
+                new_status=new_status,
+                changed_by=request.user,
+                remark=remark
+            )
+
+            if new_status in ['in_progress', 'resolved']:
+                Notification.objects.create(
+                    recipient=complaint.citizen,
+                    complaint=complaint,
+                    event='status_changed',
+                    message=f"Your complaint '{complaint.title}' has been {new_status.replace('_', ' ')}.",
+                    message_ne=f"तपाईंको उजुरी '{complaint.title}' को स्थिति {new_status} मा परिवर्तन भयो।"
+                )
+
+            updated.append(complaint.id)
+
+        return Response({
+            "updated_ids": updated,
+            "count": len(updated),
+            "new_status": new_status
+        })
