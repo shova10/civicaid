@@ -10,8 +10,6 @@ import PriorityBadge from '../../components/PriorityBadge'
 import useMapFilters from '../../hooks/useMapFilters'
 import { getHeatmapData, getAdminIssues } from '../../services/issues'
 
-const KATHMANDU = { lat: 27.7172, lng: 85.324 }
-
 const PRIORITY_STYLE = {
   critical: { color: '#ef4444', fillColor: '#ef4444', radius: 14 },
   high: { color: '#f97316', fillColor: '#f97316', radius: 11 },
@@ -112,16 +110,22 @@ export default function AdminMap() {
     try {
       let data = await getHeatmapData()
 
-      // Heatmap empty — fall back to admin complaints with approximate coords
       if (!data || data.length === 0) {
         const complaints = await getAdminIssues()
         const list = Array.isArray(complaints)
           ? complaints
           : (complaints.results ?? [])
-        data = list.slice(0, 20).map((c) => ({
+
+        data = list.map((c) => ({
           ...c,
-          lat: c.latitude ?? KATHMANDU.lat + (Math.random() - 0.5) * 0.08,
-          lng: c.longitude ?? KATHMANDU.lng + (Math.random() - 0.5) * 0.08,
+          lat: c.lat ?? (c.latitude ? parseFloat(c.latitude) : null),
+          lng: c.lng ?? (c.longitude ? parseFloat(c.longitude) : null),
+        }))
+      } else {
+        data = data.map((c) => ({
+          ...c,
+          lat: c.lat ?? (c.latitude ? parseFloat(c.latitude) : null),
+          lng: c.lng ?? (c.longitude ? parseFloat(c.longitude) : null),
         }))
       }
 

@@ -3,25 +3,22 @@ import { ThumbsUp } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { upvoteIssue } from '../services/issues'
 
- 
 export default function UpvoteButton({
   issueId,
   initialCount = 0,
   initialVoted = false,
   size = 'md',
 }) {
-  const [count, setCount]   = useState(initialCount)
-  const [voted, setVoted]   = useState(initialVoted)
+  const [count, setCount] = useState(initialCount)
+  const [voted, setVoted] = useState(initialVoted)
   const [loading, setLoading] = useState(false)
-  const [pop, setPop]       = useState(false)
+  const [pop, setPop] = useState(false)
 
   async function handleUpvote(e) {
-    
     e.stopPropagation()
 
     if (voted || loading) return
 
-    
     setCount((c) => c + 1)
     setVoted(true)
     setPop(true)
@@ -29,13 +26,14 @@ export default function UpvoteButton({
 
     try {
       const data = await upvoteIssue(issueId)
-      
+
       if (data?.upvote_count !== undefined) setCount(data.upvote_count)
     } catch (err) {
-      
       setCount((c) => c - 1)
       setVoted(false)
-      toast.error(err?.response?.data?.message ?? 'Could not register your vote.')
+      toast.error(
+        err?.response?.data?.message ?? 'Could not register your vote.'
+      )
     } finally {
       setLoading(false)
     }

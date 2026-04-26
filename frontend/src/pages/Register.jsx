@@ -1,7 +1,8 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useNavigate, Link } from 'react-router-dom'
 import toast from 'react-hot-toast'
+import { Eye, EyeOff } from 'lucide-react'
 import useAuth from '../hooks/useAuth'
 import { registerUser } from '../services/auth'
 
@@ -20,6 +21,9 @@ const Register = () => {
     if (isAuthenticated) navigate('/', { replace: true })
   }, [isAuthenticated])
 
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+
   const onSubmit = async (data) => {
     try {
       await registerUser({
@@ -29,35 +33,46 @@ const Register = () => {
         password: data.password,
         password2: data.confirmPassword,
         phone: data.phone,
+        address: data.address,
+        date_of_birth: data.dob,
       })
 
-      toast.success('Account created! Please log in.')
+      toast.success('Account created! Please verify your email.')
       navigate('/verify-otp', { state: { email: data.email } })
-      navigate('/login')
     } catch (err) {
-      const errors = err.response?.data
-      toast.error(errors?.detail || 'Registration failed. Please try again.')
+      const errData = err.response?.data
+      toast.error(
+        errData?.detail ||
+          errData?.message ||
+          'Registration failed. Please try again.'
+      )
     }
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-50">
-      <div className="w-full max-w-md p-8 bg-white rounded-xl shadow-md">
+    <div className="flex items-center justify-center min-h-screen bg-gray-50 py-10 px-4">
+      <div className="w-full max-w-md bg-white rounded-xl shadow-md p-8">
         <h1 className="text-3xl font-bold text-gray-800 mb-2">
           Create account
         </h1>
         <p className="text-gray-500 mb-8">Get started for free</p>
 
-        <form onSubmit={handleSubmit(onSubmit)} noValidate>
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          noValidate
+          className="space-y-5"
+        >
           {/* Full Name */}
-          <div className="mb-5">
+          <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Full Name
+              Full Name *
             </label>
             <input
               type="text"
               placeholder="John Doe"
-              className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.name ? 'border-red-500' : 'border-gray-300'}`}
+              className={`w-full px-4 py-2 border rounded-lg focus:outline-none
+                focus:ring-2 focus:ring-blue-500
+                ${errors.name ? 'border-red-500' : 'border-gray-300'}`}
               {...register('name', {
                 required: 'Full name is required',
                 minLength: {
@@ -72,15 +87,20 @@ const Register = () => {
           </div>
 
           {/* Phone */}
-          <div className="mb-5">
+          <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Phone number
+              Phone Number *
             </label>
             <input
               type="tel"
-              placeholder="Phone number"
-              className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.phone ? 'border-red-500' : 'border-gray-300'}`}
-              {...register('phone', { required: 'Phone number is required' })}
+              placeholder="98XXXXXXXX"
+              className={`w-full px-4 py-2 border rounded-lg focus:outline-none
+                focus:ring-2 focus:ring-blue-500
+                ${errors.phone ? 'border-red-500' : 'border-gray-300'}`}
+              {...register('phone', {
+                required: 'Phone number is required',
+                minLength: { value: 10, message: 'Enter a valid phone number' },
+              })}
             />
             {errors.phone && (
               <p className="mt-1 text-sm text-red-500">
@@ -90,14 +110,16 @@ const Register = () => {
           </div>
 
           {/* Email */}
-          <div className="mb-5">
+          <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Email
+              Email *
             </label>
             <input
               type="email"
               placeholder="you@example.com"
-              className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.email ? 'border-red-500' : 'border-gray-300'}`}
+              className={`w-full px-4 py-2 border rounded-lg focus:outline-none
+                focus:ring-2 focus:ring-blue-500
+                ${errors.email ? 'border-red-500' : 'border-gray-300'}`}
               {...register('email', {
                 required: 'Email is required',
                 pattern: {
@@ -113,15 +135,72 @@ const Register = () => {
             )}
           </div>
 
-          {/* Password */}
-          <div className="mb-5">
+          {/* Date of Birth */}
+          <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Password
+              Date of Birth *
             </label>
             <input
-              type="password"
+              type="date"
+              max={
+                new Date(new Date().setFullYear(new Date().getFullYear() - 10))
+                  .toISOString()
+                  .split('T')[0]
+              }
+              className={`w-full px-4 py-2 border rounded-lg focus:outline-none
+                focus:ring-2 focus:ring-blue-500 text-gray-700
+                ${errors.dob ? 'border-red-500' : 'border-gray-300'}`}
+              {...register('dob', {
+                required: 'Date of birth is required',
+                validate: (value) => {
+                  const age =
+                    new Date().getFullYear() - new Date(value).getFullYear()
+                  return age >= 10 || 'You must be at least 10 years old'
+                },
+              })}
+            />
+            {errors.dob && (
+              <p className="mt-1 text-sm text-red-500">{errors.dob.message}</p>
+            )}
+          </div>
+
+          {/* Address */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Address *
+            </label>
+            <input
+              type="text"
+              placeholder="e.g. Baneshwor, Kathmandu"
+              className={`w-full px-4 py-2 border rounded-lg focus:outline-none
+                focus:ring-2 focus:ring-blue-500
+                ${errors.address ? 'border-red-500' : 'border-gray-300'}`}
+              {...register('address', {
+                required: 'Address is required',
+                minLength: {
+                  value: 5,
+                  message: 'Please enter a valid address',
+                },
+              })}
+            />
+            {errors.address && (
+              <p className="mt-1 text-sm text-red-500">
+                {errors.address.message}
+              </p>
+            )}
+          </div>
+
+          {/* Password */}
+          <div className="relative">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Password *
+            </label>
+            <input
+              type={showPassword ? 'text' : 'password'}
               placeholder="••••••••"
-              className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.password ? 'border-red-500' : 'border-gray-300'}`}
+              className={`w-full px-4 py-2 pr-10 border rounded-lg focus:outline-none
+                focus:ring-2 focus:ring-blue-500
+                ${errors.password ? 'border-red-500' : 'border-gray-300'}`}
               {...register('password', {
                 required: 'Password is required',
                 minLength: {
@@ -130,6 +209,13 @@ const Register = () => {
                 },
               })}
             />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-9 text-gray-500 hover:text-gray-700"
+            >
+              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
             {errors.password && (
               <p className="mt-1 text-sm text-red-500">
                 {errors.password.message}
@@ -138,20 +224,29 @@ const Register = () => {
           </div>
 
           {/* Confirm Password */}
-          <div className="mb-5">
+          <div className="relative">
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Confirm Password
+              Confirm Password *
             </label>
             <input
-              type="password"
+              type={showConfirmPassword ? 'text' : 'password'}
               placeholder="••••••••"
-              className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.confirmPassword ? 'border-red-500' : 'border-gray-300'}`}
+              className={`w-full px-4 py-2 pr-10 border rounded-lg focus:outline-none
+                focus:ring-2 focus:ring-blue-500
+                ${errors.confirmPassword ? 'border-red-500' : 'border-gray-300'}`}
               {...register('confirmPassword', {
                 required: 'Please confirm your password',
                 validate: (value) =>
                   value === watch('password') || 'Passwords do not match',
               })}
             />
+            <button
+              type="button"
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              className="absolute right-3 top-9 text-gray-500 hover:text-gray-700"
+            >
+              {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
             {errors.confirmPassword && (
               <p className="mt-1 text-sm text-red-500">
                 {errors.confirmPassword.message}
@@ -163,9 +258,11 @@ const Register = () => {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 text-white font-semibold rounded-lg transition-colors"
+            className="w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-700
+              disabled:bg-blue-300 text-white font-semibold rounded-lg
+              transition-colors mt-2"
           >
-            {isSubmitting ? 'Creating account...' : 'Create Account'}
+            {isSubmitting ? 'Creating account…' : 'Create Account'}
           </button>
         </form>
 

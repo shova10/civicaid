@@ -22,6 +22,7 @@ import AdminUsers from './pages/admin/AdminUsers'
 import AdminSettings from './pages/admin/AdminSettings'
 import Profile from './pages/Profile'
 import VerifyOTP from './pages/VerifyOTP'
+import Landing from './pages/Landing'
 
 const App = () => {
   return (
@@ -29,6 +30,7 @@ const App = () => {
       <Toaster position="top-right" />
 
       <Routes>
+        <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
@@ -62,7 +64,7 @@ const App = () => {
 
           {/* Citizen  */}
           <Route element={<MainLayout />}>
-            <Route path="/" element={<Home />} />
+            <Route path="/home" element={<Home />} />
             <Route path="/submit" element={<SubmitIssue />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/issues" element={<Issues />} />

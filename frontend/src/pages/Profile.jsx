@@ -1,112 +1,200 @@
 import { useEffect, useState } from 'react'
+import { Phone, MapPin, Calendar, Mail, User } from 'lucide-react'
+import toast from 'react-hot-toast'
+import IssueCard from '../components/IssueCard'
 import useAuth from '../hooks/useAuth'
 import { getMyIssues } from '../services/issues'
-import IssueCard from '../components/IssueCard'
+import { getProfile } from '../services/auth'
+
+function InfoRow({ icon: Icon, label, value }) {
+  return (
+    <div className="flex items-start gap-3 py-3 border-b border-slate-100 last:border-0">
+      <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center shrink-0 mt-0.5">
+        <Icon size={14} className="text-slate-500" />
+      </div>
+      <div>
+        <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">
+          {label}
+        </p>
+        <p className="text-sm font-semibold text-slate-700">{value || '—'}</p>
+      </div>
+    </div>
+  )
+}
 
 export default function Profile() {
   const { user } = useAuth()
 
+  const [profile, setProfile] = useState(null)
   const [issues, setIssues] = useState([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState('')
 
   useEffect(() => {
-    async function fetchIssues() {
+    async function fetchAll() {
       try {
-        const data = await getMyIssues()
-        setIssues(data)
-      } catch (err) {
-        console.error('Error fetching issues:', err)
+        const [profileData, issuesData] = await Promise.all([
+          getProfile(),
+          getMyIssues(),
+        ])
+        console.log('profileData:', profileData)
+        setProfile(profileData)
+        setIssues(Array.isArray(issuesData) ? issuesData : [])
+      } catch {
+        toast.error('Could not load profile data.')
       } finally {
         setLoading(false)
       }
     }
-    fetchIssues()
+    fetchAll()
   }, [])
 
   const total = issues.length
   const resolved = issues.filter((i) => i.status === 'resolved').length
-  const pending = issues.filter((i) => i.status === 'pending').length
+  const reported = issues.filter((i) => i.status === 'reported').length
+  const inProgress = issues.filter((i) => i.status === 'in_progress').length
 
   const filteredIssues = filter
     ? issues.filter((i) => i.status === filter)
     : issues
 
+  // Use profile data if available, fall back to auth context
+  const displayName =
+    profile?.full_name ?? profile?.name ?? user?.name ?? 'User'
+  const displayEmail = profile?.email ?? user?.email ?? '—'
+  const displayPhone = profile?.phone ?? '—'
+  const displayAddr = profile?.address ?? '—'
+
   if (loading) {
-    return <div className="p-6 text-center text-gray-500">Loading profile...</div>
+    return (
+      <div className="min-h-screen bg-slate-50 py-8 px-4">
+        <div className="max-w-5xl mx-auto space-y-5 animate-pulse">
+          <div className="h-36 bg-white rounded-2xl border border-slate-200" />
+          <div className="grid grid-cols-3 gap-4">
+            {[1, 2, 3].map((i) => (
+              <div
+                key={i}
+                className="h-24 bg-white rounded-2xl border border-slate-200"
+              />
+            ))}
+          </div>
+          <div className="h-64 bg-white rounded-2xl border border-slate-200" />
+        </div>
+      </div>
+    )
   }
 
   return (
     <div className="min-h-screen bg-slate-50 py-8 px-4">
-      <div className="max-w-5xl mx-auto">
-
-        {/* 🔷 Profile Header */}
-        <div className="bg-white rounded-2xl shadow-md p-6 flex items-center gap-4">
-          <div className="w-14 h-14 bg-blue-600 text-white flex items-center justify-center rounded-full text-xl font-bold">
-            {user?.name?.charAt(0)}
-          </div>
-
-          <div>
-            <h2 className="text-xl font-semibold text-slate-800">
-              {user?.name || 'User'}
-            </h2>
-            <p className="text-sm text-slate-500">{user?.email}</p>
-            <span className="text-xs text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full mt-1 inline-block">
-              Citizen
-            </span>
-          </div>
-        </div>
-
-        {/* 📊 Stats Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
-          <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 text-center">
-            <p className="text-2xl font-bold text-slate-800">{total}</p>
-            <p className="text-sm text-slate-500 mt-1">Total Issues</p>
-          </div>
-
-          <div className="bg-green-50 p-5 rounded-2xl border border-green-100 text-center">
-            <p className="text-2xl font-bold text-green-600">{resolved}</p>
-            <p className="text-sm text-green-700 mt-1">Resolved</p>
-          </div>
-
-          <div className="bg-yellow-50 p-5 rounded-2xl border border-yellow-100 text-center">
-            <p className="text-2xl font-bold text-yellow-600">{pending}</p>
-            <p className="text-sm text-yellow-700 mt-1">Pending</p>
-          </div>
-        </div>
-
-        {/* 📂 Issues Section */}
-        <div className="mt-8">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-            <h3 className="text-lg font-semibold text-slate-800">
-              My Issues
-            </h3>
-
-            <select
-              className="border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-              value={filter}
-              onChange={(e) => setFilter(e.target.value)}
-            >
-              <option value="">All</option>
-              <option value="pending">Pending</option>
-              <option value="in_progress">In Progress</option>
-              <option value="resolved">Resolved</option>
-            </select>
-          </div>
-
-          {filteredIssues.length === 0 ? (
-            <div className="bg-white rounded-xl p-6 text-center text-slate-500 shadow-sm">
-              No issues found.
+      <div className="max-w-5xl mx-auto space-y-6">
+        {/* ── Profile header ──────────────────────────────────────────────── */}
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <div className="h-20 bg-linear-to-r from-blue-500 to-blue-600" />
+          <div className="px-6 pb-6">
+            <div className="-mt-8 flex items-end justify-between mb-4">
+              <div
+                className="w-16 h-16 rounded-2xl bg-blue-50 border-4 border-white
+                shadow-md flex items-center justify-center text-2xl font-black text-blue-600"
+              >
+                {displayName?.[0]?.toUpperCase() ?? '?'}
+              </div>
+              <span
+                className="text-xs font-bold uppercase tracking-wider
+                text-blue-600 bg-blue-50 border border-blue-200
+                px-3 py-1 rounded-full "
+              >
+                {user?.role ?? 'Citizen'}
+              </span>
             </div>
-          ) : (
-            <div className="grid md:grid-cols-2 gap-4">
-              {filteredIssues.map((issue) => (
-                <IssueCard key={issue.id} issue={issue} />
+            <h1 className="text-xl font-black text-slate-900 mb-0.5">
+              {displayName}
+            </h1>
+            <p className="text-sm text-slate-500">{displayEmail}</p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* ── Personal info ─────────────────────────────────────────────── */}
+          <div className="lg:col-span-1">
+            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
+              <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
+                Personal Information
+              </h2>
+              <InfoRow icon={User} label="Full Name" value={displayName} />
+              <InfoRow icon={Mail} label="Email" value={displayEmail} />
+              <InfoRow icon={Phone} label="Phone" value={displayPhone} />
+              <InfoRow icon={MapPin} label="Address" value={displayAddr} />
+            </div>
+          </div>
+
+          {/* ── Stats + Issues ────────────────────────────────────────────── */}
+          <div className="lg:col-span-2 space-y-5">
+            {/* Stats */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {[
+                { label: 'Total', value: total, color: 'text-slate-800' },
+                { label: 'Reported', value: reported, color: 'text-blue-600' },
+                {
+                  label: 'In Progress',
+                  value: inProgress,
+                  color: 'text-violet-600',
+                },
+                {
+                  label: 'Resolved',
+                  value: resolved,
+                  color: 'text-emerald-600',
+                },
+              ].map((s) => (
+                <div
+                  key={s.label}
+                  className="bg-white rounded-2xl border border-slate-200
+                  shadow-sm p-4 text-center"
+                >
+                  <p className={`text-2xl font-black ${s.color}`}>{s.value}</p>
+                  <p className="text-xs text-slate-400 font-medium mt-0.5">
+                    {s.label}
+                  </p>
+                </div>
               ))}
             </div>
-          )}
-        </div>
 
+            {/* Issues */}
+            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                  My Issues
+                </h2>
+                <select
+                  value={filter}
+                  onChange={(e) => setFilter(e.target.value)}
+                  className="text-xs font-medium border border-slate-200 rounded-xl
+                    px-3 py-1.5 bg-white text-slate-600 focus:outline-none
+                    focus:ring-2 focus:ring-blue-500/20"
+                >
+                  <option value="">All</option>
+                  <option value="reported">Reported</option>
+                  <option value="in_progress">In Progress</option>
+                  <option value="resolved">Resolved</option>
+                  <option value="closed">Closed</option>
+                </select>
+              </div>
+
+              {filteredIssues.length === 0 ? (
+                <div className="flex flex-col items-center py-10 text-center">
+                  <p className="text-slate-400 text-sm font-medium">
+                    No issues found.
+                  </p>
+                </div>
+              ) : (
+                <div className="grid sm:grid-cols-2 gap-4">
+                  {filteredIssues.map((issue) => (
+                    <IssueCard key={issue.id} issue={issue} />
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   )

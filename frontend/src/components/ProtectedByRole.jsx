@@ -4,7 +4,7 @@ import useAuth from '../hooks/useAuth'
 export default function ProtectedByRole({ roles }) {
   const { user, isAuthenticated } = useAuth()
 
-  if (!isAuthenticated) return <Navigate to="/login" replace />
+  if (!isAuthenticated) return <Navigate to="/" replace />
 
   if (!roles.includes(user?.role)) {
     // Redirect to their home based on role instead of showing a 403

@@ -1,9 +1,10 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useNavigate, Link } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import useAuth from '../hooks/useAuth'
-import { loginUser, getMe } from '../services/auth'
+import { loginUser, getProfile } from '../services/auth'
+import { Eye, EyeOff } from 'lucide-react'
 
 const Login = () => {
   const { login, isAuthenticated, user } = useAuth()
@@ -14,12 +15,13 @@ const Login = () => {
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm()
+  const [showPassword, setShowPassword] = useState(false)
 
   useEffect(() => {
     if (isAuthenticated && user) {
       if (user.role === 'admin') navigate('/admin', { replace: true })
       else if (user.role === 'staff') navigate('/staff', { replace: true })
-      else navigate('/', { replace: true })
+      else navigate('/home', { replace: true })
     }
   }, [isAuthenticated, user, navigate])
 
@@ -27,44 +29,37 @@ const Login = () => {
     try {
       const res = await loginUser(data)
 
-      // Adjust these based on what Django actually returns
       const accessToken =
         res.data.access || res.data.accessToken || res.data.token
       const refreshToken =
         res.data.refresh || res.data.refreshToken || res.data.token
 
-      // Save tokens first so getMe() request carries Authorization header
       localStorage.setItem('accessToken', accessToken)
       localStorage.setItem('refreshToken', refreshToken)
 
-      // Fetch full user profile
-      const meRes = await getMe()
-
-      const user = meRes.data
+      const user = await getProfile()
 
       login(user, accessToken, refreshToken)
       toast.success(
         `Welcome back, ${user.full_name || user.name || user.email}!`
       )
 
-      // Redirect by role
       if (user.role === 'admin') navigate('/admin')
       else if (user.role === 'staff') navigate('/staff')
-      else if (user.role === 'citizen') navigate('/citizen')
-      else navigate('/')
+      else navigate('/home')
     } catch (err) {
-      console.error('Login error:', err.response?.data)
-      const message =
+      console.error('Login error:', err.response?.data || err.message)
+      toast.error(
         err.response?.data?.detail ||
-        err.response?.data?.message ||
-        'Login failed. Try again.'
-      toast.error(message)
+          err.response?.data?.message ||
+          'Login failed. Try again.'
+      )
     }
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-50">
-      <div className="w-full max-w-md p-8 bg-white rounded-xl shadow-md">
+    <div className="flex items-center justify-center min-h-screen bg-[#F9FAFB]">
+      <div className="w-full max-w-md p-8 bg-[#FFFFFF] rounded-2xl shadow-lg">
         <h1 className="text-3xl font-bold text-gray-800 mb-2">Welcome back</h1>
         <p className="text-gray-500 mb-8">Sign in to your account</p>
 
@@ -96,14 +91,15 @@ const Login = () => {
           </div>
 
           {/* Password */}
-          <div className="mb-6">
+          <div className="mb-5 relative">
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Password
             </label>
+
             <input
-              type="password"
+              type={showPassword ? 'text' : 'password'}
               placeholder="••••••••"
-              className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              className={`w-full px-4 py-2 pr-10 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                 errors.password ? 'border-red-500' : 'border-gray-300'
               }`}
               {...register('password', {
@@ -114,6 +110,15 @@ const Login = () => {
                 },
               })}
             />
+
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-9 text-gray-500 hover:text-gray-700"
+            >
+              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
+
             {errors.password && (
               <p className="mt-1 text-sm text-red-500">
                 {errors.password.message}

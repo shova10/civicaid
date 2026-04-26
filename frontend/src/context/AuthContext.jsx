@@ -62,6 +62,13 @@ export const AuthProvider = ({ children }) => {
   }
 
   useEffect(() => {
+    const raw = localStorage.getItem('user')
+    if (raw === 'undefined' || raw === undefined) {
+      localStorage.removeItem('user')
+      localStorage.removeItem('accessToken')
+      localStorage.removeItem('refreshToken')
+    }
+
     const token = localStorage.getItem('accessToken')
     if (!token) {
       dispatch({ type: 'SET_LOADING', payload: false })

@@ -1,35 +1,9 @@
 import { useState, useRef } from 'react'
 import { useForm } from 'react-hook-form'
-import { MapPin, Upload, X, ImageIcon, AlertCircle } from 'lucide-react'
+import { MapPin, Upload, X, ImageIcon, AlertCircle, Info } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
 import { submitIssue } from '../services/issues'
-import VoiceInputButton from '../components/VoiceInputButton'
-import LanguageSelector from '../components/LanguageSelector'
-
-const CATEGORIES = [
-  'road',
-  'water',
-  'electricity',
-  'sanitation',
-  'safety',
-  'parks',
-  'other',
-]
-
-const PRIORITIES = [
-  { value: 'low', label: 'Low' },
-  { value: 'medium', label: 'Medium' },
-  { value: 'high', label: 'High' },
-  { value: 'critical', label: 'Critical' },
-]
-
-const LANG_TO_BCP47 = {
-  en: 'en-US',
-  ne: 'ne-NP',
-  hi: 'hi-IN',
-  mai: 'mai',
-}
 
 const SubmitIssue = () => {
   const [imagePreview, setImagePreview] = useState(null)
@@ -37,7 +11,6 @@ const SubmitIssue = () => {
   const [location, setLocation] = useState(null)
   const [locating, setLocating] = useState(false)
   const [locationError, setLocationError] = useState(null)
-  const [language, setLanguage] = useState('en')
   const fileInputRef = useRef(null)
 
   const {
@@ -45,11 +18,10 @@ const SubmitIssue = () => {
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
-    setValue,
-    watch,
-  } = useForm({ defaultValues: { priority: 'low' } })
+  } = useForm()
 
   const navigate = useNavigate()
+  const [locationName, setLocationName] = useState(null)
 
   // ── Image ───────────────────────────────────────────────────────────────────
   const handleImageChange = (e) => {
@@ -84,12 +56,32 @@ const SubmitIssue = () => {
     setLocating(true)
     setLocationError(null)
     navigator.geolocation.getCurrentPosition(
-      (pos) => {
+      async (pos) => {
         const { latitude, longitude } = pos.coords
         setLocation({ latitude, longitude })
-        toast.success(
-          `Location captured: ${latitude.toFixed(4)}, ${longitude.toFixed(4)}`
-        )
+
+        try {
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`,
+            { headers: { 'Accept-Language': 'en' } }
+          )
+          const data = await res.json()
+          const place =
+            data.address?.suburb ||
+            data.address?.neighbourhood ||
+            data.address?.village ||
+            data.address?.town ||
+            data.address?.city ||
+            data.address?.county ||
+            data.display_name?.split(',')[0] ||
+            `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`
+          setLocationName(place)
+          toast.success(`Location captured: ${place}`)
+        } catch {
+          setLocationName(`${latitude.toFixed(4)}, ${longitude.toFixed(4)}`)
+          toast.success('Location captured')
+        }
+
         setLocating(false)
       },
       (err) => {
@@ -99,31 +91,34 @@ const SubmitIssue = () => {
           message =
             'Location permission denied. Please allow location access in browser settings.'
         else if (err.code === err.POSITION_UNAVAILABLE)
-          message =
-            'Location unavailable. Try again or submit without location.'
+          message = 'Location unavailable. Try again.'
         else if (err.code === err.TIMEOUT)
           message = 'Location request timed out. Try again.'
         setLocationError(message)
         toast.error(message)
       },
-      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
     )
   }
 
   // ── Submit ──────────────────────────────────────────────────────────────────
   const handleFormSubmit = async (data) => {
+    if (!imageFile) {
+      toast.error('Please attach a photo of the issue')
+      return
+    }
+    if (!location) {
+      toast.error('Please capture your location')
+      return
+    }
+
     try {
       const formData = new FormData()
       formData.append('title', data.title)
       formData.append('description', data.description)
-      formData.append('category', data.category)
-      formData.append('priority', data.priority)
-      formData.append('language', language)
-      if (imageFile) formData.append('image', imageFile)
-      if (location) {
-        formData.append('latitude', location.latitude)
-        formData.append('longitude', location.longitude)
-      }
+      formData.append('image', imageFile)
+      formData.append('latitude', location.latitude)
+      formData.append('longitude', location.longitude)
 
       const result = await submitIssue(formData)
 
@@ -140,7 +135,7 @@ const SubmitIssue = () => {
       removeImage()
       setLocation(null)
       setLocationError(null)
-      navigate('/my-issues')
+      navigate('/issues')
     } catch (err) {
       const message =
         err?.response?.data?.detail ||
@@ -150,8 +145,6 @@ const SubmitIssue = () => {
     }
   }
 
-  const bcp47 = LANG_TO_BCP47[language] ?? 'en-US'
-
   return (
     <div className="min-h-screen bg-slate-50 py-8 px-4">
       <div className="max-w-2xl mx-auto">
@@ -160,19 +153,32 @@ const SubmitIssue = () => {
           <p className="text-slate-500 mt-1">Help improve your community</p>
         </div>
 
+        {/* Citizen tip banner */}
+        <div
+          className="flex items-start gap-3 bg-blue-50 border border-blue-200
+          rounded-2xl px-5 py-4 mb-6"
+        >
+          <Info size={18} className="text-blue-500 shrink-0 mt-0.5" />
+          <div>
+            <p className="text-sm font-semibold text-blue-800 mb-0.5">
+              Help us resolve your issue faster
+            </p>
+            <p className="text-xs text-blue-700 leading-relaxed">
+              Adding a <span className="font-semibold">photo</span> and your{' '}
+              <span className="font-semibold">location</span> helps our team
+              identify and fix the problem quickly. Issues with both are
+              prioritized and resolved sooner.
+            </p>
+          </div>
+        </div>
+
         <div className="bg-white rounded-2xl shadow-md p-6 sm:p-8">
           <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
             {/* Title */}
             <div>
-              <div className="flex items-center justify-between mb-1">
-                <label className="text-sm font-medium text-slate-700">
-                  Issue Title *
-                </label>
-                <VoiceInputButton
-                  lang={bcp47}
-                  onTranscript={(text) => setValue('title', text)}
-                />
-              </div>
+              <label className="text-sm font-medium text-slate-700 block mb-1">
+                Issue Title *
+              </label>
               <input
                 type="text"
                 placeholder="e.g. Broken streetlight on main road"
@@ -194,74 +200,11 @@ const SubmitIssue = () => {
               )}
             </div>
 
-            {/* Category */}
-            <div>
-              <label className="text-sm font-medium text-slate-700 block mb-1">
-                Category *
-              </label>
-              <select
-                className={`w-full px-4 py-2.5 border rounded-xl focus:ring-2
-                  focus:ring-blue-500/20 focus:outline-none
-                  ${errors.category ? 'border-red-400' : 'border-slate-200'}`}
-                {...register('category', {
-                  required: 'Please select a category',
-                })}
-              >
-                <option value="">Select category</option>
-                {CATEGORIES.map((c) => (
-                  <option key={c} value={c}>
-                    {c.charAt(0).toUpperCase() + c.slice(1)}
-                  </option>
-                ))}
-              </select>
-              {errors.category && (
-                <p className="text-red-500 text-xs mt-1">
-                  {errors.category.message}
-                </p>
-              )}
-            </div>
-
-            {/* Priority */}
-            <div>
-              <label className="text-sm font-medium text-slate-700 block mb-1">
-                Priority *
-              </label>
-              <select
-                className="w-full px-4 py-2.5 border border-slate-200 rounded-xl
-                focus:ring-2 focus:ring-blue-500/20 focus:outline-none"
-                {...register('priority', { required: true })}
-              >
-                {PRIORITIES.map((p) => (
-                  <option key={p.value} value={p.value}>
-                    {p.label}
-                  </option>
-                ))}
-              </select>
-              <p className="text-xs text-slate-400 mt-1">
-                AI will also suggest a priority based on your description.
-              </p>
-            </div>
-
             {/* Description */}
             <div>
-              <div className="flex items-center justify-between mb-1">
-                <label className="text-sm font-medium text-slate-700">
-                  Description *
-                </label>
-                <div className="flex items-center gap-2">
-                  <LanguageSelector value={language} onChange={setLanguage} />
-                  <VoiceInputButton
-                    lang={bcp47}
-                    onTranscript={(text) => {
-                      const current = watch('description') ?? ''
-                      setValue(
-                        'description',
-                        current ? `${current} ${text}` : text
-                      )
-                    }}
-                  />
-                </div>
-              </div>
+              <label className="text-sm font-medium text-slate-700 block mb-1">
+                Description *
+              </label>
               <textarea
                 rows={4}
                 placeholder="Describe the issue in detail — what happened, how severe it is, who is affected..."
@@ -286,13 +229,14 @@ const SubmitIssue = () => {
             {/* Image */}
             <div>
               <label className="text-sm font-medium text-slate-700 block mb-2">
-                Photo (optional)
+                Photo <span className="text-red-500">*</span>
               </label>
               {!imagePreview ? (
                 <div
                   onClick={() => fileInputRef.current?.click()}
-                  className="border-2 border-dashed border-slate-300 rounded-xl p-8 text-center
-                    cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-colors"
+                  className="border-2 border-dashed border-slate-300 rounded-xl p-8
+                    text-center cursor-pointer hover:border-blue-400 hover:bg-blue-50
+                    transition-colors"
                 >
                   <ImageIcon
                     className="mx-auto text-slate-400 mb-2"
@@ -340,7 +284,7 @@ const SubmitIssue = () => {
             {/* Location */}
             <div>
               <label className="text-sm font-medium text-slate-700 block mb-2">
-                Location (optional)
+                Location <span className="text-red-500">*</span>
               </label>
               <button
                 type="button"
@@ -361,7 +305,7 @@ const SubmitIssue = () => {
                 {locating
                   ? 'Detecting location…'
                   : location
-                    ? `✓ ${location.latitude.toFixed(4)}, ${location.longitude.toFixed(4)}`
+                    ? `✓ ${locationName}`
                     : 'Use My Location'}
               </button>
 
@@ -379,7 +323,10 @@ const SubmitIssue = () => {
               )}
 
               {locationError && (
-                <div className="mt-2 flex items-start gap-2 p-2.5 bg-red-50 rounded-xl border border-red-200">
+                <div
+                  className="mt-2 flex items-start gap-2 p-2.5 bg-red-50
+                  rounded-xl border border-red-200"
+                >
                   <AlertCircle
                     size={13}
                     className="text-red-400 mt-0.5 shrink-0"

@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import {
   Search,
   X,
@@ -11,121 +11,15 @@ import {
   ChevronUp,
   ChevronDown,
   ChevronsUpDown,
+  RefreshCw,
 } from 'lucide-react'
+import toast from 'react-hot-toast'
+import {
+  getAdminUsers,
+  updateUserRole,
+  toggleUserActive,
+} from '../../services/auth'
 
-// ─── Mock data ────────────────────────────────────────────────────────────────
-const MOCK_USERS = [
-  {
-    id: 1,
-    name: 'Aarav Sharma',
-    email: 'aarav@gmail.com',
-    role: 'citizen',
-    joined: '2025-01-05',
-    issues: 7,
-    active: true,
-  },
-  {
-    id: 2,
-    name: 'Sita Karki',
-    email: 'sita@civicaid.np',
-    role: 'staff',
-    joined: '2025-01-10',
-    issues: 0,
-    active: true,
-  },
-  {
-    id: 3,
-    name: 'Bikram Thapa',
-    email: 'bikram@civicaid.np',
-    role: 'staff',
-    joined: '2025-01-10',
-    issues: 0,
-    active: true,
-  },
-  {
-    id: 4,
-    name: 'Priya Maharjan',
-    email: 'priya@yahoo.com',
-    role: 'citizen',
-    joined: '2025-02-14',
-    issues: 3,
-    active: true,
-  },
-  {
-    id: 5,
-    name: 'Ramesh Shrestha',
-    email: 'ramesh@civicaid.np',
-    role: 'staff',
-    joined: '2025-01-15',
-    issues: 0,
-    active: true,
-  },
-  {
-    id: 6,
-    name: 'Admin User',
-    email: 'admin@civicaid.np',
-    role: 'admin',
-    joined: '2024-12-01',
-    issues: 0,
-    active: true,
-  },
-  {
-    id: 7,
-    name: 'Deepak Rai',
-    email: 'deepak@gmail.com',
-    role: 'citizen',
-    joined: '2025-02-20',
-    issues: 12,
-    active: true,
-  },
-  {
-    id: 8,
-    name: 'Anita Gurung',
-    email: 'anita@hotmail.com',
-    role: 'citizen',
-    joined: '2025-03-01',
-    issues: 1,
-    active: false,
-  },
-  {
-    id: 9,
-    name: 'Suresh Pandey',
-    email: 'suresh@civicaid.np',
-    role: 'staff',
-    joined: '2025-01-20',
-    issues: 0,
-    active: true,
-  },
-  {
-    id: 10,
-    name: 'Mina Tamang',
-    email: 'mina@gmail.com',
-    role: 'citizen',
-    joined: '2025-03-05',
-    issues: 4,
-    active: true,
-  },
-  {
-    id: 11,
-    name: 'Rohan Basnet',
-    email: 'rohan@gmail.com',
-    role: 'citizen',
-    joined: '2025-03-08',
-    issues: 2,
-    active: true,
-  },
-  {
-    id: 12,
-    name: 'Kabita Poudel',
-    email: 'kabita@outlook.com',
-    role: 'citizen',
-    joined: '2025-03-10',
-    issues: 0,
-    active: false,
-  },
-]
-
-// ─── Role badge ───────────────────────────────────────────────────────────────
 const ROLE_CONFIG = {
   admin: {
     label: 'Admin',
@@ -164,7 +58,6 @@ function RoleBadge({ role }) {
   )
 }
 
-// ─── Sort icon ────────────────────────────────────────────────────────────────
 function SortIcon({ col, sortKey, sortDir }) {
   if (sortKey !== col)
     return <ChevronsUpDown size={12} className="text-slate-300" />
@@ -176,6 +69,7 @@ function SortIcon({ col, sortKey, sortDir }) {
 }
 
 function formatDate(d) {
+  if (!d) return '—'
   return new Date(d).toLocaleDateString('en-US', {
     day: 'numeric',
     month: 'short',
@@ -183,10 +77,8 @@ function formatDate(d) {
   })
 }
 
-// ─── Row action menu ──────────────────────────────────────────────────────────
 function ActionMenu({ user, onToggleActive, onChangeRole }) {
   const [open, setOpen] = useState(false)
-
   return (
     <div className="relative">
       <button
@@ -194,12 +86,10 @@ function ActionMenu({ user, onToggleActive, onChangeRole }) {
           e.stopPropagation()
           setOpen((o) => !o)
         }}
-        className="p-1.5 rounded-lg text-slate-300 hover:text-slate-600
-          hover:bg-slate-100 transition-colors"
+        className="p-1.5 rounded-lg text-slate-300 hover:text-slate-600 hover:bg-slate-100 transition-colors"
       >
         <MoreVertical size={14} />
       </button>
-
       {open && (
         <>
           <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
@@ -229,14 +119,14 @@ function ActionMenu({ user, onToggleActive, onChangeRole }) {
             )}
             <button
               onClick={() => {
-                onToggleActive(user.id)
+                onToggleActive(user.id, user.is_active)
                 setOpen(false)
               }}
               className={`w-full text-left text-xs px-3 py-2 hover:bg-slate-50
                 font-medium transition-colors flex items-center gap-2
-                ${user.active ? 'text-red-500' : 'text-emerald-600'}`}
+                ${user.is_active ? 'text-red-500' : 'text-emerald-600'}`}
             >
-              {user.active ? (
+              {user.is_active ? (
                 <>
                   <UserX size={11} /> Deactivate
                 </>
@@ -253,13 +143,32 @@ function ActionMenu({ user, onToggleActive, onChangeRole }) {
   )
 }
 
-// ─── Main page ────────────────────────────────────────────────────────────────
 export default function AdminUsers() {
-  const [users, setUsers] = useState(MOCK_USERS)
+  const [users, setUsers] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
   const [search, setSearch] = useState('')
   const [roleFilter, setRoleFilter] = useState('all')
-  const [sortKey, setSortKey] = useState('joined')
+  const [sortKey, setSortKey] = useState('date_joined')
   const [sortDir, setSortDir] = useState('desc')
+
+  async function fetchUsers() {
+    setLoading(true)
+    setError(false)
+    try {
+      const data = await getAdminUsers()
+      setUsers(Array.isArray(data) ? data : (data.results ?? []))
+    } catch {
+      setError(true)
+      toast.error('Could not load users.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchUsers()
+  }, [])
 
   function handleSort(key) {
     if (sortKey === key) setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'))
@@ -269,16 +178,30 @@ export default function AdminUsers() {
     }
   }
 
-  function handleToggleActive(id) {
-    setUsers((prev) =>
-      prev.map((u) => (u.id === id ? { ...u, active: !u.active } : u))
-    )
+  async function handleToggleActive(id, currentlyActive) {
+    try {
+      await toggleUserActive(id, !currentlyActive)
+      setUsers((prev) =>
+        prev.map((u) =>
+          u.id === id ? { ...u, is_active: !currentlyActive } : u
+        )
+      )
+      toast.success(currentlyActive ? 'User deactivated' : 'User activated')
+    } catch {
+      toast.error('Could not update user status.')
+    }
   }
 
-  function handleChangeRole(id, newRole) {
-    setUsers((prev) =>
-      prev.map((u) => (u.id === id ? { ...u, role: newRole } : u))
-    )
+  async function handleChangeRole(id, newRole) {
+    try {
+      await updateUserRole(id, newRole)
+      setUsers((prev) =>
+        prev.map((u) => (u.id === id ? { ...u, role: newRole } : u))
+      )
+      toast.success(`Role updated to ${newRole}`)
+    } catch {
+      toast.error('Could not update user role.')
+    }
   }
 
   const processed = useMemo(() => {
@@ -287,7 +210,8 @@ export default function AdminUsers() {
       const q = search.toLowerCase()
       result = result.filter(
         (u) =>
-          u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q)
+          (u.full_name ?? u.name ?? '').toLowerCase().includes(q) ||
+          u.email.toLowerCase().includes(q)
       )
     }
     if (roleFilter !== 'all')
@@ -295,16 +219,16 @@ export default function AdminUsers() {
     result.sort((a, b) => {
       let aVal, bVal
       if (sortKey === 'name') {
-        aVal = a.name
-        bVal = b.name
+        aVal = a.full_name ?? a.name ?? ''
+        bVal = b.full_name ?? b.name ?? ''
       }
-      if (sortKey === 'joined') {
-        aVal = new Date(a.joined)
-        bVal = new Date(b.joined)
+      if (sortKey === 'date_joined') {
+        aVal = new Date(a.date_joined)
+        bVal = new Date(b.date_joined)
       }
       if (sortKey === 'issues') {
-        aVal = a.issues
-        bVal = b.issues
+        aVal = a.issues_count ?? 0
+        bVal = b.issues_count ?? 0
       }
       if (aVal < bVal) return sortDir === 'asc' ? -1 : 1
       if (aVal > bVal) return sortDir === 'asc' ? 1 : -1
@@ -313,18 +237,16 @@ export default function AdminUsers() {
     return result
   }, [users, search, roleFilter, sortKey, sortDir])
 
-  // Stats
   const totalCitizens = users.filter((u) => u.role === 'citizen').length
   const totalStaff = users.filter((u) => u.role === 'staff').length
-  const totalActive = users.filter((u) => u.active).length
+  const totalActive = users.filter((u) => u.is_active).length
 
   function Th({ col, label, className = '' }) {
     return (
       <th
         onClick={() => handleSort(col)}
         className={`px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider
-          text-slate-400 cursor-pointer hover:text-slate-600 select-none
-          whitespace-nowrap ${className}`}
+          text-slate-400 cursor-pointer hover:text-slate-600 select-none whitespace-nowrap ${className}`}
       >
         <div className="flex items-center gap-1.5">
           {label}
@@ -333,6 +255,21 @@ export default function AdminUsers() {
       </th>
     )
   }
+
+  if (error)
+    return (
+      <div className="p-8 flex flex-col items-center justify-center min-h-64">
+        <p className="text-slate-600 font-semibold mb-3">
+          Could not load users
+        </p>
+        <button
+          onClick={fetchUsers}
+          className="text-sm bg-slate-800 text-white px-4 py-2 rounded-xl hover:bg-slate-700 transition-colors"
+        >
+          Retry
+        </button>
+      </div>
+    )
 
   return (
     <div className="p-6 sm:p-8 max-w-6xl mx-auto">
@@ -346,6 +283,16 @@ export default function AdminUsers() {
             {users.length} registered users
           </p>
         </div>
+        <button
+          onClick={fetchUsers}
+          disabled={loading}
+          className="inline-flex items-center gap-2 text-xs font-semibold text-slate-500
+            hover:text-slate-800 px-3 py-2 rounded-xl border border-slate-200
+            hover:bg-slate-50 transition-all disabled:opacity-40"
+        >
+          <RefreshCw size={13} className={loading ? 'animate-spin' : ''} />
+          Refresh
+        </button>
       </div>
 
       {/* Stat cards */}
@@ -357,8 +304,7 @@ export default function AdminUsers() {
         ].map((s) => (
           <div
             key={s.label}
-            className="bg-white rounded-2xl border border-slate-200
-            shadow-sm p-4 text-center"
+            className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 text-center"
           >
             <p className={`text-2xl font-black ${s.color}`}>{s.value}</p>
             <p className="text-xs text-slate-400 font-medium mt-0.5">
@@ -393,7 +339,6 @@ export default function AdminUsers() {
             </button>
           )}
         </div>
-
         {['all', 'citizen', 'staff', 'admin'].map((r) => (
           <button
             key={r}
@@ -416,32 +361,46 @@ export default function AdminUsers() {
           <table className="w-full min-w-150">
             <thead className="border-b border-slate-100 bg-slate-50/80">
               <tr>
-                <th
-                  className="px-4 py-3 w-10 text-[11px] font-bold uppercase
-                  tracking-wider text-slate-400 text-left"
-                >
+                <th className="px-4 py-3 w-10 text-[11px] font-bold uppercase tracking-wider text-slate-400 text-left">
                   #
                 </th>
-                <th col="name" label="Name" />
-                <th
-                  className="px-4 py-3 text-left text-[11px] font-bold uppercase
-                  tracking-wider text-slate-400"
-                >
+                <Th col="name" label="Name" />
+                <th className="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-slate-400">
                   Role
                 </th>
-                <th col="issues" label="Issues" className="w-20" />
-                <th col="joined" label="Joined" className="w-28" />
-                <th
-                  className="px-4 py-3 w-24 text-left text-[11px] font-bold uppercase
-                  tracking-wider text-slate-400"
-                >
+                <Th col="issues" label="Issues" className="w-20" />
+                <Th col="date_joined" label="Joined" className="w-28" />
+                <th className="px-4 py-3 w-24 text-left text-[11px] font-bold uppercase tracking-wider text-slate-400">
                   Status
                 </th>
                 <th className="px-4 py-3 w-10" />
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50">
-              {processed.length === 0 ? (
+              {loading ? (
+                Array.from({ length: 5 }).map((_, i) => (
+                  <tr key={i} className="animate-pulse">
+                    <td className="px-4 py-3">
+                      <div className="h-3 w-6 bg-slate-100 rounded" />
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-slate-100" />
+                        <div className="space-y-1.5">
+                          <div className="h-3 w-28 bg-slate-100 rounded" />
+                          <div className="h-2.5 w-36 bg-slate-100 rounded" />
+                        </div>
+                      </div>
+                    </td>
+                    {[1, 2, 3, 4].map((j) => (
+                      <td key={j} className="px-4 py-3">
+                        <div className="h-3 w-16 bg-slate-100 rounded" />
+                      </td>
+                    ))}
+                    <td className="px-4 py-3" />
+                  </tr>
+                ))
+              ) : processed.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="py-16 text-center">
                     <p className="text-slate-400 text-sm">
@@ -450,74 +409,80 @@ export default function AdminUsers() {
                   </td>
                 </tr>
               ) : (
-                processed.map((user) => (
-                  <tr
-                    key={user.id}
-                    className="hover:bg-slate-50 transition-colors group"
-                  >
-                    <td className="px-4 py-3">
-                      <span className="text-xs font-mono text-slate-300">
-                        #{user.id}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-3">
-                        <div
-                          className="w-8 h-8 rounded-full bg-linear-to-br
-                          from-blue-400 to-violet-500 flex items-center justify-center shrink-0"
-                        >
-                          <span className="text-xs font-bold text-white">
-                            {user.name[0].toUpperCase()}
-                          </span>
+                processed.map((user) => {
+                  const name =
+                    user.full_name ?? user.name ?? user.username ?? '—'
+                  return (
+                    <tr
+                      key={user.id}
+                      className="hover:bg-slate-50 transition-colors group"
+                    >
+                      <td className="px-4 py-3">
+                        <span className="text-xs font-mono text-slate-300">
+                          #{user.id}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-3">
+                          <div
+                            className="w-8 h-8 rounded-full bg-linear-to-br
+                            from-blue-400 to-violet-500 flex items-center justify-center shrink-0"
+                          >
+                            <span className="text-xs font-bold text-white">
+                              {name[0]?.toUpperCase() ?? '?'}
+                            </span>
+                          </div>
+                          <div>
+                            <p className="text-sm font-semibold text-slate-800">
+                              {name}
+                            </p>
+                            <p className="text-xs text-slate-400">
+                              {user.email}
+                            </p>
+                          </div>
                         </div>
-                        <div>
-                          <p className="text-sm font-semibold text-slate-800">
-                            {user.name}
-                          </p>
-                          <p className="text-xs text-slate-400">{user.email}</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3">
-                      <RoleBadge role={user.role} />
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className="text-sm font-semibold text-slate-600">
-                        {user.issues}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className="text-xs text-slate-400">
-                        {formatDate(user.joined)}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3">
-                      <span
-                        className={`inline-flex items-center gap-1 text-xs font-semibold
-                        px-2 py-0.5 rounded-full
-                        ${
-                          user.active
-                            ? 'bg-emerald-50 text-emerald-600 border border-emerald-200'
-                            : 'bg-slate-100 text-slate-400 border border-slate-200'
-                        }`}
-                      >
+                      </td>
+                      <td className="px-4 py-3">
+                        <RoleBadge role={user.role} />
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className="text-sm font-semibold text-slate-600">
+                          {user.issues_count ?? user.issues ?? 0}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className="text-xs text-slate-400">
+                          {formatDate(user.date_joined ?? user.joined)}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3">
                         <span
-                          className={`w-1.5 h-1.5 rounded-full ${user.active ? 'bg-emerald-400' : 'bg-slate-300'}`}
-                        />
-                        {user.active ? 'Active' : 'Inactive'}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                        <ActionMenu
-                          user={user}
-                          onToggleActive={handleToggleActive}
-                          onChangeRole={handleChangeRole}
-                        />
-                      </div>
-                    </td>
-                  </tr>
-                ))
+                          className={`inline-flex items-center gap-1 text-xs font-semibold
+                          px-2 py-0.5 rounded-full
+                          ${
+                            user.is_active
+                              ? 'bg-emerald-50 text-emerald-600 border border-emerald-200'
+                              : 'bg-slate-100 text-slate-400 border border-slate-200'
+                          }`}
+                        >
+                          <span
+                            className={`w-1.5 h-1.5 rounded-full ${user.is_active ? 'bg-emerald-400' : 'bg-slate-300'}`}
+                          />
+                          {user.is_active ? 'Active' : 'Inactive'}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                          <ActionMenu
+                            user={user}
+                            onToggleActive={handleToggleActive}
+                            onChangeRole={handleChangeRole}
+                          />
+                        </div>
+                      </td>
+                    </tr>
+                  )
+                })
               )}
             </tbody>
           </table>
@@ -529,13 +494,6 @@ export default function AdminUsers() {
           </p>
         </div>
       </div>
-
-      {/* Connect backend note */}
-      <p className="text-xs text-slate-300 text-center mt-4">
-        Demo data — connect to{' '}
-        <code className="font-mono">GET /api/admin/users/</code> to load real
-        users
-      </p>
     </div>
   )
 }
