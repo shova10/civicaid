@@ -19,7 +19,6 @@ class StatusHistorySerializer(serializers.ModelSerializer):
 
 class ComplaintDetailSerializer(serializers.ModelSerializer):
     status_history = StatusHistorySerializer(many=True, read_only=True)
-    image = serializers.ImageField(use_url=True) 
 
     class Meta:
         model = Complaint
