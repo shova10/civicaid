@@ -14,5 +14,5 @@ urlpatterns = [
     path('admin/trends/', AdminTrendsView.as_view(), name='admin-trends'),
     path('admin/issues/bulk-update/', BulkStatusUpdateView.as_view(), name='bulk-update'),
     
-    path('admin/users/', .as_view(), name='admin-users'),
+    path('admin/users/', AdminUserListView.as_view(), name='admin-users'),
 ]
