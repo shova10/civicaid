@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import CustomUser
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from django.db.models import Count
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -46,8 +47,12 @@ class CivicAidTokenSerializer(TokenObtainPairSerializer):
         return data
 
 class UserProfileSerializer(serializers.ModelSerializer):
+    complaint_count = serializers.SerializerMethodField()
+
+    def get_complaint_count(self, obj):
+        return obj.complaint_set.count()
 
     class Meta:
         model = CustomUser
-        fields = ['id', 'username', 'email', 'full_name', 'phone', 'address', 'language', 'role', 'created_at']
+        fields = ['id', 'username', 'email', 'full_name', 'phone', 'address', 'language', 'role', 'created_at', 'is_active', 'date_joined', 'complaint_count',]
         read_only_fields = ['id', 'email', 'role', 'created_at']
