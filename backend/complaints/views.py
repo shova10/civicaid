@@ -13,6 +13,8 @@ from django.utils import timezone
 from notifications.models import Notification
 from django.conf import settings
 from django.core.mail import send_mail
+from accounts.serializers import UserProfileSerializer
+from accounts.models import CustomUser
 
 
 class IsAdminOrStaff(BasePermission):
