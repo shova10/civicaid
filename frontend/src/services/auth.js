@@ -9,7 +9,7 @@ export const getProfile = async () => {
   return res.data
 }
 export const getAdminUsers = async () => {
-  const res = await api.get('/api/admin/users/')
+  const res = await api.get(`/api/admin/users/`)
   return res.data
 }
 

@@ -118,16 +118,11 @@ export default function AdminMap() {
 
         data = list.map((c) => ({
           ...c,
-          lat: c.lat ?? (c.latitude ? parseFloat(c.latitude) : null),
-          lng: c.lng ?? (c.longitude ? parseFloat(c.longitude) : null),
-        }))
-      } else {
-        data = data.map((c) => ({
-          ...c,
-          lat: c.lat ?? (c.latitude ? parseFloat(c.latitude) : null),
-          lng: c.lng ?? (c.longitude ? parseFloat(c.longitude) : null),
+          lat: c.location_lat ?? null,
+          lng: c.location_lng ?? null,
         }))
       }
+      setIssues(data.filter((d) => d.lat && d.lng))
 
       setIssues(data)
     } catch (err) {
