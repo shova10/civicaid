@@ -313,3 +313,13 @@ class BulkStatusUpdateView(APIView):
             "count": len(updated),
             "new_status": new_status
         })
+
+
+class IsAdmin(BasePermission):
+    def has_permission(self, request, view):
+        return request.user.role == 'admin'
+
+class AdminUserListView(generics.ListAPIView):
+    serializer_class = UserProfileSerializer
+    permission_classes = [IsAuthenticated, IsAdmin]
+    queryset = CustomUser.objects.all().order_by('-date_joined')

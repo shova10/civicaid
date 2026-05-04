@@ -6,7 +6,7 @@ from .serializers import RegisterSerializer, CivicAidTokenSerializer, UserProfil
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated, BasePermission
+from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.conf import settings
 from django.core.mail import send_mail
@@ -153,12 +153,3 @@ class ResendOTPView(APIView):
             {"message": "OTP resent successfully"},
             status=200
         )
-
-class IsAdmin(BasePermission):
-    def has_permission(self, request, view):
-        return request.user.role == 'admin'
-
-class AdminUserListView(generics.ListAPIView):
-    serializer_class = UserProfileSerializer
-    permission_classes = [IsAuthenticated, IsAdmin]
-    queryset = CustomUser.objects.all().order_by('-date_joined')
