@@ -6,7 +6,7 @@ export async function getMyIssues() {
 }
 
 export async function getMyIssueById(id) {
-  const response = await api.get(`/api/complaints/${id}/`)
+  const response = await api.get(`/api/complaints/${id}`)
   return response.data
 }
 
@@ -38,8 +38,8 @@ export async function adminUpdateIssue(id, payload) {
   return response.data
 }
 
-export async function getStaffList() {
-  const response = await api.get('/api/admin/staff/')
+export async function getUserList() {
+  const response = await api.get('/api/admin/users/${id}')
   return response.data
 }
 
@@ -56,7 +56,7 @@ export async function getStaffIssues() {
 export async function staffUpdateStatus(id, status) {
   const response = await api.patch(`/api/staff/issues/${id}/status/`, {
     status,
-  }) // ← fixed
+  })
   return response.data
 }
 

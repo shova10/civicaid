@@ -164,53 +164,64 @@ const CATEGORIES = [
 // ─── Sub-components ───────────────────────────────────────────────────────────
 function Navbar({ onLogin, onRegister }) {
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200/80">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center">
-            <Shield size={15} className="text-white" />
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-[#fafaf9]/90 backdrop-blur-lg border-b border-slate-200/50">
+      <div className="max-w-6xl mx-auto px-4 h-20 flex items-center justify-between">
+        {/* Logo Area: Swapped the blue square for an organic shape and serif font */}
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-[12px_4px_12px_4px] bg-indigo-700 flex items-center justify-center shadow-lg shadow-indigo-100 -rotate-">
+            <Shield size={18} className="text-white rotate-3" />
           </div>
-          <span className="font-black text-slate-900 text-lg tracking-tight">
-            Civic<span className="text-blue-600">Aid</span>
-          </span>
+          <a href="#" className="group">
+            <span className="font-serif italic text-2xl text-slate-900 tracking-tight">
+              Civic
+              <span className="text-indigo-700 not-italic font-sans font-black">
+                Aid
+              </span>
+            </span>
+
+            <div className="h-0.5 w-0 group-hover:w-full bg-amber-400 transition-all duration-300" />
+          </a>
         </div>
 
-        <div className="hidden sm:flex items-center gap-6 text-sm font-medium">
+        <div className="hidden md:flex items-center gap-8 text-[11px] font-bold uppercase tracking-[0.15em] text-slate-500">
           <a
             href="#features"
-            className="text-slate-500 hover:text-slate-900 transition-colors"
+            className="hover:text-indigo-700 transition-colors relative group"
           >
             Features
+            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-indigo-700 group-hover:w-full transition-all" />
           </a>
           <a
             href="#how-it-works"
-            className="text-slate-500 hover:text-slate-900 transition-colors"
+            className="hover:text-indigo-700 transition-colors relative group"
           >
             How it works
+            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-indigo-700 group-hover:w-full transition-all" />
           </a>
           <a
             href="#categories"
-            className="text-slate-500 hover:text-slate-900 transition-colors"
+            className="hover:text-indigo-700 transition-colors relative group"
           >
-            Categories
+            Catagories
+            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-indigo-700 group-hover:w-full transition-all" />
           </a>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4">
           <button
             onClick={onLogin}
-            className="text-sm font-semibold text-slate-600 hover:text-slate-900
-              px-4 py-2 rounded-xl hover:bg-slate-100 transition-colors"
+            className="hidden sm:block text-xs font-bold text-slate-600 hover:text-slate-900 
+          px-4 py-2 transition-all"
           >
-            Sign In
+            Sign in
           </button>
 
           <button
             onClick={onRegister}
-            className="text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700
-              px-4 py-2 rounded-xl transition-colors shadow-sm shadow-blue-200"
+            className="text-xs font-bold text-white bg-amber-500 hover:bg-amber-600 
+          px-6 py-3 rounded-[1.5rem_0.5rem_1.5rem_0.5rem] transition-all shadow-md shadow-slate-200"
           >
-            Get Started
+            Sign Up
           </button>
         </div>
       </div>
@@ -230,98 +241,128 @@ export default function Landing() {
       />
 
       {/* ── Hero ────────────────────────────────────────────────────────────── */}
-      <section className="relative pt-32 pb-20 px-4 overflow-hidden">
+      <section className="relative pt-32 pb-20 px-4 sm:px-6 overflow-hidden bg-[#fafaf9]">
         <div className="absolute inset-0 pointer-events-none">
           <div
-            className="absolute top-0 left-1/2 -translate-x-1/2 w-225 h-225
-            bg-linear-to-b from-blue-50/60 to-transparent rounded-b-[50%]"
+            className="absolute -top-24 left-1/2 -translate-x-1/2 w-full max-w-7xl h-125 
+      bg-[radial-gradient(circle_at_center,var(--tw-gradient-from)_0%,transparent_70%)] 
+      from-indigo-100/40 to-transparent"
           />
-
-          <div className="absolute top-32 right-0 w-72 h-72 bg-teal-50/50 rounded-full blur-3xl" />
-          <div className="absolute bottom-0 left-0 w-64 h-64 bg-sky-50/40 rounded-full blur-3xl" />
         </div>
-
-        <div className="relative max-w-4xl mx-auto text-center">
+        <div className="relative max-w-5xl mx-auto text-center">
           <div
-            className="inline-flex items-center gap-2 bg-blue-50 border border-blue-200
-            text-blue-700 text-xs font-bold px-3 py-1.5 rounded-full mb-6 uppercase tracking-wider"
+            className="inline-flex items-center gap-2 bg-white border border-slate-200 
+      shadow-sm text-slate-600 text-[10px] font-bold px-3 py-1 rounded-full mb-8 uppercase tracking-[0.2em]"
           >
-            <Zap size={11} />
-            AI-Powered Civic Platform · Nepal
+            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            Direct Civic Action • Nepal
           </div>
 
-          {/* Headline */}
-          <h1
-            className="text-5xl sm:text-6xl lg:text-7xl font-black text-slate-900
-            tracking-tight leading-none mb-6"
-          >
-            Report. Track.
-            <span className="block text-blue-600">Resolve.</span>
+          <h1 className="text-5xl sm:text-7xl font-serif italic text-slate-900 tracking-tight leading-[1.1] mb-8">
+            Building a better <br />
+            <span className="text-indigo-700 not-italic font-sans font-black relative">
+              community, together.
+              <svg
+                className="absolute -bottom-2 left-0 w-full h-2 text-amber-400/60"
+                viewBox="0 0 100 10"
+                preserveAspectRatio="none"
+              >
+                <path
+                  d="M0 5 Q 25 0, 50 5 T 100 5"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                />
+              </svg>
+            </span>
           </h1>
 
-          <p className="text-lg sm:text-xl text-slate-500 max-w-2xl mx-auto leading-relaxed mb-10">
-            CivicAid connects citizens with local authorities to fix civic
-            problems faster. Report road damage, water issues, electricity
-            failures and more — right from your phone.
+          <p className="text-base sm:text-lg text-slate-600 max-w-xl mx-auto leading-relaxed mb-12 font-medium">
+            CivicAid is your direct line to local authorities. From potholes to
+            power lines, report issues in seconds and watch your neighborhood
+            transform.
           </p>
 
-          {/* CTA buttons */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-5">
             <button
               onClick={() => navigate('/register')}
-              className="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600
-                text-white font-bold px-8 py-4 rounded-2xl text-base transition-colors
-                shadow-md shadow-amber-200 w-full sm:w-auto justify-center"
+              className="group relative inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600
+          text-white font-bold px-10 py-4 rounded-[2rem_0.5rem_2rem_0.5rem] text-base 
+          transition-all hover:rounded-2xl shadow-xl shadow-slate-200 w-full sm:w-auto justify-center"
             >
               Report an Issue
-              <ArrowRight size={18} />
+              <ArrowRight
+                size={18}
+                className="group-hover:translate-x-1 transition-transform"
+              />
             </button>
+
             <button
               onClick={() => navigate('/login')}
-              className="inline-flex items-center gap-2 bg-white hover:bg-slate-50
-                text-slate-700 font-bold px-8 py-4 rounded-2xl text-base
-                border border-slate-200 transition-colors w-full sm:w-auto justify-center"
+              className="inline-flex items-center gap-2 bg-transparent hover:bg-slate-100
+          text-slate-900 font-bold px-10 py-4 rounded-xl text-base transition-colors 
+          border-2 border-slate-900/5 w-full sm:w-auto justify-center"
             >
               Sign In
             </button>
           </div>
-
-          <p className="text-xs text-slate-400 mt-6 flex items-center justify-center gap-1.5">
-            <CheckCircle size={12} className="text-emerald-500" />
-            Free for citizens · Secure · Made for Nepal
-          </p>
         </div>
 
-        {/* Scroll indicator */}
-        <div className="flex justify-center mt-16">
+        <div className="flex justify-center mt-20">
           <a
             href="#features"
-            className="flex flex-col items-center gap-2 text-slate-300 hover:text-slate-400
-              transition-colors animate-bounce"
+            className="group flex flex-col items-center gap-3"
           >
-            <span className="text-xs font-medium">Scroll to explore</span>
-            <ChevronDown size={18} />
+            <div className="w-px h-12 bg-linear-to-b from-slate-200 to-indigo-500 relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-full h-full bg-indigo-500 animate-[scroll_2s_infinite]" />
+            </div>
+            <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400 group-hover:text-indigo-500 transition-colors">
+              Discover
+            </span>
           </a>
         </div>
       </section>
 
       {/* ── Stats ───────────────────────────────────────────────────────────── */}
 
-      <section className="py-12 bg-slate-900">
-        <div className="max-w-5xl mx-auto px-4">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
-            {STATS.map((stat) => (
-              <div key={stat.label} className="text-center">
-                <p className="text-3xl sm:text-4xl font-black text-amber-400 mb-1">
-                  {stat.value}
-                </p>
-                <p className="text-sm text-slate-400 font-medium">
-                  {stat.label}
-                </p>
+      <section className="py-16 bg-[#0f172a] relative overflow-hidden">
+        {/* Sublte background element to break the flat darkness */}
+        <div className="absolute top-0 left-0 w-full h-px bg-linear-to-r from-transparent via-slate-700 to-transparent" />
+
+        <div className="max-w-5xl mx-auto px-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-y-12 gap-x-4">
+            {STATS.map((stat, index) => (
+              <div
+                key={stat.label}
+                className="relative group text-center lg:text-left"
+              >
+                {/* Decorative index number for a 'Journal' feel */}
+                <span className="absolute -top-4 -left-2 text-[60px] font-black text-white/[0.03] select-none">
+                  0{index + 1}
+                </span>
+
+                <div className="relative">
+                  <p className="text-4xl sm:text-5xl font-serif italic text-amber-400 mb-2">
+                    {stat.value}
+                  </p>
+
+                  {/* The Label with a 'tag' style */}
+                  <div className="inline-flex items-center gap-2">
+                    <div className="w-1 h-4 bg-indigo-500 rounded-full" />
+                    <p className="text-[10px] uppercase tracking-[0.2em] text-slate-400 font-bold">
+                      {stat.label}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Asymmetric hover underline */}
+                <div className="mt-4 h-0.5 w-12 bg-slate-800 group-hover:w-20 group-hover:bg-amber-400 transition-all duration-500" />
               </div>
             ))}
           </div>
         </div>
+
+        <div className="absolute bottom-0 left-0 w-full h-px bg-linear-to-r from-transparent via-slate-700 to-transparent" />
       </section>
 
       {/* ── Features ────────────────────────────────────────────────────────── */}
@@ -639,7 +680,7 @@ export default function Landing() {
             </span>
           </div>
           <p className="text-sm text-slate-500">
-            © 2026 CivicAid Nepal. Built for citizens, by citizens.
+            © 2026 CivicAid Nepal. Built for citizens, by Binita & Shova.
           </p>
           <div className="flex items-center gap-4 text-sm text-slate-500">
             <button

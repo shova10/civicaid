@@ -119,10 +119,11 @@ export default function IssueMap() {
             : (complaints.results ?? [])
           data = list.map((c) => ({
             ...c,
-            lat: c.latitude ? parseFloat(c.latitude) : null,
-            lng: c.longitude ? parseFloat(c.longitude) : null,
+            lat: c.location_lat ?? null,
+            lng: c.location_lng ?? null,
           }))
         }
+        setIssues(data.filter((d) => d.lat && d.lng))
 
         setIssues(data)
       } catch (err) {
