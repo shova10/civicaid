@@ -140,61 +140,6 @@ class StatusUpdateView(APIView):
         }, status=status.HTTP_200_OK)
 
 
-class IsStaff(BasePermission):
-    def has_permission(self, request, view):
-        return request.user.role == 'staff'
-
-class StaffIssueListView(generics.ListAPIView):
-    permission_classes = [IsAuthenticated, IsStaff]
-    serializer_class = ComplaintListSerializer
-
-    def get_queryset(self):
-        return Complaint.objects.filter(assignment__staff=self.request.user)
-
-class StaffStatusUpdateView(APIView):
-    permission_classes = [IsAuthenticated, IsStaff]
-
-    def patch(self, request, pk):
-        complaint = get_object_or_404(Complaint, id=pk)
-        
-        if not hasattr(complaint, 'assignment') or complaint.assignment.staff != request.user:
-            raise PermissionDenied("This complaint is not assigned to you.")
-        
-        previous_status = complaint.status
-        new_status = request.data.get("new_status")
-
-        complaint.status = new_status
-        complaint.save()
-
-        StatusHistory.objects.create(
-            complaint=complaint,
-            previous_status=previous_status,
-            new_status=new_status,
-            changed_by=request.user,
-            remark=""
-        )
-        
-        Notification.objects.create(
-            recipient=complaint.citizen,
-            complaint=complaint,
-            event='status_changed',
-            message=f"Your complaint '{complaint.title}' has been {new_status.replace('_', ' ')}.",
-            message_ne=f"तपाईंको उजुरी '{complaint.title}' को स्थिति {new_status} मा परिवर्तन भयो।"
-        )
-        if new_status in ['in_progress', 'resolved', 'rejected']:
-            send_mail(
-                subject="CivicAid - Your Complaint Status Updated",
-                message=f"Dear {complaint.citizen.full_name}, your complaint '{complaint.title}' has been updated to {new_status}.",
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[complaint.citizen.email]
-            )
-
-        return Response({
-            "message": f"Status updated to {new_status}",
-            "complaint_id": complaint.id,
-            "new_status": new_status
-        }, status=status.HTTP_200_OK)
-
 
 
 class HeatmapView(generics.ListAPIView):
