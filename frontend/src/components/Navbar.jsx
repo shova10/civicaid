@@ -54,92 +54,118 @@ const Navbar = () => {
   const isActive = (path) => location.pathname === path
 
   return (
-    <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur border-b border-gray-200">
-      <div className="max-w-7xl mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
-          {/* 🔷 Logo */}
-          <Link
-            to="/home"
-            className="text-xl font-bold bg-linear-to-r from-blue-700 to-blue-500 bg-clip-text text-transparent"
-          >
-            CivicAid
+    <nav className="sticky top-0 z-50 bg-[#fafaf9]/95 backdrop-blur-lg border-b border-slate-200/50">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="flex items-center justify-between h-18">
+          {/* Logo */}
+          <Link to="/home" className="flex items-center gap-3 no-underline">
+            <div className="w-9 h-9 rounded-[10px_3px_10px_3px] bg-indigo-700 flex items-center justify-center shadow-sm">
+              <Shield size={15} className="text-white" />
+            </div>
+            <span className="text-[22px] font-black tracking-tight text-slate-900">
+              Civic<span className="text-indigo-700">Aid</span>
+            </span>
           </Link>
 
-          {/* 🔗 Desktop Links */}
-          <div className="hidden md:flex items-center gap-2">
+          {/* Desktop Links */}
+          <div className="hidden md:flex items-center gap-1">
             {roleLinks.map(({ label, path, icon: LinkIcon }) => (
               <Link
                 key={path}
                 to={path}
-                className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-[11px] font-bold uppercase tracking-[0.15em] transition-all ${
                   isActive(path)
-                    ? 'bg-blue-100 text-blue-700 shadow-sm'
-                    : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                    ? 'bg-indigo-50 text-indigo-700'
+                    : 'text-slate-500 hover:text-slate-900 hover:bg-slate-100'
                 }`}
               >
-                <LinkIcon size={16} />
+                <LinkIcon size={14} />
                 {label}
               </Link>
             ))}
           </div>
 
-          {/* 👤 Right Section */}
+          {/* Right Section */}
           <div className="hidden md:flex items-center gap-3">
-            {/* 🔔 Notifications */}
+            {/* Notifications */}
             <NotificationBell />
 
-            {/* 👤 Profile Dropdown */}
+            {/* Profile Dropdown */}
             <div className="relative" ref={profileRef}>
               <button
                 onClick={() => setProfileOpen((o) => !o)}
-                className="flex items-center gap-2.5 bg-gray-50 hover:bg-gray-100 px-3 py-1.5 rounded-lg transition-colors"
+                className="flex items-center gap-2.5 bg-slate-50 hover:bg-slate-100
+                  border border-slate-200 px-3 py-1.5 rounded-full transition-colors"
               >
-                <div className="w-8 h-8 bg-blue-500 text-white flex items-center justify-center rounded-full text-sm font-bold">
+                <div
+                  className="w-7 h-7 bg-indigo-500 text-white flex items-center
+                  justify-center rounded-full text-xs font-black"
+                >
                   {user?.name?.charAt(0)?.toUpperCase()}
                 </div>
-
-                <div className="text-sm hidden sm:block">
-                  <p className="font-medium text-gray-800">{user?.name}</p>
-                  <p className="text-xs text-gray-500 capitalize">
+                <div className="text-sm hidden sm:block text-left">
+                  <p className="font-black text-slate-900 text-xs tracking-tight leading-none mb-0.5">
+                    {user?.name}
+                  </p>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400  leading-none">
                     {user?.role}
                   </p>
                 </div>
               </button>
 
               {profileOpen && (
-                <div className="absolute right-0 top-full mt-2 w-64 bg-white rounded-2xl border border-slate-200 shadow-xl z-50 overflow-hidden">
+                <div
+                  className="absolute right-0 top-full mt-2 w-64 bg-white rounded-2xl
+                  border border-slate-200 shadow-xl z-50 overflow-hidden"
+                >
                   {/* Header */}
-                  <div className="px-4 py-4 bg-blue-50 border-b">
-                    <p className="font-bold text-sm">{user?.name}</p>
-                    <p className="text-xs text-gray-500">{user?.email}</p>
+                  <div className="px-4 py-4 bg-[#01104e]">
+                    <div className="flex items-center gap-3">
+                      <div
+                        className="w-9 h-9 bg-indigo-700 text-white flex items-center
+                        justify-center rounded-[8px_2px_8px_2px] text-lg font-black"
+                      >
+                        {user?.name?.charAt(0)?.toUpperCase()}
+                      </div>
+                      <div>
+                        <p className="font-black text-sm text-slate-100 tracking-tight">
+                          {user?.name}
+                        </p>
+                        <p className="text-xs text-slate-100 font-black">
+                          {user?.email}
+                        </p>
+                      </div>
+                    </div>
                   </div>
 
-                  {/* Menu */}
+                  {/* Menu items */}
                   <div className="py-2">
                     <Link
                       to="/issues"
                       onClick={() => setProfileOpen(false)}
-                      className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-50"
+                      className="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold
+                        text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors"
                     >
-                      <ClipboardList size={14} />
+                      <ClipboardList size={14} className="text-indigo-500" />
                       Issues
                     </Link>
-
                     <Link
                       to="/profile"
                       onClick={() => setProfileOpen(false)}
-                      className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-50"
+                      className="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold
+                        text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors"
                     >
-                      <User size={14} />
+                      <User size={14} className="text-indigo-500" />
                       Profile
                     </Link>
                   </div>
 
                   {/* Logout */}
-                  <div className="border-t">
+                  <div className="border-t border-slate-100 p-2">
                     <button
                       onClick={handleLogout}
-                      className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+                      className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm font-bold
+                        text-red-600 hover:bg-red-50 rounded-xl transition-colors"
                     >
                       <LogOut size={14} />
                       Sign out
@@ -150,9 +176,9 @@ const Navbar = () => {
             </div>
           </div>
 
-          {/* 📱 Mobile Toggle */}
+          {/* Mobile Toggle */}
           <button
-            className="md:hidden p-2"
+            className="md:hidden p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors"
             onClick={() => setMenuOpen(!menuOpen)}
           >
             {menuOpen ? <X size={20} /> : <Menu size={20} />}
@@ -160,33 +186,40 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* 📱 Mobile Menu */}
+      {/* Mobile Menu */}
       {menuOpen && (
-        <div className="md:hidden border-t px-4 py-3 flex flex-col gap-2">
+        <div className="md:hidden border-t border-slate-200 bg-[#fafaf9] px-4 py-3 flex flex-col gap-1">
           {roleLinks.map(({ label, path, icon: LinkIcon }) => (
             <Link
               key={path}
               to={path}
               onClick={() => setMenuOpen(false)}
-              className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm hover:bg-gray-100"
+              className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[11px] font-bold
+                uppercase tracking-[0.15em] transition-colors ${
+                  isActive(path)
+                    ? 'bg-indigo-50 text-indigo-700'
+                    : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900'
+                }`}
             >
-              <LinkIcon size={16} />
+              <LinkIcon size={14} />
               {label}
             </Link>
           ))}
 
-          {/* Mobile Notification */}
-          <div className="mt-2">
+          <div className="mt-1 px-1">
             <NotificationBell />
           </div>
 
-          <button
-            onClick={handleLogout}
-            className="flex items-center gap-2 px-3 py-2 text-red-600"
-          >
-            <LogOut size={16} />
-            Logout
-          </button>
+          <div className="border-t border-slate-200 mt-1 pt-1">
+            <button
+              onClick={handleLogout}
+              className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm font-bold
+                text-red-600 hover:bg-red-50 rounded-xl transition-colors"
+            >
+              <LogOut size={14} />
+              Sign out
+            </button>
+          </div>
         </div>
       )}
     </nav>
