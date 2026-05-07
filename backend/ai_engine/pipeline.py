@@ -39,12 +39,12 @@ def analyze(complaint):
     existing_complaints = Complaint.objects.exclude(id=complaint.id)
     is_duplicate = check_duplicate(text, existing_complaints)
 
-    complaint.ai_category = ai_category
+    if ai_confidence < 0.40:
+        complaint.ai_category = "uncertain"
+    else:
+        complaint.ai_category = ai_category
+
     complaint.ai_priority = ai_priority
     complaint.ai_confidence = round(float(ai_confidence), 4)
     complaint.is_duplicate = is_duplicate
     complaint.save()
-
-    if confidence < 0.40:
-        complaint.ai_category = "uncertain"
-        complaint.priority = "low"

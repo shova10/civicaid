@@ -1,6 +1,6 @@
 from rest_framework import generics, status
 from .models import Complaint, StatusHistory, ComplaintUpvote, ComplaintAssignment
-from .serializers import ComplaintCreateSerializer, ComplaintListSerializer, ComplaintDetailSerializer, ComplaintHeatmapSerializer
+from .serializers import ComplaintCreateSerializer, ComplaintListSerializer, ComplaintDetailSerializer, ComplaintHeatmapSerializer, ComplaintStatusUpdateSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, BasePermission
@@ -322,6 +322,7 @@ class AdminUserUpdateView(APIView):
             status=status.HTTP_200_OK
         )
 
+
 class ComplaintStatusUpdateView(generics.UpdateAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = ComplaintStatusUpdateSerializer
@@ -329,6 +330,27 @@ class ComplaintStatusUpdateView(generics.UpdateAPIView):
 
     def get_object(self):
         complaint = get_object_or_404(Complaint, id=self.kwargs['pk'])
-        if not self.request.user.is_staff and not self.request.user.is_superuser:
+        if not self.request.user.is_superuser:
             raise PermissionDenied("Only admin can update status.")
         return complaint
+
+    def patch(self, request, *args, **kwargs):
+        complaint = self.get_object()
+        old_status = complaint.status
+        
+        serializer = self.get_serializer(complaint, data=request.data, partial=True)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=400)
+        serializer.save()
+
+        StatusHistory.objects.create(
+            complaint=complaint,
+            previous_status=old_status,
+            new_status=request.data.get('status'),
+            changed_by=request.user
+        )
+
+        return Response({
+            "detail": "Status updated successfully.",
+            "status": serializer.data['status']
+        })
