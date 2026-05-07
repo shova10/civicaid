@@ -9,7 +9,6 @@ import Home from './pages/Home'
 import Login from './pages/Login'
 import NotFound from './pages/NotFound'
 import Register from './pages/Register'
-import Staff from './pages/Staff'
 import SubmitIssue from './pages/SubmitIssue'
 import Issues from './pages/Issues'
 import IssueDetail from './pages/IssueDetail'
@@ -52,13 +51,6 @@ const App = () => {
                 }
               />
               <Route path="/admin/settings" element={<AdminSettings />} />
-            </Route>
-          </Route>
-
-          {/* Staff */}
-          <Route element={<ProtectedByRole roles={['staff']} />}>
-            <Route element={<MainLayout />}>
-              <Route path="/staff" element={<Staff />} />
             </Route>
           </Route>
 

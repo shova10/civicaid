@@ -222,7 +222,14 @@ export default function IssueDetail() {
                 <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">
                   Photo
                 </h2>
-                <IssueImage src={issue.image} title={issue.title} />
+                <IssueImage
+                  src={
+                    issue.image
+                      ? `https://civicaid-backend-mwrq.onrender.com/media/${issue.image}`
+                      : null
+                  }
+                  title={issue.title}
+                />
               </div>
               {/* Description */}
               <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6">
@@ -320,7 +327,7 @@ export default function IssueDetail() {
                     label="Category"
                     value={issue.category}
                   />
-                  {issue.location && (
+                  {issue.location_name && (
                     <MetaItem
                       icon={MapPin}
                       label="Location"

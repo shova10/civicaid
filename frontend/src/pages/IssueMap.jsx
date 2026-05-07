@@ -124,8 +124,6 @@ export default function IssueMap() {
           }))
         }
         setIssues(data.filter((d) => d.lat && d.lng))
-
-        setIssues(data)
       } catch (err) {
         setError(true)
         toast.error(err?.response?.data?.message ?? 'Could not load map data.')

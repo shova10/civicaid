@@ -6,7 +6,7 @@ export async function getMyIssues() {
 }
 
 export async function getMyIssueById(id) {
-  const response = await api.get(`/api/complaints/${id}`)
+  const response = await api.get(`/api/complaints/${id}/`)
   return response.data
 }
 
@@ -21,7 +21,7 @@ export async function upvoteIssue(id) {
 }
 
 export async function getHeatmapData() {
-  const response = await api.get('/api/issues/heatmap/')
+  const response = await api.get('/api/complaints/heatmap/')
   return response.data
 }
 
@@ -39,24 +39,12 @@ export async function adminUpdateIssue(id, payload) {
 }
 
 export async function getUserList() {
-  const response = await api.get('/api/admin/users/${id}')
+  const response = await api.get('/api/admin/users/')
   return response.data
 }
 
 export async function bulkUpdateIssues(payload) {
-  const response = await api.post('/api/admin/issues/bulk-update/', payload)
-  return response.data
-}
-
-export async function getStaffIssues() {
-  const response = await api.get('/api/staff/issues/')
-  return response.data
-}
-
-export async function staffUpdateStatus(id, status) {
-  const response = await api.patch(`/api/staff/issues/${id}/status/`, {
-    status,
-  })
+  const response = await api.post('/api/admin/complaints/bulk-update/', payload)
   return response.data
 }
 
@@ -71,6 +59,6 @@ export async function getAdminIssues() {
 }
 
 export async function getWeeklyStats() {
-  const response = await api.get('/api/admin/analytics/weekly/')
+  const response = await api.get('/api/admin/trends/')
   return response.data
 }

@@ -117,8 +117,9 @@ const SubmitIssue = () => {
       formData.append('title', data.title)
       formData.append('description', data.description)
       formData.append('image', imageFile)
-      formData.append('latitude', location.latitude)
-      formData.append('longitude', location.longitude)
+      formData.append('location_lat', location.latitude)
+      formData.append('location_lng', location.longitude)
+      formData.append('location_name', locationName || '')
 
       const result = await submitIssue(formData)
 
