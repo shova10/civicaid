@@ -321,3 +321,14 @@ class AdminUserUpdateView(APIView):
             },
             status=status.HTTP_200_OK
         )
+
+class ComplaintStatusUpdateView(generics.UpdateAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = ComplaintStatusUpdateSerializer
+    queryset = Complaint.objects.all()
+
+    def get_object(self):
+        complaint = get_object_or_404(Complaint, id=self.kwargs['pk'])
+        if not self.request.user.is_staff and not self.request.user.is_superuser:
+            raise PermissionDenied("Only admin can update status.")
+        return complaint

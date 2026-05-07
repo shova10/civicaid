@@ -44,3 +44,7 @@ def analyze(complaint):
     complaint.ai_confidence = round(float(ai_confidence), 4)
     complaint.is_duplicate = is_duplicate
     complaint.save()
+
+    if confidence < 0.40:
+        complaint.ai_category = "uncertain"
+        complaint.priority = "low"

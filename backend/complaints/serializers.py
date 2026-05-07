@@ -43,3 +43,8 @@ class ComplaintHeatmapSerializer(serializers.ModelSerializer):
     class Meta:
         model = Complaint
         fields = ['id','title', 'category', 'priority', 'status', 'location_lat', 'location_lng', 'location_name']
+
+class ComplaintStatusUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Complaint
+        fields = ['status']
