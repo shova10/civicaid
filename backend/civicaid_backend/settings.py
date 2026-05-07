@@ -154,7 +154,7 @@ CORS_ALLOWED_ORIGINS = [
     'http://localhost:5174',
     'http://192.168.100.167:5174',
     'http://192.168.1.247:5174',
-    'https://civicaid-sooty.vercel.app/',
+    'https://civicaid-sooty.vercel.app',
 ]
 
 CORS_ALLOW_CREDENTIALS = True

@@ -270,3 +270,39 @@ class AdminUserListView(generics.ListAPIView):
     serializer_class = UserProfileSerializer
     permission_classes = [IsAuthenticated, IsAdmin]
     queryset = CustomUser.objects.all().order_by('-date_joined')
+
+class AdminUserUpdateView(APIView):
+    permission_classes = [IsAuthenticated, IsAdmin]
+
+    def patch(self, request, pk):
+        user = get_object_or_404(CustomUser, pk=pk)
+
+        role = request.data.get("role")
+        is_active = request.data.get("is_active")
+
+        if role is None and is_active is None:
+            return Response(
+                {"detail": "Provide at least one field: role or is_active."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if role is not None:
+            user.role = role
+
+        if is_active is not None:
+            user.is_active = is_active
+
+        user.save()
+
+        return Response(
+            {
+                "detail": "User updated successfully.",
+                "user": {
+                    "id": user.id,
+                    "email": user.email,
+                    "role": user.role,
+                    "is_active": user.is_active,
+                }
+            },
+            status=status.HTTP_200_OK
+        )
