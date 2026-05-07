@@ -5,6 +5,20 @@ class ComplaintCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Complaint
         fields = ['title', 'description', 'image', 'category', 'location_name', 'location_lat', 'location_lng', 'language']
+
+    def validate_description(self, value):
+        if len(value.strip()) < 20:
+            raise serializers.ValidationError(
+                "Description is too short. Please describe the issue in at least 20 characters."
+            )
+        return value
+    
+    def validate_title(self, value):
+        if len(value.strip()) < 5:
+            raise serializers.ValidationError(
+                "Title is too short. Please provide a meaningful title."
+            )
+        return value
         
 class ComplaintListSerializer(serializers.ModelSerializer):
     class Meta:

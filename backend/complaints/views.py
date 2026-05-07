@@ -15,6 +15,7 @@ from django.conf import settings
 from django.core.mail import send_mail
 from accounts.serializers import UserProfileSerializer
 from accounts.models import CustomUser
+from django.core.cache import cache
 
 
 class IsAdminOrStaff(BasePermission):
@@ -32,13 +33,27 @@ class ComplaintListCreateView(generics.ListCreateAPIView):
     def get_queryset(self):
         return Complaint.objects.filter(citizen=self.request.user)
 
-    def create(self, request, *args, **kwargs):       
+    def create(self, request, *args, **kwargs):
+        user_id = request.user.id
+        cache_key = f"complaint_ratelimit_{user_id}"
+        request_count = cache.get(cache_key, 0)
+
+        if request_count >= 5:
+            return Response(
+                {"detail": "You have submitted too many complaints. Please wait before trying again."},
+                status=status.HTTP_429_TOO_MANY_REQUESTS
+            )
+
         print("DATA:", request.data)
         serializer = self.get_serializer(data=request.data)
         if not serializer.is_valid():
             print("ERRORS:", serializer.errors)
             return Response(serializer.errors, status=400)
+        
         self.perform_create(serializer)
+
+        cache.set(cache_key, request_count + 1, timeout=3600)  
+
         return Response(serializer.data, status=201)
 
     def perform_create(self, serializer):
