@@ -170,7 +170,7 @@ export default function IssueDetail() {
     <div className="min-h-screen bg-slate-50">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
         <button
-          onClick={() => navigate('/issues')}
+          onClick={() => navigate(-1)}
           className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-slate-800
             font-medium transition-colors duration-150 mb-6 group"
         >
@@ -178,7 +178,7 @@ export default function IssueDetail() {
             size={15}
             className="group-hover:-translate-x-0.5 transition-transform duration-150"
           />
-          Back to My Issues
+          Back to Issues
         </button>
 
         {loading ? (
@@ -241,7 +241,7 @@ export default function IssueDetail() {
                 <IssueImage
                   src={
                     issue.image
-                      ? `https://civicaid-backend-mwrq.onrender.com/media/${issue.image}`
+                      ? `https://civicaid-backend-mwrq.onrender.com/${issue.image}`
                       : null
                   }
                   title={issue.title}

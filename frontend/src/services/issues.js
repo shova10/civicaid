@@ -67,9 +67,10 @@ export async function getWeeklyStats() {
   return response.data
 }
 
-export async function updateIssueStatus(id, status) {
+export async function updateIssueStatus(id, status, remark = '') {
   const response = await api.patch(`/api/admin/complaints/${id}/status/`, {
-    status,
+    new_status: status,
+    ...(remark && { remark }),
   })
   return response.data
 }
