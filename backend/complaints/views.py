@@ -1,6 +1,6 @@
 from rest_framework import generics, status
 from .models import Complaint, StatusHistory, ComplaintUpvote, ComplaintAssignment
-from .serializers import ComplaintCreateSerializer, ComplaintListSerializer, ComplaintDetailSerializer, ComplaintHeatmapSerializer, ComplaintStatusUpdateSerializer
+from .serializers import ComplaintCreateSerializer, ComplaintListSerializer, ComplaintDetailSerializer, ComplaintHeatmapSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, BasePermission
@@ -17,10 +17,9 @@ from accounts.serializers import UserProfileSerializer
 from accounts.models import CustomUser
 from django.core.cache import cache
 
-
-class IsAdminOrStaff(BasePermission):
+class IsAdmin(BasePermission):
     def has_permission(self, request, view):
-        return request.user.role in ['admin', 'staff']
+        return request.user.role == 'admin'
 
 class ComplaintListCreateView(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
@@ -108,12 +107,12 @@ class UpvoteToggleView(APIView):
 
 
 class AdminComplaintListView(generics.ListAPIView):
-    permission_classes = [IsAuthenticated, IsAdminOrStaff]
+    permission_classes = [IsAuthenticated, IsAdmin]
     serializer_class = ComplaintListSerializer
     queryset = Complaint.objects.all()
 
 class StatusUpdateView(APIView):
-    permission_classes = [IsAuthenticated, IsAdminOrStaff]
+    permission_classes = [IsAuthenticated, IsAdmin]
 
     def patch(self, request, pk):
         complaint = get_object_or_404(Complaint, id=pk)
@@ -121,8 +120,22 @@ class StatusUpdateView(APIView):
         new_status = request.data.get("new_status")
         remark = request.data.get("remark", "")
 
+        if not new_status:
+            return Response(
+                {"error": "new_status is required."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        valid_statuses = ['reported', 'pending', 'verified', 'in_progress', 'resolved', 'rejected']
+        if new_status not in valid_statuses:
+            return Response(
+                {"error": f"Invalid status. Choose from: {valid_statuses}"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
         complaint.status = new_status
-        complaint.save()
+        complaint.save(update_fields=['status', 'updated_at']) 
+
 
 
         StatusHistory.objects.create(
@@ -171,7 +184,7 @@ class HeatmapView(generics.ListAPIView):
 
 
 class AdminSummaryView(APIView):
-    permission_classes = [IsAuthenticated, IsAdminOrStaff]
+    permission_classes = [IsAuthenticated, IsAdmin]
 
     def get(self, request):
         total = Complaint.objects.count()
@@ -200,7 +213,7 @@ class AdminSummaryView(APIView):
 
 
 class AdminTrendsView(APIView):
-    permission_classes = [IsAuthenticated, IsAdminOrStaff]
+    permission_classes = [IsAuthenticated, IsAdmin]
 
     def get(self, request):
         eight_weeks_ago = timezone.now() - timedelta(weeks=8)
@@ -223,7 +236,7 @@ class AdminTrendsView(APIView):
         return Response(data)
 
 class BulkStatusUpdateView(APIView):
-    permission_classes = [IsAuthenticated, IsAdminOrStaff]
+    permission_classes = [IsAuthenticated, IsAdmin]
 
     def post(self, request):
         complaint_ids = request.data.get('complaint_ids', [])
@@ -280,9 +293,6 @@ class BulkStatusUpdateView(APIView):
         })
 
 
-class IsAdmin(BasePermission):
-    def has_permission(self, request, view):
-        return request.user.role == 'admin'
 
 class AdminUserListView(generics.ListAPIView):
     serializer_class = UserProfileSerializer
@@ -325,35 +335,3 @@ class AdminUserUpdateView(APIView):
             status=status.HTTP_200_OK
         )
 
-
-class ComplaintStatusUpdateView(generics.UpdateAPIView):
-    permission_classes = [IsAuthenticated]
-    serializer_class = ComplaintStatusUpdateSerializer
-    queryset = Complaint.objects.all()
-
-    def get_object(self):
-        complaint = get_object_or_404(Complaint, id=self.kwargs['pk'])
-        if not self.request.user.is_superuser:
-            raise PermissionDenied("Only admin can update status.")
-        return complaint
-
-    def patch(self, request, *args, **kwargs):
-        complaint = self.get_object()
-        old_status = complaint.status
-        
-        serializer = self.get_serializer(complaint, data=request.data, partial=True)
-        if not serializer.is_valid():
-            return Response(serializer.errors, status=400)
-        serializer.save()
-
-        StatusHistory.objects.create(
-            complaint=complaint,
-            previous_status=old_status,
-            new_status=request.data.get('status'),
-            changed_by=request.user
-        )
-
-        return Response({
-            "detail": "Status updated successfully.",
-            "status": serializer.data['status']
-        })
