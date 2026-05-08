@@ -98,12 +98,20 @@ def predict_category(text):
         classifier = pickle.load(f)
 
     vector = vectorizer.transform([text])
+    probabilities = classifier.predict_proba(vector)[0]
+    
+    sorted_probs = sorted(probabilities, reverse=True)
+    best_prob = sorted_probs[0]
+    second_prob = sorted_probs[1]
+    
     category = classifier.predict(vector)[0]
-    confidence = classifier.predict_proba(vector).max()
+    
+    # confidence = how much better best is compared to second best
+    relative_confidence = best_prob - second_prob
 
-    return category, confidence
+    return category, relative_confidence
 
-
+    
 def predict_priority(text):
     with open(PRIORITY_VECTORIZER_PATH, "rb") as f:
         vectorizer = pickle.load(f)
