@@ -146,14 +146,16 @@ class StatusUpdateView(APIView):
             remark=remark
         )
         
-
-        Notification.objects.create(
-            recipient=complaint.citizen,
-            complaint=complaint,
-            event='status_changed',
-            message=f"Your complaint '{complaint.title}' has been {new_status.replace('_', ' ')}.",
-            message_ne=f"तपाईंको उजुरी '{complaint.title}' को स्थिति {new_status} मा परिवर्तन भयो।"
+        try:
+            Notification.objects.create(
+                recipient=complaint.citizen,
+                complaint=complaint,
+                event='status_changed',
+                message=f"Your complaint '{complaint.title}' has been {new_status.replace('_', ' ')}.",
+                message_ne=f"तपाईंको उजुरी '{complaint.title}' को स्थिति {new_status} मा परिवर्तन भयो।"
         )
+        except Exception as e:
+            print(f"Notification creation failed: {e}")
 
         if new_status in ['in_progress', 'resolved', 'rejected']:
             try:
@@ -268,14 +270,16 @@ class BulkStatusUpdateView(APIView):
                 remark=remark
             )
 
-            
-            Notification.objects.create(
-                recipient=complaint.citizen,
-                complaint=complaint,
-                event='status_changed',
-                message=f"Your complaint '{complaint.title}' has been {new_status.replace('_', ' ')}.",
-                message_ne=f"तपाईंको उजुरी '{complaint.title}' को स्थिति {new_status} मा परिवर्तन भयो।"
-            )
+            try:
+                Notification.objects.create(
+                    recipient=complaint.citizen,
+                    complaint=complaint,
+                    event='status_changed',
+                    message=f"Your complaint '{complaint.title}' has been {new_status.replace('_', ' ')}.",
+                    message_ne=f"तपाईंको उजुरी '{complaint.title}' को स्थिति {new_status} मा परिवर्तन भयो।"
+                )
+            except Exception as e:
+                print(f"Notification creation failed: {e}")
 
             if new_status in ['in_progress', 'resolved', 'rejected']:
                 try:
