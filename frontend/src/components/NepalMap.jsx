@@ -19,18 +19,20 @@ const NEPAL_ZOOM = 7
 function MapInvalidator() {
   const map = useMap()
   useEffect(() => {
-    setTimeout(() => map.invalidateSize(), 300)
+    const timer = setTimeout(() => {
+      try {
+        if (map && map.getContainer()) {
+          map.invalidateSize()
+        }
+      } catch (_) {
+        // map unmounted before timer fired — safe to ignore
+      }
+    }, 300)
+    return () => clearTimeout(timer)
   }, [map])
   return null
 }
 
-/**
- * NepalMap
- * @param {string}  className   - additional Tailwind classes for the container
- * @param {number}  zoom        - initial zoom level (default 7)
- * @param {array}   center      - [lat, lng] (default Nepal center)
- * @param {node}    children    - Markers, Popups, etc. passed as children
- */
 export default function NepalMap({
   className = '',
   zoom = NEPAL_ZOOM,
@@ -47,21 +49,17 @@ export default function NepalMap({
         zoom={zoom}
         scrollWheelZoom={true}
         style={{ height: '100%', width: '100%' }}
-        // Prevent the map from stealing scroll on the page
         whenCreated={(map) => {
           map.on('focus', () => map.scrollWheelZoom.enable())
           map.on('blur', () => map.scrollWheelZoom.disable())
         }}
       >
         <MapInvalidator />
-
-        {/* OpenStreetMap tile layer — free, no API key needed */}
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           maxZoom={19}
         />
-
         {children}
       </MapContainer>
     </div>

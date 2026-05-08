@@ -22,7 +22,11 @@ export async function upvoteIssue(id) {
 
 export async function getHeatmapData() {
   const response = await api.get('/api/complaints/heatmap/')
-  return response.data
+  return response.data.map((c) => ({
+    ...c,
+    lat: c.location_lat ?? null,
+    lng: c.location_lng ?? null,
+  }))
 }
 
 export async function getAdminSummary() {
@@ -60,5 +64,12 @@ export async function getAdminIssues() {
 
 export async function getWeeklyStats() {
   const response = await api.get('/api/admin/trends/')
+  return response.data
+}
+
+export async function updateIssueStatus(id, status) {
+  const response = await api.patch(`/api/admin/complaints/${id}/status/`, {
+    status,
+  })
   return response.data
 }

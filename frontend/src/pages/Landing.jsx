@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import {
   MapPin,
   ThumbsUp,
@@ -8,6 +8,7 @@ import {
   Brain,
   ArrowRight,
 } from 'lucide-react'
+
 
 const FEATURES = [
   {
@@ -30,7 +31,7 @@ const FEATURES = [
     icon: Map,
     title: 'Live Issue Map',
     description:
-      'See all reported civic problems plotted on an interactive map of the Kathmandu Valley.',
+      'See all reported civic problems plotted on an interactive map of the Nepal.',
     iconBg: 'bg-sky-100',
     iconColor: 'text-sky-700',
   },
@@ -60,6 +61,7 @@ const FEATURES = [
   },
 ]
 
+
 const STEPS = [
   {
     step: '01',
@@ -86,12 +88,14 @@ const STEPS = [
   },
 ]
 
+
 const STATS = [
   { value: '2,400+', label: 'Issues Reported' },
   { value: '87%', label: 'Resolution Rate' },
   { value: '14', label: 'Avg. Days to Resolve' },
   { value: '12,000+', label: 'Active Citizens' },
 ]
+
 
 const CATEGORIES = [
   {
@@ -138,6 +142,7 @@ const CATEGORIES = [
   },
 ]
 
+
 // ─── Shared Section Header ────────────────────────────────────────────────────
 function SectionHeader({ label, title, sub, light = false }) {
   return (
@@ -168,6 +173,7 @@ function SectionHeader({ label, title, sub, light = false }) {
   )
 }
 
+
 // ─── Navbar ───────────────────────────────────────────────────────────────────
 function Navbar({ onLogin, onRegister }) {
   return (
@@ -186,6 +192,7 @@ function Navbar({ onLogin, onRegister }) {
           </a>
         </div>
 
+
         {/* Links */}
         <div className="hidden md:flex items-center gap-8">
           {['Features', 'How it works', 'Categories'].map((item) => (
@@ -198,6 +205,7 @@ function Navbar({ onLogin, onRegister }) {
             </a>
           ))}
         </div>
+
 
         {/* Actions */}
         <div className="flex items-center gap-3">
@@ -219,9 +227,11 @@ function Navbar({ onLogin, onRegister }) {
   )
 }
 
+
 // ─── Main Landing ─────────────────────────────────────────────────────────────
 export default function Landing() {
   const navigate = useNavigate()
+
 
   return (
     <div className="min-h-screen bg-[#f8fafc] text-slate-900 font-sans">
@@ -230,6 +240,7 @@ export default function Landing() {
         onRegister={() => navigate('/register')}
       />
 
+
       {/* ── Hero ──────────────────────────────────────────────────────────── */}
       <section className="relative pt-32 pb-16 px-4 sm:px-6 overflow-hidden bg-[#fafaf9]">
         {/* Radial glow */}
@@ -237,12 +248,14 @@ export default function Landing() {
           <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-full max-w-4xl h-96 bg-[radial-gradient(ellipse_at_center,rgba(99,102,241,0.08)_0%,transparent_70%)]" />
         </div>
 
+
         <div className="relative max-w-4xl mx-auto text-center">
           {/* Badge */}
           <div className="inline-flex items-center gap-2 bg-white border border-slate-200 shadow-sm text-slate-500 text-[10px] font-bold px-3 py-1.5 rounded-full mb-7 uppercase tracking-[0.18em]">
             <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
             Direct Civic Action • Nepal
           </div>
+
 
           {/* Heading */}
           <h1 className="text-5xl sm:text-7xl font-black text-slate-900 tracking-tight leading-[1.08] mb-6">
@@ -253,11 +266,13 @@ export default function Landing() {
             </span>
           </h1>
 
+
           <p className="text-base sm:text-lg text-slate-500 font-medium max-w-xl mx-auto leading-relaxed mb-10">
             CivicAid is your direct line to local authorities. From potholes to
             power lines, report issues in seconds and watch your neighborhood
             transform.
           </p>
+
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <button
@@ -273,6 +288,7 @@ export default function Landing() {
               />
             </button>
 
+
             <button
               onClick={() => navigate('/login')}
               className="inline-flex items-center gap-2 bg-transparent hover:bg-slate-100
@@ -283,6 +299,7 @@ export default function Landing() {
             </button>
           </div>
         </div>
+
 
         {/* Scroll hint */}
         <div className="flex justify-center mt-16">
@@ -300,10 +317,12 @@ export default function Landing() {
         </div>
       </section>
 
+
       {/* ── Stats ─────────────────────────────────────────────────────────── */}
       <section className="py-16 bg-[#0f172a] relative">
         <div className="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-slate-700 to-transparent" />
         <div className="absolute bottom-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-slate-700 to-transparent" />
+
 
         <div className="max-w-5xl mx-auto px-6">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-y-12 gap-x-0">
@@ -331,6 +350,7 @@ export default function Landing() {
         </div>
       </section>
 
+
       {/* ── Features ──────────────────────────────────────────────────────── */}
       <section id="features" className="py-20 px-4 bg-white">
         <SectionHeader
@@ -338,6 +358,7 @@ export default function Landing() {
           title="Everything you need"
           sub="A complete platform for citizens, staff, and administrators."
         />
+
 
         <div className="max-w-6xl mx-auto mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {FEATURES.map((f) => {
@@ -365,6 +386,7 @@ export default function Landing() {
         </div>
       </section>
 
+
       {/* ── How it Works ──────────────────────────────────────────────────── */}
       <section id="how-it-works" className="py-20 px-4 bg-[#0f172a]">
         <SectionHeader
@@ -373,6 +395,7 @@ export default function Landing() {
           sub="Three simple steps from problem to resolution."
           light
         />
+
 
         <div className="max-w-3xl mx-auto mt-14 grid grid-cols-1 sm:grid-cols-3 gap-8 relative">
           <div className="hidden sm:block absolute top-8 left-[calc(16.67%+1.5rem)] right-[calc(16.67%+1.5rem)] h-px bg-slate-800" />
@@ -398,6 +421,7 @@ export default function Landing() {
         </div>
       </section>
 
+
       {/* ── How to Report ─────────────────────────────────────────────────── */}
       <section className="py-20 px-4 bg-slate-50">
         <SectionHeader
@@ -405,6 +429,7 @@ export default function Landing() {
           title="How to Report Effectively"
           sub="The more specific your report, the faster it gets resolved."
         />
+
 
         <div className="max-w-4xl mx-auto mt-12 grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* Category */}
@@ -438,6 +463,7 @@ export default function Landing() {
             </ul>
           </div>
 
+
           {/* Description */}
           <div className="bg-blue-50 border border-blue-200 rounded-2xl p-6">
             <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center mb-4 text-lg">
@@ -464,6 +490,7 @@ export default function Landing() {
               ))}
             </div>
           </div>
+
 
           {/* Priority */}
           <div className="bg-white border border-slate-200 rounded-2xl p-6">
@@ -507,6 +534,7 @@ export default function Landing() {
             </div>
           </div>
 
+
           {/* Supporting details */}
           <div className="bg-teal-50 border border-teal-200 rounded-2xl p-6">
             <div className="w-10 h-10 bg-teal-100 rounded-xl flex items-center justify-center mb-4 text-lg">
@@ -549,6 +577,7 @@ export default function Landing() {
         </div>
       </section>
 
+
       {/* ── Categories ────────────────────────────────────────────────────── */}
       <section id="categories" className="py-20 px-4 bg-white">
         <SectionHeader
@@ -556,6 +585,7 @@ export default function Landing() {
           title="Issue Categories"
           sub="Report problems across all civic departments."
         />
+
 
         <div className="max-w-4xl mx-auto mt-12 grid grid-cols-2 sm:grid-cols-3 gap-4">
           {CATEGORIES.map((cat) => (
@@ -574,6 +604,7 @@ export default function Landing() {
           ))}
         </div>
       </section>
+
 
       {/* ── CTA ───────────────────────────────────────────────────────────── */}
       <section className="py-20 px-4 bg-[#0f172a] relative overflow-hidden">
@@ -612,6 +643,7 @@ export default function Landing() {
         </div>
       </section>
 
+
       {/* ── Footer ────────────────────────────────────────────────────────── */}
       <footer className="py-8 px-4 bg-[#020617]">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -645,3 +677,6 @@ export default function Landing() {
     </div>
   )
 }
+
+
+

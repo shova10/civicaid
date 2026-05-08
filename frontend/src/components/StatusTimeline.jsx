@@ -1,4 +1,5 @@
-import { CheckCircle2, Circle, Clock, XCircle } from 'lucide-react'
+import { CheckCircle2, Circle, Clock, XCircle, Loader2 } from 'lucide-react'
+import { useState } from 'react'
 
 // The canonical order statuses flow through
 const TIMELINE_STEPS = [
@@ -33,10 +34,16 @@ const STEP_INDEX = {
   rejected: -1,
 }
 
-function StepIcon({ state }) {
+function StepIcon({ state, isAdmin, isLoading }) {
+  if (isLoading)
+    return <Loader2 size={18} className="text-blue-500 animate-spin" />
   if (state === 'complete')
     return (
-      <CheckCircle2 size={18} className="text-emerald-500" strokeWidth={2} />
+      <CheckCircle2
+        size={18}
+        className={`text-emerald-500 ${isAdmin ? 'group-hover:text-emerald-600 transition-colors' : ''}`}
+        strokeWidth={2}
+      />
     )
   if (state === 'active')
     return (
@@ -45,16 +52,45 @@ function StepIcon({ state }) {
         <span className="relative inline-flex h-3 w-3 rounded-full bg-blue-500" />
       </span>
     )
-  return <Circle size={18} className="text-slate-300" strokeWidth={1.5} />
+  // upcoming
+  return (
+    <Circle
+      size={18}
+      className={`${isAdmin ? 'text-slate-300 group-hover:text-blue-400 transition-colors' : 'text-slate-300'}`}
+      strokeWidth={1.5}
+    />
+  )
 }
 
 /**
  * StatusTimeline
- * @param {string} status        - current issue status
- * @param {array}  history       - optional array of { status, timestamp, note }
+ * @param {string}   status          - current issue status key
+ * @param {array}    history         - optional [{ status, timestamp, note }]
+ * @param {boolean}  isAdmin         - renders clickable steps when true
+ * @param {function} onStatusChange  - async (newStatus: string) => void  (admin only)
  */
-export default function StatusTimeline({ status, history = [] }) {
-  // Rejected is a special case — show a single rejection state
+export default function StatusTimeline({
+  status,
+  history = [],
+  isAdmin = false,
+  onStatusChange,
+}) {
+  const [loadingKey, setLoadingKey] = useState(null)
+
+  async function handleStepClick(stepKey) {
+    if (!isAdmin || !onStatusChange) return
+    if (stepKey === status) return // already current — no-op
+    if (loadingKey) return // another request in flight
+
+    setLoadingKey(stepKey)
+    try {
+      await onStatusChange(stepKey)
+    } finally {
+      setLoadingKey(null)
+    }
+  }
+
+  // ── Rejected special case ───────────────────────────────────────────────────
   if (status === 'rejected') {
     return (
       <div className="flex items-start gap-3 p-4 rounded-xl bg-red-50 border border-red-100">
@@ -81,15 +117,36 @@ export default function StatusTimeline({ status, history = [] }) {
               ? 'active'
               : 'upcoming'
 
-        // Find matching history entry if provided
+        const isCurrentStep = step.key === status
+        const isLoading = loadingKey === step.key
         const historyEntry = history.find((h) => h.status === step.key)
+
+        // Admin: every step is clickable EXCEPT the current one
+        const clickable = isAdmin && !isCurrentStep && !loadingKey
 
         return (
           <li key={step.key} className="flex gap-4">
-            {/* Left column: icon + connector line */}
+            {/* Left column: icon + connector */}
             <div className="flex flex-col items-center">
-              <div className="flex items-center justify-center w-6 h-6 mt-0.5">
-                <StepIcon state={state} />
+              <div
+                onClick={() => clickable && handleStepClick(step.key)}
+                className={`flex items-center justify-center w-6 h-6 mt-0.5 rounded-full
+                  ${clickable ? 'cursor-pointer group' : 'cursor-default'}
+                  ${isAdmin && !isCurrentStep && !loadingKey ? 'relative' : ''}
+                `}
+              >
+                {/* Subtle ring hint for admins on hover */}
+                {clickable && (
+                  <span
+                    className="absolute inset-0 rounded-full ring-0 group-hover:ring-2
+                      group-hover:ring-blue-400/40 transition-all duration-150"
+                  />
+                )}
+                <StepIcon
+                  state={state}
+                  isAdmin={clickable}
+                  isLoading={isLoading}
+                />
               </div>
               {idx < TIMELINE_STEPS.length - 1 && (
                 <div
@@ -101,18 +158,25 @@ export default function StatusTimeline({ status, history = [] }) {
               )}
             </div>
 
-            {/* Right column: text */}
-            <div className="pb-5">
+            {/* Right column: text (also clickable for admin) */}
+            <div
+              onClick={() => clickable && handleStepClick(step.key)}
+              className={`pb-5 group ${clickable ? 'cursor-pointer' : ''}`}
+            >
               <p
-                className={`text-sm font-semibold leading-tight ${
-                  state === 'active'
-                    ? 'text-blue-600'
-                    : state === 'complete'
-                      ? 'text-slate-700'
-                      : 'text-slate-400'
-                }`}
+                className={`text-sm font-semibold leading-tight transition-colors
+                  ${
+                    state === 'active'
+                      ? 'text-blue-600'
+                      : state === 'complete'
+                        ? 'text-slate-700'
+                        : 'text-slate-400'
+                  }
+                  ${clickable ? 'group-hover:text-blue-500' : ''}
+                `}
               >
                 {step.label}
+
                 {state === 'active' && (
                   <span
                     className="ml-2 text-[10px] font-bold uppercase tracking-widest
@@ -121,12 +185,26 @@ export default function StatusTimeline({ status, history = [] }) {
                     Current
                   </span>
                 )}
+
+                {/* Admin affordance: show "Set →" hint on hover */}
+                {clickable && (
+                  <span
+                    className="ml-2 text-[10px] font-bold uppercase tracking-widest
+                    text-slate-300 group-hover:text-blue-400 transition-colors"
+                  >
+                    · Set →
+                  </span>
+                )}
               </p>
+
               <p
-                className={`text-xs mt-0.5 ${state === 'upcoming' ? 'text-slate-300' : 'text-slate-400'}`}
+                className={`text-xs mt-0.5 ${
+                  state === 'upcoming' ? 'text-slate-300' : 'text-slate-400'
+                }`}
               >
                 {historyEntry?.note ?? step.description}
               </p>
+
               {historyEntry?.timestamp && (
                 <p className="text-[10px] text-slate-300 mt-0.5 flex items-center gap-1">
                   <Clock size={9} />

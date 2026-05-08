@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
+import useAuth from '../hooks/useAuth'
 import {
   ArrowLeft,
   MapPin,
@@ -14,7 +15,7 @@ import toast from 'react-hot-toast'
 import StatusBadge from '../components/StatusBadge'
 import PriorityBadge from '../components/PriorityBadge'
 import StatusTimeline from '../components/StatusTimeline'
-import { getMyIssueById } from '../services/issues'
+import { getMyIssueById, updateIssueStatus } from '../services/issues'
 import UpvoteButton from '../components/UpvoteButton'
 
 function formatDate(dateStr) {
@@ -105,7 +106,6 @@ function IssueImage({ src, title }) {
         />
       </div>
 
-      {/* Lightbox */}
       {expanded && (
         <div
           onClick={() => setExpanded(false)}
@@ -127,6 +127,11 @@ export default function IssueDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
 
+  // ── Auth ────────────────────────────────────────────────────────────────────
+  const { user } = useAuth()
+  const isAdmin = user?.role === 'admin'
+
+  // ── State ───────────────────────────────────────────────────────────────────
   const [issue, setIssue] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
@@ -150,6 +155,17 @@ export default function IssueDetail() {
     fetchIssue()
   }, [id])
 
+  // ── Admin: status change ────────────────────────────────────────────────────
+  async function handleStatusChange(newStatus) {
+    try {
+      await updateIssueStatus(id, newStatus)
+      setIssue((prev) => ({ ...prev, status: newStatus }))
+      toast.success(`Status updated to ${newStatus.replace('_', ' ')}`)
+    } catch (err) {
+      toast.error(err?.response?.data?.message ?? 'Failed to update status.')
+    }
+  }
+
   return (
     <div className="min-h-screen bg-slate-50">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
@@ -168,7 +184,6 @@ export default function IssueDetail() {
         {loading ? (
           <Skeleton />
         ) : error ? (
-          /* ── Error state ───────────────────────────────────────────────── */
           <div className="flex flex-col items-center justify-center py-24 text-center">
             <div className="w-16 h-16 rounded-2xl bg-red-50 flex items-center justify-center mb-4">
               <AlertCircle size={28} className="text-red-400" />
@@ -217,6 +232,7 @@ export default function IssueDetail() {
                   </div>
                 </div>
               </div>
+
               {/* Image */}
               <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
                 <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">
@@ -231,6 +247,7 @@ export default function IssueDetail() {
                   title={issue.title}
                 />
               </div>
+
               {/* Description */}
               <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6">
                 <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">
@@ -240,7 +257,8 @@ export default function IssueDetail() {
                   {issue.description}
                 </p>
               </div>
-              {/* AI Analysis  */}
+
+              {/* AI Analysis */}
               {(issue.ai_category ||
                 issue.ai_priority ||
                 issue.is_duplicate) && (
@@ -248,22 +266,17 @@ export default function IssueDetail() {
                   <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-4 flex items-center gap-1.5">
                     <span className="text-blue-500">✦</span> AI Analysis
                   </h2>
-
                   <div className="space-y-3">
                     {issue.ai_category && (
                       <div className="flex items-center justify-between">
                         <span className="text-xs text-slate-500 font-medium">
                           AI Category
                         </span>
-                        <span
-                          className="text-xs font-bold text-blue-600 bg-blue-50
-                              px-2.5 py-1 rounded-full border border-blue-200"
-                        >
+                        <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2.5 py-1 rounded-full border border-blue-200">
                           {issue.ai_category}
                         </span>
                       </div>
                     )}
-
                     {issue.ai_priority && (
                       <div className="flex items-center justify-between">
                         <span className="text-xs text-slate-500 font-medium">
@@ -272,7 +285,6 @@ export default function IssueDetail() {
                         <PriorityBadge priority={issue.ai_priority} size="sm" />
                       </div>
                     )}
-
                     {issue.ai_confidence && (
                       <div className="flex items-start justify-between gap-3">
                         <span className="text-xs text-slate-500 font-medium shrink-0">
@@ -293,12 +305,8 @@ export default function IssueDetail() {
                         </div>
                       </div>
                     )}
-
                     {issue.is_duplicate && (
-                      <div
-                        className="flex items-start gap-2 p-2.5 bg-amber-50 rounded-xl
-                          border border-amber-200 mt-1"
-                      >
+                      <div className="flex items-start gap-2 p-2.5 bg-amber-50 rounded-xl border border-amber-200 mt-1">
                         <span className="text-amber-500 shrink-0">⚠️</span>
                         <p className="text-xs text-amber-700 font-medium">
                           AI detected this may be a duplicate of an existing
@@ -356,6 +364,8 @@ export default function IssueDetail() {
                 <StatusTimeline
                   status={issue.status}
                   history={issue.status_history ?? []}
+                  isAdmin={isAdmin}
+                  onStatusChange={handleStatusChange}
                 />
               </div>
             </div>

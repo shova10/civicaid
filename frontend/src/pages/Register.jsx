@@ -42,7 +42,8 @@ const Register = () => {
     } catch (err) {
       const errData = err.response?.data
       toast.error(
-        errData?.detail ||
+        errData?.email?.[0] ||
+          errData?.detail ||
           errData?.message ||
           'Registration failed. Please try again.'
       )
