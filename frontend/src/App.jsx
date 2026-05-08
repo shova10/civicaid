@@ -18,6 +18,7 @@ import AdminIssues from './pages/admin/AdminIssues'
 import AdminMap from './pages/admin/AdminMap'
 import AdminAnalytics from './pages/admin/AdminAnalytics'
 import AdminUsers from './pages/admin/AdminUsers'
+import AdminUserDetail from './pages/admin/AdminUserDetail'
 import AdminSettings from './pages/admin/AdminSettings'
 import Profile from './pages/Profile'
 import VerifyOTP from './pages/VerifyOTP'
@@ -42,14 +43,7 @@ const App = () => {
               <Route path="/admin/map" element={<AdminMap />} />
               <Route path="/admin/analytics" element={<AdminAnalytics />} />
               <Route path="/admin/users" element={<AdminUsers />} />
-              <Route
-                path="/admin/analytics"
-                element={
-                  <div className="p-8">
-                    <h1 className="text-2xl font-bold">Analytics</h1>
-                  </div>
-                }
-              />
+              <Route path="/admin/users/:id" element={<AdminUserDetail />} />
               <Route path="/admin/settings" element={<AdminSettings />} />
             </Route>
           </Route>
@@ -60,9 +54,9 @@ const App = () => {
             <Route path="/submit" element={<SubmitIssue />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/issues" element={<Issues />} />
-            <Route path="/issues/:id" element={<IssueDetail />} />
             <Route path="/map" element={<IssueMap />} />
           </Route>
+          <Route path="/issues/:id" element={<IssueDetail />} />
         </Route>
         <Route path="/verify-otp" element={<VerifyOTP />} />
 

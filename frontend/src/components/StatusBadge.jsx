@@ -7,14 +7,14 @@ const STATUS_CONFIG = {
     dot: 'bg-blue-400',
   },
   pending: {
-    label: 'Pending',
+    label: 'reported',
     bg: 'bg-amber-50',
     text: 'text-amber-700',
     border: 'border-amber-200',
     dot: 'bg-amber-400',
   },
   open: {
-    label: 'Open',
+    label: 'verified',
     bg: 'bg-blue-50',
     text: 'text-blue-700',
     border: 'border-blue-200',
@@ -59,11 +59,7 @@ const DEFAULT = {
   dot: 'bg-gray-400',
 }
 
-/**
- * StatusBadge
- * @param {string} status  - one of: pending | open | in_progress | resolved | closed | rejected
- * @param {string} size    - "sm" | "md" (default "md")
- */
+
 export default function StatusBadge({ status, size = 'md' }) {
   const cfg = STATUS_CONFIG[status] ?? DEFAULT
 

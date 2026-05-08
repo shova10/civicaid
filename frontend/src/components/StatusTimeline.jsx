@@ -4,12 +4,12 @@ import { useState } from 'react'
 // The canonical order statuses flow through
 const TIMELINE_STEPS = [
   {
-    key: 'pending',
+    key: 'reported',
     label: 'Submitted',
     description: 'Your issue has been received.',
   },
   {
-    key: 'open',
+    key: 'verified',
     label: 'Reviewed',
     description: 'Issue reviewed by our team.',
   },
@@ -26,11 +26,11 @@ const TIMELINE_STEPS = [
 ]
 
 const STEP_INDEX = {
+  reported: 0,
   pending: 0,
-  open: 1,
+  verified: 1,
   in_progress: 2,
   resolved: 3,
-  closed: 3,
   rejected: -1,
 }
 
@@ -62,13 +62,6 @@ function StepIcon({ state, isAdmin, isLoading }) {
   )
 }
 
-/**
- * StatusTimeline
- * @param {string}   status          - current issue status key
- * @param {array}    history         - optional [{ status, timestamp, note }]
- * @param {boolean}  isAdmin         - renders clickable steps when true
- * @param {function} onStatusChange  - async (newStatus: string) => void  (admin only)
- */
 export default function StatusTimeline({
   status,
   history = [],
@@ -79,8 +72,8 @@ export default function StatusTimeline({
 
   async function handleStepClick(stepKey) {
     if (!isAdmin || !onStatusChange) return
-    if (stepKey === status) return // already current — no-op
-    if (loadingKey) return // another request in flight
+    if (stepKey === status) return
+    if (loadingKey) return
 
     setLoadingKey(stepKey)
     try {
@@ -121,12 +114,10 @@ export default function StatusTimeline({
         const isLoading = loadingKey === step.key
         const historyEntry = history.find((h) => h.status === step.key)
 
-        // Admin: every step is clickable EXCEPT the current one
         const clickable = isAdmin && !isCurrentStep && !loadingKey
 
         return (
           <li key={step.key} className="flex gap-4">
-            {/* Left column: icon + connector */}
             <div className="flex flex-col items-center">
               <div
                 onClick={() => clickable && handleStepClick(step.key)}

@@ -1,4 +1,5 @@
 import { useEffect, useState, useMemo } from 'react'
+import { useNavigate } from 'react-router-dom'
 import {
   Search,
   X,
@@ -151,6 +152,7 @@ export default function AdminUsers() {
   const [roleFilter, setRoleFilter] = useState('all')
   const [sortKey, setSortKey] = useState('date_joined')
   const [sortDir, setSortDir] = useState('desc')
+  const navigate = useNavigate()
 
   async function fetchUsers() {
     setLoading(true)
@@ -415,7 +417,8 @@ export default function AdminUsers() {
                   return (
                     <tr
                       key={user.id}
-                      className="hover:bg-slate-50 transition-colors group"
+                      onClick={() => navigate(`/admin/users/${user.id}`)}
+                      className="hover:bg-slate-50 transition-colors group cursor-pointer"
                     >
                       <td className="px-4 py-3">
                         <span className="text-xs font-mono text-slate-300">
@@ -472,7 +475,9 @@ export default function AdminUsers() {
                         </span>
                       </td>
                       <td className="px-4 py-3">
-                        <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div 
+                         onClick={(e) => e.stopPropagation()} 
+                        className="opacity-0 group-hover:opacity-100 transition-opacity">
                           <ActionMenu
                             user={user}
                             onToggleActive={handleToggleActive}
