@@ -72,8 +72,8 @@ class ComplaintDetailView(generics.RetrieveAPIView):
         complaint_id = self.kwargs['pk']
         complaint = get_object_or_404(Complaint, id=complaint_id)
 
-        if self.request.user.is_superuser:
-            return complaint 
+        if self.request.user.role == 'admin':
+            return complaint
 
         if complaint.citizen != self.request.user:
             raise PermissionDenied("You cannot access this complaint.")
