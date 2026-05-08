@@ -47,6 +47,7 @@ def analyze(complaint):
         complaint.category = ai_category
 
     complaint.ai_priority = ai_priority
+    complaint.priority = ai_priority
     complaint.ai_confidence = round(float(ai_confidence), 4)
     complaint.is_duplicate = is_duplicate
     complaint.save()
