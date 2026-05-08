@@ -157,16 +157,16 @@ class StatusUpdateView(APIView):
         except Exception as e:
             print(f"Notification creation failed: {e}")
 
-        if new_status in ['in_progress', 'resolved', 'rejected']:
-            try:
-                send_mail(
-                    subject="CivicAid - Your Complaint Status Updated",
-                    message=f"Dear {complaint.citizen.full_name}, your complaint '{complaint.title}' has been updated to {new_status}.",
-                    from_email=settings.DEFAULT_FROM_EMAIL,
-                    recipient_list=[complaint.citizen.email]
-                )
-            except Exception as e:
-                print(f"Email sending failed: {e}")
+        # if new_status in ['in_progress', 'resolved', 'rejected']:
+        #     try:
+        #         send_mail(
+        #             subject="CivicAid - Your Complaint Status Updated",
+        #             message=f"Dear {complaint.citizen.full_name}, your complaint '{complaint.title}' has been updated to {new_status}.",
+        #             from_email=settings.DEFAULT_FROM_EMAIL,
+        #             recipient_list=[complaint.citizen.email]
+        #         )
+        #     except Exception as e:
+        #         print(f"Email sending failed: {e}")
 
         return Response({
             "message": f"Complaint status updated to {new_status}",
@@ -281,17 +281,17 @@ class BulkStatusUpdateView(APIView):
             except Exception as e:
                 print(f"Notification creation failed: {e}")
 
-            if new_status in ['in_progress', 'resolved', 'rejected']:
-                try:
-                    send_mail(
-                        subject="CivicAid - Your Complaint Status Updated",
-                        message=f"Dear {complaint.citizen.full_name}, your complaint '{complaint.title}' has been updated to {new_status}.",
-                        from_email=settings.DEFAULT_FROM_EMAIL,
-                        recipient_list=[complaint.citizen.email]
-                    )
-                except Exception as e:
-                    print(f"Email sending failed: {e}")
-            updated.append(complaint.id)
+            # if new_status in ['in_progress', 'resolved', 'rejected']:
+            #     try:
+            #         send_mail(
+            #             subject="CivicAid - Your Complaint Status Updated",
+            #             message=f"Dear {complaint.citizen.full_name}, your complaint '{complaint.title}' has been updated to {new_status}.",
+            #             from_email=settings.DEFAULT_FROM_EMAIL,
+            #             recipient_list=[complaint.citizen.email]
+            #         )
+            #     except Exception as e:
+            #         print(f"Email sending failed: {e}")
+            # updated.append(complaint.id)
 
 
         return Response({
