@@ -88,8 +88,8 @@ class ComplaintDetailView(generics.RetrieveAPIView):
     serializer_class = ComplaintDetailSerializer
 
     def get_object(self):
-    complaint_id = self.kwargs['pk']
-    return get_object_or_404(Complaint, id=complaint_id)
+        complaint_id = self.kwargs['pk']
+        return get_object_or_404(Complaint, id=complaint_id)
 
 class MyComplaintListView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
