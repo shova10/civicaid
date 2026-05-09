@@ -1,3 +1,6 @@
+import os
+import sib_api_v3_sdk
+from sib_api_v3_sdk.rest import ApiException
 from rest_framework import generics, status
 from .models import Complaint, StatusHistory, ComplaintUpvote, ComplaintAssignment
 from .serializers import ComplaintCreateSerializer, ComplaintListSerializer, ComplaintDetailSerializer, ComplaintHeatmapSerializer
@@ -11,11 +14,28 @@ from django.db.models.functions import TruncWeek
 from datetime import timedelta
 from django.utils import timezone
 from notifications.models import Notification
-from django.conf import settings
-from django.core.mail import send_mail
 from accounts.serializers import UserProfileSerializer
 from accounts.models import CustomUser
 from django.core.cache import cache
+
+def send_status_email(to_email, citizen_name, complaint_title, new_status):
+    try:
+        configuration = sib_api_v3_sdk.Configuration()
+        configuration.api_key['api-key'] = os.getenv('BREVO_API_KEY')
+
+        api_instance = sib_api_v3_sdk.TransactionalEmailsApi(
+            sib_api_v3_sdk.ApiClient(configuration)
+        )
+
+        email = sib_api_v3_sdk.SendSmtpEmail(
+            to=[{"email": to_email}],
+            sender={"email": os.getenv('DEFAULT_FROM_EMAIL'), "name": "CivicAid"},
+            subject="CivicAid - Your Complaint Status Updated",
+            text_content=f"Dear {citizen_name}, your complaint '{complaint_title}' has been updated to {new_status.replace('_', ' ')}."
+        )
+        api_instance.send_transac_email(email)
+    except ApiException as e:
+        print(f"Email sending failed: {e}")
 
 class IsAdmin(BasePermission):
     def has_permission(self, request, view):
@@ -155,16 +175,13 @@ class StatusUpdateView(APIView):
             message_ne=f"तपाईंको उजुरी '{complaint.title}' को स्थिति {new_status} मा परिवर्तन भयो।"
         )
 
-        # if new_status in ['in_progress', 'resolved', 'rejected']:
-        #     try:
-        #         send_mail(
-        #             subject="CivicAid - Your Complaint Status Updated",
-        #             message=f"Dear {complaint.citizen.full_name}, your complaint '{complaint.title}' has been updated to {new_status}.",
-        #             from_email=settings.DEFAULT_FROM_EMAIL,
-        #             recipient_list=[complaint.citizen.email]
-        #         )
-        #     except Exception as e:
-        #         print(f"Email sending failed: {e}")
+        if new_status in ['in_progress', 'resolved', 'rejected']:
+            send_status_email(
+                complaint.citizen.email,
+                complaint.citizen.full_name,
+                complaint.title,
+                new_status
+            )
 
         return Response({
             "message": f"Complaint status updated to {new_status}",
@@ -277,16 +294,13 @@ class BulkStatusUpdateView(APIView):
                 message_ne=f"तपाईंको उजुरी '{complaint.title}' को स्थिति {new_status} मा परिवर्तन भयो।"
             )
 
-            # if new_status in ['in_progress', 'resolved', 'rejected']:
-            #     try:
-            #         send_mail(
-            #             subject="CivicAid - Your Complaint Status Updated",
-            #             message=f"Dear {complaint.citizen.full_name}, your complaint '{complaint.title}' has been updated to {new_status}.",
-            #             from_email=settings.DEFAULT_FROM_EMAIL,
-            #             recipient_list=[complaint.citizen.email]
-            #         )
-            #     except Exception as e:
-            #         print(f"Email sending failed: {e}")
+            if new_status in ['in_progress', 'resolved', 'rejected']:
+                send_status_email(
+                    complaint.citizen.email,
+                    complaint.citizen.full_name,
+                    complaint.title,
+                    new_status
+                )
             updated.append(complaint.id)
 
 
