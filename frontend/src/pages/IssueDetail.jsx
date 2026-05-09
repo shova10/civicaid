@@ -15,7 +15,6 @@ import toast from 'react-hot-toast'
 import StatusBadge from '../components/StatusBadge'
 import PriorityBadge from '../components/PriorityBadge'
 import StatusTimeline from '../components/StatusTimeline'
-import api from '../services/api'
 import { getMyIssueById, updateIssueStatus } from '../services/issues'
 import UpvoteButton from '../components/UpvoteButton'
 
@@ -238,14 +237,7 @@ export default function IssueDetail() {
                 <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">
                   Photo
                 </h2>
-                <IssueImage
-                  src={
-                    issue.image
-                      ? `https://civicaid-backend-mwrq.onrender.com/${issue.image}`
-                      : null
-                  }
-                  title={issue.title}
-                />
+                <IssueImage src={issue.image || null} title={issue.title} />
               </div>
 
               {/* Description */}

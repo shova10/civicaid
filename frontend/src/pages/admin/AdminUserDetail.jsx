@@ -14,9 +14,10 @@ import {
   Hash,
 } from 'lucide-react'
 import toast from 'react-hot-toast'
-import { getAdminUsers } from '../../services/auth'
+// import { getAdminUsers } from '../../services/auth'
 import { updateUserRole, toggleUserActive } from '../../services/auth'
-import { getAdminIssues } from '../../services/issues'
+// import { getAdminIssues } from '../../services/issues'
+import api from '../../services/api'
 import StatusBadge from '../../components/StatusBadge'
 import PriorityBadge from '../../components/PriorityBadge'
 
@@ -115,23 +116,16 @@ export default function AdminUserDetail() {
       setLoading(true)
       setError(false)
       try {
-        const [userData, allIssues] = await Promise.all([
-          getAdminUsers().then((data) => {
-            const list = Array.isArray(data) ? data : (data.results ?? [])
-            return list.find((u) => u.id === parseInt(id))
-          }),
-          getAdminIssues(),
+        const [userData, issuesRes] = await Promise.all([
+          api.get(`/api/admin/users/${id}/`).then((r) => r.data),
+          api.get(`/api/complaints/admin/users/${id}/complaints/`),
         ])
         setUser(userData)
-        const userIssues = Array.isArray(allIssues)
-          ? allIssues.filter(
-              (issue) =>
-                issue.user === parseInt(id) ||
-                issue.user_id === parseInt(id) ||
-                issue.submitted_by === parseInt(id)
-            )
-          : []
-        setIssues(userIssues)
+        setIssues(
+          Array.isArray(issuesRes.data)
+            ? issuesRes.data
+            : (issuesRes.data.results ?? [])
+        )
       } catch (err) {
         setError(true)
         toast.error('Could not load user details.')
