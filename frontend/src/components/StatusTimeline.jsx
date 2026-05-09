@@ -5,12 +5,17 @@ import { useState } from 'react'
 const TIMELINE_STEPS = [
   {
     key: 'reported',
-    label: 'Submitted',
+    label: 'Reported',
+    description: 'Your issue has been received.',
+  },
+  {
+    key: 'pending',
+    label: 'Pending',
     description: 'Your issue has been received.',
   },
   {
     key: 'verified',
-    label: 'Reviewed',
+    label: 'Verified',
     description: 'Issue reviewed by our team.',
   },
   {
@@ -23,14 +28,19 @@ const TIMELINE_STEPS = [
     label: 'Resolved',
     description: 'The issue has been resolved.',
   },
+  {
+    key: 'rejected',
+    label: 'Rejected',
+    description: 'Your issue has been received.',
+  },
 ]
 
 const STEP_INDEX = {
   reported: 0,
-  pending: 0,
-  verified: 1,
-  in_progress: 2,
-  resolved: 3,
+  pending: 1,
+  verified: 2,
+  in_progress: 3,
+  resolved: 4,
   rejected: -1,
 }
 
@@ -112,7 +122,7 @@ export default function StatusTimeline({
 
         const isCurrentStep = step.key === status
         const isLoading = loadingKey === step.key
-        const historyEntry = history.find((h) => h.status === step.key)
+        const historyEntry = history.find((h) => h.new_status === step.key)
 
         const clickable = isAdmin && !isCurrentStep && !loadingKey
 

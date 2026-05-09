@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import {
   ClipboardList,
   CheckCircle2,
@@ -23,6 +24,7 @@ function objectToArray(obj, keyName) {
 function CategoryBreakdown({ data = [], loading }) {
   const safeData = Array.isArray(data) ? data : []
   const max = Math.max(...safeData.map((d) => d.count), 1)
+  const navigate = useNavigate()
 
   return (
     <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
@@ -44,7 +46,13 @@ function CategoryBreakdown({ data = [], loading }) {
       ) : (
         <div className="space-y-2.5">
           {safeData.map((item) => (
-            <div key={item.category} className="flex items-center gap-3">
+            <div
+              key={item.category}
+              onClick={() =>
+                navigate(`/admin/issues?category=${item.category}`)
+              }
+              className="flex items-center gap-3"
+            >
               <span className="text-xs text-slate-500 font-medium w-28 shrink-0 truncate capitalize">
                 {item.category}
               </span>
@@ -77,6 +85,7 @@ const STATUS_COLORS = {
 
 function StatusBreakdown({ data = [], total = 0, loading }) {
   const safeData = Array.isArray(data) ? data : []
+  const navigate = useNavigate()
 
   return (
     <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
@@ -106,6 +115,9 @@ function StatusBreakdown({ data = [], total = 0, loading }) {
               return (
                 <div
                   key={item.status}
+                  onClick={() =>
+                    navigate(`/admin/issues?status=${item.status}`)
+                  }
                   className={`${color} transition-all duration-500`}
                   style={{ width: `${pct}%` }}
                   title={`${item.status}: ${item.count}`}
@@ -151,6 +163,7 @@ export default function AdminDashboard() {
   const [summary, setSummary] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
+  const navigate = useNavigate()
 
   async function fetchSummary() {
     setLoading(true)
@@ -223,6 +236,7 @@ export default function AdminDashboard() {
               sub="All time"
               accent="blue"
               loading={loading}
+              onClick={() => navigate('/admin/issues')}
             />
             <StatCard
               icon={Loader2}
@@ -231,6 +245,7 @@ export default function AdminDashboard() {
               sub="Currently reported"
               accent="amber"
               loading={loading}
+              onClick={() => navigate('/admin/issues?status=reported')}
             />
             <StatCard
               icon={CheckCircle2}
@@ -239,6 +254,7 @@ export default function AdminDashboard() {
               sub="Issues resolved"
               accent="emerald"
               loading={loading}
+              onClick={() => navigate('/admin/issues?status=resolved')}
             />
             <StatCard
               icon={Copy}
@@ -247,6 +263,7 @@ export default function AdminDashboard() {
               sub="Duplicate issues found"
               accent="red"
               loading={loading}
+              onClick={() => navigate('/admin/issues?duplicate=true')}
             />
           </div>
 

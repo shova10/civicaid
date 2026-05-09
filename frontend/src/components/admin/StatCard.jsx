@@ -50,6 +50,7 @@ export default function StatCard({
   sub,
   accent = 'blue',
   loading = false,
+  onClick,
 }) {
   const a = ACCENT[accent] ?? ACCENT.blue
 
@@ -68,10 +69,11 @@ export default function StatCard({
 
   return (
     <div
+      onClick={onClick}
       className={`relative bg-white rounded-2xl border ${a.border}
-      shadow-sm hover:shadow-md transition-shadow duration-200 p-5 overflow-hidden`}
+    shadow-sm hover:shadow-md transition-shadow duration-200 p-5 overflow-hidden
+    ${onClick ? 'cursor-pointer' : ''}`}
     >
-      {/* Subtle background tint */}
       <div
         className={`absolute inset-0 ${a.bg} opacity-30 pointer-events-none`}
       />
