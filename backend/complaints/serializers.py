@@ -21,9 +21,10 @@ class ComplaintCreateSerializer(serializers.ModelSerializer):
         return value
         
 class ComplaintListSerializer(serializers.ModelSerializer):
+    citizen_name = serializers.CharField(source='citizen.full_name', default='Unknown')
     class Meta:
         model = Complaint
-        fields = ['title', 'id', 'category', 'status', 'priority', 'created_at', 'upvote_count']
+        fields = ['title', 'id', 'category', 'status', 'priority', 'created_at', 'upvote_count', 'citizen_name']
 
 class StatusHistorySerializer(serializers.ModelSerializer):
     changed_by = serializers.StringRelatedField()
