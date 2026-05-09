@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import {
   Search,
+  ArrowLeft, 
   X,
   ChevronUp,
   ChevronDown,
@@ -95,7 +96,7 @@ function FilterSelect({ value, onChange, options, placeholder }) {
 function SkeletonRow() {
   return (
     <tr className="animate-pulse border-b border-slate-100">
-      {Array.from({ length: 7 }).map((_, i) => (
+      {Array.from({ length: 8 }).map((_, i) => (
         <td key={i} className="px-4 py-3">
           <div className="h-3 bg-slate-100 rounded-full w-full" />
         </td>
@@ -218,6 +219,8 @@ export default function AdminIssues() {
   const [issues, setIssues] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
+  const [searchParams] = useSearchParams()
+  const cameFromDashboard = searchParams.toString() !== ''
 
   const {
     search,
@@ -256,6 +259,13 @@ export default function AdminIssues() {
       setLoading(false)
     }
   }
+  useEffect(() => {
+    const statusParam = searchParams.get('status')
+    const categoryParam = searchParams.get('category')
+
+    if (statusParam) setStatus(statusParam)
+    if (categoryParam) setCategory(categoryParam)
+  }, [searchParams, setCategory, setStatus])
 
   useEffect(() => {
     fetchIssues()
@@ -283,6 +293,19 @@ export default function AdminIssues() {
       {/* ── Header ─────────────────────────────────────────────────────────── */}
       <div className="flex items-center justify-between mb-6">
         <div>
+          {cameFromDashboard && (
+            <button
+              onClick={() => navigate(-1)}
+              className="inline-flex items-center gap-1.5 text-xs text-slate-400
+          hover:text-slate-700 font-medium mb-2 group transition-colors"
+            >
+              <ArrowLeft
+                size={13}
+                className="group-hover:-translate-x-0.5 transition-transform"
+              />
+              Back to Dashboard
+            </button>
+          )}
           <h1 className="text-2xl font-black text-slate-900 tracking-tight">
             Issues
           </h1>
@@ -397,6 +420,9 @@ export default function AdminIssues() {
                 <tr>
                   <Th col="id" label="#" className="w-14" />
                   <Th col="title" label="Title" />
+                  <th className="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-slate-400 whitespace-nowrap w-36">
+                    Citizen
+                  </th>
                   <Th col="status" label="Status" className="w-32" />
                   <Th col="priority" label="Priority" className="w-28" />
                   <th
@@ -416,7 +442,7 @@ export default function AdminIssues() {
                   ))
                 ) : rows.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="py-16 text-center">
+                    <td colSpan={8} className="py-16 text-center">
                       <p className="text-slate-400 text-sm font-medium">
                         No issues match your filters.
                       </p>
@@ -458,6 +484,12 @@ export default function AdminIssues() {
                             {issue.location}
                           </p>
                         )}
+                      </td>
+                      {/* Citizen — ADD THIS */}
+                      <td className="px-4 py-3">
+                        <span className="text-xs text-slate-600 font-medium">
+                          {issue.citizen_name ?? '—'}
+                        </span>
                       </td>
 
                       {/* Status */}
