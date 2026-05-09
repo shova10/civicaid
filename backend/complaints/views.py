@@ -166,16 +166,6 @@ class StatusUpdateView(APIView):
             changed_by=request.user,
             remark=remark
         )
-<<<<<<< HEAD
-        
-        try:
-            Notification.objects.create(
-                recipient=complaint.citizen,
-                complaint=complaint,
-                event='status_changed',
-                message=f"Your complaint '{complaint.title}' has been {new_status.replace('_', ' ')}.",
-                message_ne=f"तपाईंको उजुरी '{complaint.title}' को स्थिति {new_status} मा परिवर्तन भयो।"
-=======
 
         Notification.objects.create(
             recipient=complaint.citizen,
@@ -183,7 +173,6 @@ class StatusUpdateView(APIView):
             event='status_changed',
             message=f"Your complaint '{complaint.title}' has been {new_status.replace('_', ' ')}.",
             message_ne=f"तपाईंको उजुरी '{complaint.title}' को स्थिति {new_status} मा परिवर्तन भयो।"
->>>>>>> dev
         )
         except Exception as e:
             print(f"Notification creation failed: {e}")
