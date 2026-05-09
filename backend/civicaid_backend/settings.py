@@ -204,3 +204,5 @@ CACHES = {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
     }
 }
+
+EMAIL_USE_SSL = os.getenv('EMAIL_USE_SSL', 'False') == 'True'

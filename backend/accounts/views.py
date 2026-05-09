@@ -1,4 +1,7 @@
 import random
+import os
+import sib_api_v3_sdk
+from sib_api_v3_sdk.rest import ApiException
 from rest_framework import generics
 from rest_framework.permissions import AllowAny
 from .models import CustomUser, OTPVerification
@@ -9,14 +12,35 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.conf import settings
-from django.core.mail import send_mail
 from django.utils import timezone
 from datetime import timedelta
+
+
+def send_otp_email(to_email, otp, subject="Your OTP Code", message=None):
+    try:
+        configuration = sib_api_v3_sdk.Configuration()
+        configuration.api_key['api-key'] = os.getenv('BREVO_API_KEY')
+
+        api_instance = sib_api_v3_sdk.TransactionalEmailsApi(
+            sib_api_v3_sdk.ApiClient(configuration)
+        )
+
+        email = sib_api_v3_sdk.SendSmtpEmail(
+            to=[{"email": to_email}],
+            sender={"email": os.getenv('DEFAULT_FROM_EMAIL'), "name": "CivicAid"},
+            subject=subject,
+            text_content=message or f"Your OTP is {otp}"
+        )
+        api_instance.send_transac_email(email)
+        print(f"Email sent successfully to {to_email}")
+    except ApiException as e:
+        print(f"Email sending failed: {e}")
+
 
 class RegisterView(generics.CreateAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = RegisterSerializer
-    permission_classes = [AllowAny]  
+    permission_classes = [AllowAny]
 
     def perform_create(self, serializer):
         user = serializer.save(is_active=False)
@@ -27,19 +51,13 @@ class RegisterView(generics.CreateAPIView):
             otp=otp
         )
 
-        try:
-            send_mail(
-                subject="Your OTP Code",
-                message=f"Your OTP is {otp}",
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[user.email],
-            )
-        except Exception as e:
-            print(f"Email sending failed: {e}")
-    
+        send_otp_email(user.email, otp)
+
+
 class LoginView(TokenObtainPairView):
     serializer_class = CivicAidTokenSerializer
     permission_classes = [AllowAny]
+
 
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
@@ -48,6 +66,7 @@ class LogoutView(APIView):
         refresh_token = request.data['refresh']
         RefreshToken(refresh_token).blacklist()
         return Response({'message': 'Logged out successfully'})
+
 
 class ProfileView(generics.RetrieveUpdateAPIView):
     permission_classes = [IsAuthenticated]
@@ -101,13 +120,13 @@ class VerifyOTPView(APIView):
 
         user.is_active = True
         user.save()
-
         otp_obj.delete()
 
         return Response(
             {"message": "Account verified successfully"},
             status=200
         )
+
 
 class ResendOTPView(APIView):
     permission_classes = [AllowAny]
@@ -136,20 +155,14 @@ class ResendOTPView(APIView):
             )
 
         OTPVerification.objects.filter(user=user).delete()
-
         otp = str(random.randint(100000, 999999))
+        OTPVerification.objects.create(user=user, otp=otp)
 
-        OTPVerification.objects.create(
-            user=user,
-            otp=otp
-        )
-
-   
-        send_mail(
+        send_otp_email(
+            user.email,
+            otp,
             subject="Your New OTP Code",
-            message=f"Your new OTP is {otp}",
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[user.email],
+            message=f"Your new OTP is {otp}"
         )
 
         return Response(
