@@ -1,9 +1,10 @@
 from django.urls import path
-from .views import ComplaintListCreateView, ComplaintDetailView, UpvoteToggleView, AdminComplaintListView, AdminComplaintDetailView, StatusUpdateView, HeatmapView, AdminSummaryView, BulkStatusUpdateView, AdminTrendsView, AdminUserListView,      AdminUserUpdateView, AdminUserComplaintsView
+from .views import ComplaintListCreateView, ComplaintDetailView, MyComplaintListView, UpvoteToggleView, AdminComplaintListView, AdminComplaintDetailView, StatusUpdateView, HeatmapView, AdminSummaryView, BulkStatusUpdateView, AdminTrendsView, AdminUserListView,      AdminUserUpdateView, AdminUserComplaintsView
 
 urlpatterns = [
     path('complaints/', ComplaintListCreateView.as_view(), name='complaint-list'),
     path('complaints/heatmap/', HeatmapView.as_view(), name='heatmap'),
+    path('complaints/mine/', MyComplaintListView.as_view(), name='my-complaints'),
     path('complaints/<int:pk>/', ComplaintDetailView.as_view(), name='complaint-detail'),
     path('complaints/<int:pk>/upvote/', UpvoteToggleView.as_view(), name='upvote-toggle'),
     path('admin/complaints/', AdminComplaintListView.as_view(), name='admin-complaint-list'),

@@ -88,16 +88,15 @@ class ComplaintDetailView(generics.RetrieveAPIView):
     serializer_class = ComplaintDetailSerializer
 
     def get_object(self):
-        complaint_id = self.kwargs['pk']
-        complaint = get_object_or_404(Complaint, id=complaint_id)
+    complaint_id = self.kwargs['pk']
+    return get_object_or_404(Complaint, id=complaint_id)
 
-        if self.request.user.role == 'admin':
-            return complaint
+class MyComplaintListView(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = ComplaintListSerializer
 
-        if complaint.citizen != self.request.user:
-            raise PermissionDenied("You cannot access this complaint.")
-
-        return complaint
+    def get_queryset(self):
+        return Complaint.objects.filter(citizen=self.request.user).order_by('-created_at')
 
 class UpvoteToggleView(APIView):
     permission_classes = [IsAuthenticated]
@@ -310,6 +309,11 @@ class AdminUserListView(generics.ListAPIView):
 class AdminUserUpdateView(APIView):
     permission_classes = [IsAuthenticated, IsAdmin]
 
+    def get(self, request, pk):
+        user = get_object_or_404(CustomUser, pk=pk)
+        serializer = UserProfileSerializer(user)
+        return Response(serializer.data)
+
     def patch(self, request, pk):
         user = get_object_or_404(CustomUser, pk=pk)
 
@@ -350,3 +354,4 @@ class AdminUserComplaintsView(generics.ListAPIView):
     def get_queryset(self):
         user_id = self.kwargs['pk']
         return Complaint.objects.filter(citizen__id=user_id).order_by('-created_at')
+
