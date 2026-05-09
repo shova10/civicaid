@@ -24,12 +24,21 @@ function MapInvalidator() {
         if (map && map.getContainer()) {
           map.invalidateSize()
         }
-      } catch (_) {
+      } catch {
         // map unmounted before timer fired — safe to ignore
       }
     }, 300)
     return () => clearTimeout(timer)
   }, [map])
+  return null
+}
+function FlyToCenter({ center }) {
+  const map = useMap()
+  useEffect(() => {
+    if (center) {
+      map.flyTo(center, 14, { duration: 1.2 })
+    }
+  }, [center, map])
   return null
 }
 
@@ -55,6 +64,7 @@ export default function NepalMap({
         }}
       >
         <MapInvalidator />
+        {center !== NEPAL_CENTER && <FlyToCenter center={center} />}
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'

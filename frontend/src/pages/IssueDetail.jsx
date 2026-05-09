@@ -159,8 +159,6 @@ export default function IssueDetail() {
       setIssue((prev) => ({ ...prev, status: newStatus }))
       toast.success(`Status updated to ${newStatus.replace('_', ' ')}`)
     } catch (err) {
-      setIssue((prev) => ({ ...prev, status: newStatus }))
-      toast.success(`Status updated to ${newStatus.replace('_', ' ')}`)
       toast.error(err?.response?.data?.message ?? 'Failed to update status.')
     }
   }
@@ -277,26 +275,6 @@ export default function IssueDetail() {
                         <PriorityBadge priority={issue.ai_priority} size="sm" />
                       </div>
                     )}
-                    {issue.ai_confidence && (
-                      <div className="flex items-start justify-between gap-3">
-                        <span className="text-xs text-slate-500 font-medium shrink-0">
-                          Confidence
-                        </span>
-                        <div className="flex items-center gap-2 min-w-0">
-                          <div className="w-20 h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                            <div
-                              className="h-full bg-blue-500 rounded-full transition-all duration-500"
-                              style={{
-                                width: `${Math.round(issue.ai_confidence * 100)}%`,
-                              }}
-                            />
-                          </div>
-                          <span className="text-xs font-bold text-slate-600 shrink-0">
-                            {Math.round(issue.ai_confidence * 100)}%
-                          </span>
-                        </div>
-                      </div>
-                    )}
                     {issue.is_duplicate && (
                       <div className="flex items-start gap-2 p-2.5 bg-amber-50 rounded-xl border border-amber-200 mt-1">
                         <span className="text-amber-500 shrink-0">⚠️</span>
@@ -317,11 +295,6 @@ export default function IssueDetail() {
                   Details
                 </h2>
                 <div className="divide-y divide-slate-100">
-                  <MetaItem
-                    icon={Hash}
-                    label="Issue ID"
-                    value={`#${issue.id}`}
-                  />
                   <MetaItem
                     icon={Tag}
                     label="Category"
