@@ -74,3 +74,7 @@ export async function updateIssueStatus(id, status, remark = '') {
   })
   return response.data
 }
+export async function getMyOwnIssues() {
+  const response = await api.get('/api/complaints/mine/')
+  return response.data
+}

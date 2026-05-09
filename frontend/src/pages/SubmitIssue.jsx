@@ -12,6 +12,10 @@ const SubmitIssue = () => {
   const [locating, setLocating] = useState(false)
   const [locationError, setLocationError] = useState(null)
   const fileInputRef = useRef(null)
+  const [locationMode, setLocationMode] = useState(null)
+  const [manualAddress, setManualAddress] = useState('')
+  const [isGeocodingAddress, setIsGeocodingAddress] = useState(false)
+  const [suggestions, setSuggestions] = useState([])
 
   const {
     register,
@@ -99,6 +103,48 @@ const SubmitIssue = () => {
       },
       { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
     )
+  }
+  const searchTimeout = useRef(null)
+
+  const handleAddressInput = (e) => {
+    const value = e.target.value
+    setManualAddress(value)
+    setSuggestions([])
+
+    if (value.trim().length < 3) return
+
+    clearTimeout(searchTimeout.current)
+    searchTimeout.current = setTimeout(async () => {
+      try {
+        const res = await fetch(
+          `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(value)}&format=json&limit=5`,
+          { headers: { 'Accept-Language': 'en' } }
+        )
+        const data = await res.json()
+        setSuggestions(data)
+      } catch {
+        // silently fail
+      }
+    }, 400)
+  }
+
+  const handleSelectSuggestion = (item) => {
+    setLocation({
+      latitude: parseFloat(item.lat),
+      longitude: parseFloat(item.lon),
+    })
+    setLocationName(item.display_name.split(',').slice(0, 3).join(','))
+    setManualAddress(item.display_name.split(',').slice(0, 3).join(','))
+    setSuggestions([])
+    toast.success('Address selected!')
+  }
+
+  const resetLocation = () => {
+    setLocation(null)
+    setLocationName(null)
+    setLocationError(null)
+    setManualAddress('')
+    setLocationMode(null)
   }
 
   // ── Submit ──────────────────────────────────────────────────────────────────
@@ -287,46 +333,116 @@ const SubmitIssue = () => {
               <label className="text-sm font-medium text-slate-700 block mb-2">
                 Location <span className="text-red-500">*</span>
               </label>
-              <button
-                type="button"
-                onClick={handleGetLocation}
-                disabled={locating}
-                className={`inline-flex items-center gap-2 px-4 py-2.5 border rounded-xl
-                  text-sm font-medium transition-colors disabled:opacity-60
-                  ${
-                    location
-                      ? 'border-green-300 bg-green-50 text-green-700'
-                      : 'border-slate-200 hover:bg-slate-50 text-slate-600'
-                  }`}
-              >
-                <MapPin
-                  size={16}
-                  className={location ? 'text-green-600' : ''}
-                />
-                {locating
-                  ? 'Detecting location…'
-                  : location
-                    ? `✓ ${locationName}`
-                    : 'Use My Location'}
-              </button>
 
+              {/* Mode toggle — only shown before a mode is chosen */}
+              {!locationMode && (
+                <div className="flex gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setLocationMode('auto')}
+                    className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5
+          border border-slate-200 rounded-xl text-sm font-medium
+          hover:bg-blue-50 hover:border-blue-300 text-slate-600 transition-colors"
+                  >
+                    <MapPin size={16} /> Use My Location
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setLocationMode('manual')}
+                    className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5
+          border border-slate-200 rounded-xl text-sm font-medium
+          hover:bg-blue-50 hover:border-blue-300 text-slate-600 transition-colors"
+                  >
+                    ✏️ Enter Address
+                  </button>
+                </div>
+              )}
+
+              {/* AUTO mode */}
+              {locationMode === 'auto' && !location && (
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={handleGetLocation}
+                    disabled={locating}
+                    className="inline-flex items-center gap-2 px-4 py-2.5 border border-slate-200
+          rounded-xl text-sm font-medium hover:bg-slate-50 text-slate-600
+          transition-colors disabled:opacity-60"
+                  >
+                    <MapPin size={16} />
+                    {locating ? 'Detecting location…' : 'Detect Now'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={resetLocation}
+                    className="text-xs text-slate-400 hover:text-red-500 underline"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              )}
+
+              {/* MANUAL mode */}
+              {/* MANUAL mode */}
+              {locationMode === 'manual' && !location && (
+                <div className="relative space-y-2">
+                  <input
+                    type="text"
+                    value={manualAddress}
+                    onChange={handleAddressInput}
+                    placeholder="Start typing an address…"
+                    className="w-full px-4 py-2.5 border border-slate-200 rounded-xl
+        text-sm focus:ring-2 focus:ring-blue-500/20 focus:outline-none"
+                  />
+                  {suggestions.length > 0 && (
+                    <ul
+                      className="absolute z-10 w-full mt-1 bg-white border border-slate-200
+        rounded-xl shadow-lg overflow-hidden"
+                    >
+                      {suggestions.map((item) => (
+                        <li
+                          key={item.place_id}
+                          onClick={() => handleSelectSuggestion(item)}
+                          className="px-4 py-2.5 text-sm text-slate-700 hover:bg-blue-50
+              cursor-pointer border-b border-slate-100 last:border-0 truncate"
+                        >
+                          📍 {item.display_name}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                  <button
+                    type="button"
+                    onClick={resetLocation}
+                    className="text-xs text-slate-400 hover:text-red-500 underline"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              )}
+
+              {/* Confirmed location (both modes) */}
               {location && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setLocation(null)
-                    setLocationError(null)
-                  }}
-                  className="ml-2 text-xs text-slate-400 hover:text-red-500 underline"
+                <div
+                  className="flex items-center gap-2 px-4 py-2.5 border border-green-300
+      bg-green-50 rounded-xl text-sm text-green-700 font-medium"
                 >
-                  Remove
-                </button>
+                  <MapPin size={16} className="text-green-600 shrink-0" />
+                  <span className="truncate">✓ {locationName}</span>
+                  <button
+                    type="button"
+                    onClick={resetLocation}
+                    className="ml-auto text-xs text-slate-400 hover:text-red-500 underline whitespace-nowrap"
+                  >
+                    Remove
+                  </button>
+                </div>
               )}
 
               {locationError && (
                 <div
                   className="mt-2 flex items-start gap-2 p-2.5 bg-red-50
-                  rounded-xl border border-red-200"
+      rounded-xl border border-red-200"
                 >
                   <AlertCircle
                     size={13}

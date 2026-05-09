@@ -3,7 +3,7 @@ import { Phone, MapPin, Calendar, Mail, User } from 'lucide-react'
 import toast from 'react-hot-toast'
 import IssueCard from '../components/IssueCard'
 import useAuth from '../hooks/useAuth'
-import { getMyIssues } from '../services/issues'
+import { getMyOwnIssues } from '../services/issues'
 import { getProfile } from '../services/auth'
 
 function InfoRow({ icon: Icon, label, value }) {
@@ -35,7 +35,7 @@ export default function Profile() {
       try {
         const [profileData, issuesData] = await Promise.all([
           getProfile(),
-          getMyIssues(),
+          getMyOwnIssues(),
         ])
         console.log('profileData:', profileData)
         setProfile(profileData)

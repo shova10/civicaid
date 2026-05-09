@@ -27,7 +27,7 @@ const QUICK_ACTIONS = [
   },
   {
     icon: ClipboardList,
-    label: 'My Issues',
+    label: 'Issues',
     description: 'View your submitted reports',
     path: '/issues',
     card: 'bg-white hover:bg-slate-50 border border-slate-200',
@@ -39,7 +39,7 @@ const QUICK_ACTIONS = [
   },
   {
     icon: Map,
-    label: 'Issue Map',
+    label: 'Map',
     description: 'See all issues near you',
     path: '/map',
     card: 'bg-white hover:bg-slate-50 border border-slate-200',
@@ -116,6 +116,23 @@ const STATUSES = [
 export default function Home() {
   const { user } = useAuth()
   const navigate = useNavigate()
+  const handleMapNavigate = () => {
+    if (!navigator.geolocation) {
+      navigate('/map')
+      return
+    }
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const { latitude, longitude } = pos.coords
+        navigate('/map', { state: { lat: latitude, lng: longitude } })
+      },
+      () => {
+        // permission denied or error — go to map anyway
+        navigate('/map')
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
+    )
+  }
 
   const firstName = user?.name?.split(' ')[0] ?? 'there'
   const hour = new Date().getHours()
@@ -175,7 +192,11 @@ export default function Home() {
               return (
                 <button
                   key={action.path}
-                  onClick={() => navigate(action.path)}
+                  onClick={() =>
+                    action.path === '/map'
+                      ? handleMapNavigate()
+                      : navigate(action.path)
+                  }
                   className={`${action.card} rounded-2xl p-4 text-left
                     transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md
                     flex items-center gap-3 group`}

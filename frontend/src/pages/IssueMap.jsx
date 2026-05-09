@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { CircleMarker, Popup } from 'react-leaflet'
 import { AlertCircle, RefreshCw, Map } from 'lucide-react'
 import toast from 'react-hot-toast'
@@ -94,6 +94,7 @@ export default function IssueMap() {
   const [issues, setIssues] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
+  const { state } = useLocation()
 
   const {
     filters,
@@ -197,7 +198,10 @@ export default function IssueMap() {
               </div>
             )}
 
-            <NepalMap className="h-140">
+            <NepalMap
+              className="h-140"
+              center={state?.lat ? [state.lat, state.lng] : undefined}
+            >
               <MarkerClusterGroup>
                 {filtered
                   .filter((issue) => issue.lat && issue.lng)

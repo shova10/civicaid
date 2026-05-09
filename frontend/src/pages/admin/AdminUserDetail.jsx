@@ -118,7 +118,7 @@ export default function AdminUserDetail() {
       try {
         const [userData, issuesRes] = await Promise.all([
           api.get(`/api/admin/users/${id}/`).then((r) => r.data),
-          api.get(`/api/complaints/admin/users/${id}/complaints/`),
+          api.get(`/api/admin/users/${id}/complaints/`),
         ])
         setUser(userData)
         setIssues(
