@@ -291,7 +291,7 @@ class BulkStatusUpdateView(APIView):
             #         )
             #     except Exception as e:
             #         print(f"Email sending failed: {e}")
-            # updated.append(complaint.id)
+            updated.append(complaint.id)
 
 
         return Response({
