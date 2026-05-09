@@ -27,12 +27,15 @@ class RegisterView(generics.CreateAPIView):
             otp=otp
         )
 
-        send_mail(
-            subject="Your OTP Code",
-            message=f"Your OTP is {otp}",
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[user.email],
-        )
+        try:
+            send_mail(
+                subject="Your OTP Code",
+                message=f"Your OTP is {otp}",
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[user.email],
+            )
+        except Exception as e:
+            print(f"Email sending failed: {e}")
     
 class LoginView(TokenObtainPairView):
     serializer_class = CivicAidTokenSerializer
