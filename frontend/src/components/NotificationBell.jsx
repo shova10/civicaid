@@ -3,7 +3,6 @@ import { Bell, CheckCheck, Clock, AlertCircle, X } from 'lucide-react'
 import {
   getNotifications,
   markNotificationRead,
-  markAllNotificationsRead,
 } from '../services/notifications'
 
 // ─── Notification type config ─────────────────────────────────────────────────
@@ -63,7 +62,6 @@ export default function NotificationBell() {
     fetch()
   }, [open])
 
-  // Poll unread count every 60 seconds
   useEffect(() => {
     async function pollCount() {
       try {
@@ -85,15 +83,6 @@ export default function NotificationBell() {
       setNotifications((prev) =>
         prev.map((n) => (n.id === id ? { ...n, is_read: true } : n))
       )
-    } catch {
-      // silently fail
-    }
-  }
-
-  async function handleMarkAllRead() {
-    try {
-      await markAllNotificationsRead()
-      setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })))
     } catch {
       // silently fail
     }
@@ -133,16 +122,6 @@ export default function NotificationBell() {
           >
             <h3 className="text-sm font-bold text-slate-800">Notifications</h3>
             <div className="flex items-center gap-2">
-              {unread > 0 && (
-                <button
-                  onClick={handleMarkAllRead}
-                  className="text-xs text-blue-600 hover:text-blue-700 font-semibold
-                    flex items-center gap-1"
-                >
-                  <CheckCheck size={12} />
-                  Mark all read
-                </button>
-              )}
               <button
                 onClick={() => setOpen(false)}
                 className="text-slate-400 hover:text-slate-600"

@@ -29,13 +29,7 @@ const ROLE_CONFIG = {
     border: 'border-violet-200',
     Icon: Shield,
   },
-  staff: {
-    label: 'Staff',
-    bg: 'bg-blue-50',
-    text: 'text-blue-700',
-    border: 'border-blue-200',
-    Icon: Wrench,
-  },
+
   citizen: {
     label: 'Citizen',
     bg: 'bg-slate-50',
@@ -102,19 +96,12 @@ function ActionMenu({ user, onToggleActive, onChangeRole }) {
               <>
                 <button
                   onClick={() => {
-                    onChangeRole(
-                      user.id,
-                      user.role === 'staff' ? 'citizen' : 'staff'
-                    )
+                    onChangeRole(user.id, user.role === 'citizen')
                     setOpen(false)
                   }}
                   className="w-full text-left text-xs px-3 py-2 hover:bg-slate-50
                     text-slate-700 font-medium transition-colors"
-                >
-                  {user.role === 'staff'
-                    ? 'Demote to Citizen'
-                    : 'Promote to Staff'}
-                </button>
+                ></button>
                 <div className="h-px bg-slate-100 my-1" />
               </>
             )}
@@ -240,7 +227,7 @@ export default function AdminUsers() {
   }, [users, search, roleFilter, sortKey, sortDir])
 
   const totalCitizens = users.filter((u) => u.role === 'citizen').length
-  const totalStaff = users.filter((u) => u.role === 'staff').length
+
   const totalActive = users.filter((u) => u.is_active).length
 
   function Th({ col, label, className = '' }) {
@@ -298,10 +285,9 @@ export default function AdminUsers() {
       </div>
 
       {/* Stat cards */}
-      <div className="grid grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-2 gap-4 mb-6">
         {[
           { label: 'Citizens', value: totalCitizens, color: 'text-slate-700' },
-          { label: 'Staff', value: totalStaff, color: 'text-blue-600' },
           { label: 'Active', value: totalActive, color: 'text-emerald-600' },
         ].map((s) => (
           <div
@@ -341,7 +327,7 @@ export default function AdminUsers() {
             </button>
           )}
         </div>
-        {['all', 'citizen', 'staff', 'admin'].map((r) => (
+        {['all', 'citizen', 'admin'].map((r) => (
           <button
             key={r}
             onClick={() => setRoleFilter(r)}
@@ -475,9 +461,10 @@ export default function AdminUsers() {
                         </span>
                       </td>
                       <td className="px-4 py-3">
-                        <div 
-                         onClick={(e) => e.stopPropagation()} 
-                        className="opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div
+                          onClick={(e) => e.stopPropagation()}
+                          className="opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
                           <ActionMenu
                             user={user}
                             onToggleActive={handleToggleActive}

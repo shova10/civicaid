@@ -423,7 +423,7 @@ export default function AdminIssues() {
                   <th className="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-slate-400 whitespace-nowrap w-36">
                     Citizen
                   </th>
-                  <Th col="status" label="Status" className="w-32" />
+                  <Th col="status" label="Status" className="w-33" />
                   <Th col="priority" label="Priority" className="w-28" />
                   <th
                     className="px-4 py-3 text-left text-[11px] font-bold uppercase
