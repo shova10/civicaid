@@ -57,11 +57,10 @@ export default function IssueCard({ issue, onClick }) {
         {issue.image ? (
           <>
             <img
-              src={issue.image}
-              alt={issue.title}
+              src={issue.image || null}
+              title={issue.title}
               className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
             />
-
             <div className="absolute inset-0 bg-linear-to-t from-black/40 via-black/10 to-transparent" />
           </>
         ) : (
@@ -69,7 +68,8 @@ export default function IssueCard({ issue, onClick }) {
             <ImageOff size={22} className="text-slate-300" />
             <span className="text-xs text-slate-300 font-medium">No photo</span>
           </div>
-        )}
+        )
+        }
 
         {/* Category */}
         <span

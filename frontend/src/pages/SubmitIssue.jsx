@@ -14,7 +14,6 @@ const SubmitIssue = () => {
   const fileInputRef = useRef(null)
   const [locationMode, setLocationMode] = useState(null)
   const [manualAddress, setManualAddress] = useState('')
-  const [isGeocodingAddress, setIsGeocodingAddress] = useState(false)
   const [suggestions, setSuggestions] = useState([])
 
   const {
@@ -382,7 +381,6 @@ const SubmitIssue = () => {
                 </div>
               )}
 
-              {/* MANUAL mode */}
               {/* MANUAL mode */}
               {locationMode === 'manual' && !location && (
                 <div className="relative space-y-2">
