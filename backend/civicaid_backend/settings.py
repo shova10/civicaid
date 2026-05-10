@@ -49,6 +49,8 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
     'corsheaders',
+    'cloudinary_storage',
+    'cloudinary',
 ]
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
@@ -206,3 +208,11 @@ CACHES = {
 }
 
 EMAIL_USE_SSL = os.getenv('EMAIL_USE_SSL', 'False') == 'True'
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME'),
+    'API_KEY': os.environ.get('CLOUDINARY_API_KEY'),
+    'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET'),
+}
+
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
