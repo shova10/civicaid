@@ -3,8 +3,8 @@ import { Bell, Clock, X } from 'lucide-react'
 import {
   getNotifications,
   markNotificationRead,
+  markAllNotificationsRead,
 } from '../services/notifications'
-
 
 const TYPE_CONFIG = {
   status_updated: { color: 'bg-blue-50 text-blue-600', dot: 'bg-blue-500' },
@@ -34,7 +34,6 @@ export default function NotificationBell() {
 
   const unread = notifications.filter((n) => !n.is_read).length
 
-  
   useEffect(() => {
     function handleOutside(e) {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
@@ -45,7 +44,6 @@ export default function NotificationBell() {
     return () => document.removeEventListener('mousedown', handleOutside)
   }, [])
 
- 
   useEffect(() => {
     if (!open) return
     async function fetchNotifications() {
@@ -62,7 +60,6 @@ export default function NotificationBell() {
     fetchNotifications()
   }, [open])
 
-  
   useEffect(() => {
     async function pollCount() {
       try {
@@ -89,10 +86,17 @@ export default function NotificationBell() {
       // silently fail
     }
   }
+  async function handleMarkAllRead() {
+    try {
+      await markAllNotificationsRead()
+      setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })))
+    } catch {
+      // silently fail
+    }
+  }
 
   return (
     <div className="relative" ref={dropdownRef}>
-      
       <button
         onClick={() => setOpen((o) => !o)}
         className="relative p-2 rounded-xl text-slate-500 hover:text-slate-800
@@ -102,7 +106,7 @@ export default function NotificationBell() {
         <Bell size={18} />
         {unread > 0 && (
           <span
-            className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 px-1
+            className="absolute -top-0.5 -right-0.5 min-w-4 h-4 px-1
             bg-red-500 text-white text-[10px] font-bold rounded-full
             flex items-center justify-center leading-none"
           >
@@ -123,12 +127,25 @@ export default function NotificationBell() {
             border-b border-slate-100"
           >
             <h3 className="text-sm font-bold text-slate-800">Notifications</h3>
-            <button
-              onClick={() => setOpen(false)}
-              className="text-slate-400 hover:text-slate-600"
-            >
-              <X size={14} />
-            </button>
+            <div className="flex items-center gap-2">
+              {unread > 0 && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    handleMarkAllRead()
+                  }}
+                  className="text-[11px] font-semibold text-blue-500 hover:text-blue-700 transition-colors"
+                >
+                  Mark all read
+                </button>
+              )}
+              <button
+                onClick={() => setOpen(false)}
+                className="text-slate-400 hover:text-slate-600"
+              >
+                <X size={14} />
+              </button>
+            </div>
           </div>
 
           {/* List */}
@@ -154,7 +171,7 @@ export default function NotificationBell() {
               </div>
             ) : (
               notifications.map((n) => {
-                const cfg = TYPE_CONFIG[n.event] ?? TYPE_CONFIG.default 
+                const cfg = TYPE_CONFIG[n.event] ?? TYPE_CONFIG.default
                 return (
                   <button
                     key={n.id}

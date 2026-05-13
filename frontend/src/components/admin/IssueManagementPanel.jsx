@@ -1,16 +1,9 @@
 import { useEffect, useState } from 'react'
-import {
-  X,
-  Save,
-  User,
-  MessageSquare,
-  AlertTriangle,
-  Loader2,
-} from 'lucide-react'
+import { X, Save, MessageSquare, AlertTriangle, Loader2 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import StatusBadge from '../StatusBadge'
 import PriorityBadge from '../PriorityBadge'
-import { adminUpdateIssue, getStaffList } from '../../services/issues'
+import { adminUpdateIssue } from '../../services/issues'
 
 const STATUSES = [
   { value: 'reported', label: 'Reported' },
@@ -22,36 +15,34 @@ const STATUSES = [
 
 export default function IssueManagementPanel({ issue, onClose, onSaved }) {
   const [status, setStatus] = useState('')
-  const [assignedStaff, setAssignedStaff] = useState('')
   const [remark, setRemark] = useState('')
-  const [staffList, setStaffList] = useState([])
   const [saving, setSaving] = useState(false)
-  const [loadingStaff, setLoadingStaff] = useState(false)
 
   // Populate form when issue changes
   useEffect(() => {
     if (!issue) return
-    setStatus(issue.status ?? 'pending')
-    setAssignedStaff(issue.assigned_staff ?? '')
-    setRemark('')
 
-    // Fetch staff list
-    setLoadingStaff(true)
-    getStaffList()
-      .then(setStaffList)
-      .catch(() => toast.error('Could not load staff list.'))
-      .finally(() => setLoadingStaff(false))
+    setStatus(issue.status ?? 'reported')
+    setRemark('')
   }, [issue])
 
   async function handleSave() {
+    // Optional validation for closed/rejected issues
+    if ((status === 'closed' || status === 'rejected') && !remark.trim()) {
+      toast.error('Please add a remark before closing/rejecting.')
+      return
+    }
+
     setSaving(true)
+
     try {
       const updated = await adminUpdateIssue(issue.id, {
         status,
-        assigned_staff: assignedStaff || null,
         remark: remark.trim() || null,
       })
+
       toast.success('Issue updated successfully.')
+
       onSaved?.(updated)
       onClose()
     } catch (err) {
@@ -85,11 +76,13 @@ export default function IssueManagementPanel({ issue, onClose, onSaved }) {
             <p className="text-xs font-bold uppercase tracking-wider text-slate-400">
               Manage Issue
             </p>
+
             <p className="text-sm font-semibold text-slate-800 mt-0.5">
               #{issue?.id} — {issue?.title?.slice(0, 40)}
               {(issue?.title?.length ?? 0) > 40 ? '…' : ''}
             </p>
           </div>
+
           <button
             onClick={onClose}
             className="p-2 rounded-xl text-slate-400 hover:text-slate-700
@@ -101,13 +94,14 @@ export default function IssueManagementPanel({ issue, onClose, onSaved }) {
 
         {/* Body */}
         <div className="flex-1 overflow-y-auto px-5 py-5 space-y-5">
-          {/* Current state */}
           <div
             className="flex items-center gap-2 p-3 bg-slate-50 rounded-xl
             border border-slate-100"
           >
             <StatusBadge status={issue?.status} size="sm" />
+
             <PriorityBadge priority={issue?.priority} size="sm" />
+
             <span className="text-xs text-slate-400 ml-auto">
               {issue?.category}
             </span>
@@ -121,6 +115,7 @@ export default function IssueManagementPanel({ issue, onClose, onSaved }) {
             >
               Update Status
             </label>
+
             <select
               value={status}
               onChange={(e) => setStatus(e.target.value)}
@@ -136,51 +131,20 @@ export default function IssueManagementPanel({ issue, onClose, onSaved }) {
             </select>
           </div>
 
-          {/* Assign staff */}
-          <div>
-            <label
-              className="flex-block text-xs font-bold uppercase tracking-wider
-              text-slate-500 mb-2 flex items-center gap-1.5"
-            >
-              <User size={11} />
-              Assign Staff
-            </label>
-            {loadingStaff ? (
-              <div className="flex items-center gap-2 text-xs text-slate-400 py-2">
-                <Loader2 size={13} className="animate-spin" />
-                Loading staff…
-              </div>
-            ) : (
-              <select
-                value={assignedStaff}
-                onChange={(e) => setAssignedStaff(e.target.value)}
-                className="w-full text-sm font-medium border border-slate-200 rounded-xl
-                  px-3 py-2.5 bg-white text-slate-700
-                  focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-              >
-                <option value="">— Unassigned —</option>
-                {staffList.map((s) => (
-                  <option key={s.id} value={s.id}>
-                    {s.name} ({s.department})
-                  </option>
-                ))}
-              </select>
-            )}
-          </div>
-
           {/* Remark */}
           <div>
             <label
-              className="flex-block text-xs font-bold uppercase tracking-wider
+              className="block text-xs font-bold uppercase tracking-wider
               text-slate-500 mb-2 flex items-center gap-1.5"
             >
               <MessageSquare size={11} />
               Add Remark
             </label>
+
             <textarea
               value={remark}
               onChange={(e) => setRemark(e.target.value)}
-              rows={3}
+              rows={4}
               placeholder="Add a note about this update…"
               className="w-full text-sm border border-slate-200 rounded-xl px-3 py-2.5
                 bg-white text-slate-700 placeholder:text-slate-300 resize-none
@@ -188,7 +152,7 @@ export default function IssueManagementPanel({ issue, onClose, onSaved }) {
             />
           </div>
 
-          {/* Warning for destructive statuses */}
+          {/* Warning */}
           {(status === 'rejected' || status === 'closed') && (
             <div
               className="flex items-start gap-2.5 p-3 bg-amber-50 rounded-xl
@@ -198,6 +162,7 @@ export default function IssueManagementPanel({ issue, onClose, onSaved }) {
                 size={14}
                 className="text-amber-500 mt-0.5 shrink-0"
               />
+
               <p className="text-xs text-amber-700 font-medium">
                 Setting status to <strong>{status}</strong> will close this
                 issue. This action should be final.
@@ -215,6 +180,7 @@ export default function IssueManagementPanel({ issue, onClose, onSaved }) {
           >
             Cancel
           </button>
+
           <button
             onClick={handleSave}
             disabled={saving}
@@ -224,11 +190,13 @@ export default function IssueManagementPanel({ issue, onClose, onSaved }) {
           >
             {saving ? (
               <>
-                <Loader2 size={14} className="animate-spin" /> Saving…
+                <Loader2 size={14} className="animate-spin" />
+                Saving…
               </>
             ) : (
               <>
-                <Save size={14} /> Save Changes
+                <Save size={14} />
+                Save Changes
               </>
             )}
           </button>
