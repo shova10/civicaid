@@ -1,15 +1,15 @@
 import { useEffect, useState, useRef } from 'react'
-import { Bell, CheckCheck, Clock, AlertCircle, X } from 'lucide-react'
+import { Bell, Clock, X } from 'lucide-react'
 import {
   getNotifications,
   markNotificationRead,
 } from '../services/notifications'
 
-// ─── Notification type config ─────────────────────────────────────────────────
+
 const TYPE_CONFIG = {
-  status_change: { color: 'bg-blue-50 text-blue-600', dot: 'bg-blue-500' },
+  status_updated: { color: 'bg-blue-50 text-blue-600', dot: 'bg-blue-500' },
   assigned: { color: 'bg-violet-50 text-violet-600', dot: 'bg-violet-500' },
-  resolved: { color: 'bg-emerald-50 text-emerald-600', dot: 'bg-emerald-500' },
+  submitted: { color: 'bg-emerald-50 text-emerald-600', dot: 'bg-emerald-500' },
   duplicate: { color: 'bg-amber-50 text-amber-600', dot: 'bg-amber-500' },
   default: { color: 'bg-slate-50 text-slate-600', dot: 'bg-slate-400' },
 }
@@ -34,7 +34,7 @@ export default function NotificationBell() {
 
   const unread = notifications.filter((n) => !n.is_read).length
 
-  // Close on outside click
+  
   useEffect(() => {
     function handleOutside(e) {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
@@ -45,10 +45,10 @@ export default function NotificationBell() {
     return () => document.removeEventListener('mousedown', handleOutside)
   }, [])
 
-  // Fetch on open
+ 
   useEffect(() => {
     if (!open) return
-    async function fetch() {
+    async function fetchNotifications() {
       setLoading(true)
       try {
         const data = await getNotifications()
@@ -59,9 +59,10 @@ export default function NotificationBell() {
         setLoading(false)
       }
     }
-    fetch()
+    fetchNotifications()
   }, [open])
 
+  
   useEffect(() => {
     async function pollCount() {
       try {
@@ -77,7 +78,8 @@ export default function NotificationBell() {
     return () => clearInterval(interval)
   }, [])
 
-  async function handleMarkRead(id) {
+  async function handleMarkRead(id, isRead) {
+    if (isRead) return // already read, skip API call
     try {
       await markNotificationRead(id)
       setNotifications((prev) =>
@@ -90,7 +92,7 @@ export default function NotificationBell() {
 
   return (
     <div className="relative" ref={dropdownRef}>
-      {/* Bell button */}
+      
       <button
         onClick={() => setOpen((o) => !o)}
         className="relative p-2 rounded-xl text-slate-500 hover:text-slate-800
@@ -121,14 +123,12 @@ export default function NotificationBell() {
             border-b border-slate-100"
           >
             <h3 className="text-sm font-bold text-slate-800">Notifications</h3>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setOpen(false)}
-                className="text-slate-400 hover:text-slate-600"
-              >
-                <X size={14} />
-              </button>
-            </div>
+            <button
+              onClick={() => setOpen(false)}
+              className="text-slate-400 hover:text-slate-600"
+            >
+              <X size={14} />
+            </button>
           </div>
 
           {/* List */}
@@ -154,11 +154,11 @@ export default function NotificationBell() {
               </div>
             ) : (
               notifications.map((n) => {
-                const cfg = TYPE_CONFIG[n.type] ?? TYPE_CONFIG.default
+                const cfg = TYPE_CONFIG[n.event] ?? TYPE_CONFIG.default 
                 return (
                   <button
                     key={n.id}
-                    onClick={() => handleMarkRead(n.id)}
+                    onClick={() => handleMarkRead(n.id, n.is_read)}
                     className={`w-full text-left px-4 py-3 flex items-start gap-3
                       hover:bg-slate-50 transition-colors border-b border-slate-50
                       ${!n.is_read ? 'bg-blue-50/30' : ''}`}
@@ -174,7 +174,7 @@ export default function NotificationBell() {
                         className={`text-xs font-semibold leading-snug
                         ${!n.is_read ? 'text-slate-800' : 'text-slate-500'}`}
                       >
-                        {n.message ?? n.title ?? 'New notification'}
+                        {n.message ?? 'New notification'}
                       </p>
                       <p className="text-[10px] text-slate-400 mt-0.5 flex items-center gap-1">
                         <Clock size={9} />

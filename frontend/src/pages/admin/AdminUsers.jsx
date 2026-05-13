@@ -14,6 +14,7 @@ import {
   ChevronsUpDown,
   RefreshCw,
 } from 'lucide-react'
+import Avatar from '../../components/Avatar'
 import toast from 'react-hot-toast'
 import {
   getAdminUsers,
@@ -413,14 +414,7 @@ export default function AdminUsers() {
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-3">
-                          <div
-                            className="w-8 h-8 rounded-full bg-linear-to-br
-                            from-blue-400 to-violet-500 flex items-center justify-center shrink-0"
-                          >
-                            <span className="text-xs font-bold text-white">
-                              {name[0]?.toUpperCase() ?? '?'}
-                            </span>
-                          </div>
+                          <Avatar userId={user?.id} name={name} size="sm" />
                           <div>
                             <p className="text-sm font-semibold text-slate-800">
                               {name}

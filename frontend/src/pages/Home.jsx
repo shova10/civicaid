@@ -10,6 +10,7 @@ import {
   CheckCircle2,
   Clock,
 } from 'lucide-react'
+import Avatar from '../components/Avatar'
 import useAuth from '../hooks/useAuth'
 
 const QUICK_ACTIONS = [
@@ -149,17 +150,17 @@ export default function Home() {
             <div className="absolute -top-16 -right-16 w-56 h-56 bg-[radial-gradient(circle,rgba(99,102,241,0.15)_0%,transparent_70%)]" />
             <div className="absolute -bottom-10 left-10 w-40 h-40 bg-[radial-gradient(circle,rgba(67,56,202,0.1)_0%,transparent_70%)]" />
           </div>
-          {/* Amber accent dot */}
+
           <div className="absolute top-6 right-6 w-2 h-2 rounded-full bg-amber-400 opacity-80" />
 
           <div className="relative">
             {/* Avatar */}
-            <div
-              className="w-12 h-12 rounded-[10px_3px_10px_3px] bg-indigo-700 border border-indigo-500/40
-              flex items-center justify-center text-xl font-black mb-5 text-white"
-            >
-              {user?.name?.[0]?.toUpperCase() ?? '?'}
-            </div>
+            <Avatar
+              userId={user?.id}
+              name={user?.name}
+              size="md"
+              className="mb-5"
+            />
 
             <p className="text-slate-400 text-sm font-bold uppercase tracking-[0.15em] mb-1">
               {greeting} 👋
@@ -168,12 +169,8 @@ export default function Home() {
               Welcome back, {firstName}!
             </h1>
             <p className="text-slate-400 text-sm leading-relaxed max-w-md">
-              You're logged in as a{' '}
-              <span className="font-black capitalize text-white bg-white/10 border border-white/10 px-2 py-0.5 rounded-md">
-                {user?.role}
-              </span>
-              . Help improve your community by reporting civic issues and
-              tracking their resolution.
+              Help improve your community by reporting civic issues and tracking
+              their resolution.
             </p>
           </div>
         </div>

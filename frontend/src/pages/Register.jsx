@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useNavigate, Link } from 'react-router-dom'
 import toast from 'react-hot-toast'
-import { Eye, EyeOff } from 'lucide-react'
+import { Eye, EyeOff, Shield } from 'lucide-react'
 import useAuth from '../hooks/useAuth'
 import { registerUser } from '../services/auth'
 
@@ -53,6 +53,18 @@ const Register = () => {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-50 py-10 px-4">
       <div className="w-full max-w-md bg-white rounded-xl shadow-md p-8">
+        {/* Logo */}
+        <div className="flex justify-center mb-8">
+          <Link to="/" className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-[10px_3px_10px_3px] bg-indigo-700 flex items-center justify-center shadow-sm">
+              <Shield size={15} className="text-white" />
+            </div>
+            <span className="text-[22px] font-black tracking-tight text-slate-900">
+              Civic<span className="text-indigo-700">Aid</span>
+            </span>
+          </Link>
+        </div>
+
         <h1 className="text-3xl font-bold text-gray-800 mb-2">
           Create account
         </h1>
