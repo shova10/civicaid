@@ -35,7 +35,7 @@ export default function Avatar({ userId, name, size = 'md', className = '' }) {
                             from-blue-400 to-violet-500 flex items-center justify-center shrink-0"
     >
       <span className="text-xs font-bold text-white">
-        {name[0]?.toUpperCase() ?? '?'}
+        {name?.[0]?.toUpperCase() ?? '?'}
       </span>
     </div>
   )
