@@ -83,6 +83,14 @@ class ComplaintListCreateView(generics.ListCreateAPIView):
         except Exception as e:
             print(f"AI pipeline error: {e}")
 
+        Notification.objects.create(
+            recipient=complaint.citizen,
+            complaint=complaint,
+            event=Notification.Event.SUBMITTED,
+            message=f"Your complaint '{complaint.title}' has been submitted successfully.",
+            message_ne=f"तपाईंको उजुरी '{complaint.title}' सफलतापूर्वक दर्ता भयो।"
+    )
+
 class ComplaintDetailView(generics.RetrieveAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = ComplaintDetailSerializer
@@ -169,7 +177,7 @@ class StatusUpdateView(APIView):
         Notification.objects.create(
             recipient=complaint.citizen,
             complaint=complaint,
-            event='status_changed',
+            event=Notification.Event.STATUS_UPDATED,
             message=f"Your complaint '{complaint.title}' has been {new_status.replace('_', ' ')}.",
             message_ne=f"तपाईंको उजुरी '{complaint.title}' को स्थिति {new_status} मा परिवर्तन भयो।"
         )
@@ -281,7 +289,7 @@ class BulkStatusUpdateView(APIView):
             Notification.objects.create(
                 recipient=complaint.citizen,
                 complaint=complaint,
-                event='status_changed',
+                event=Notification.Event.STATUS_UPDATED,
                 message=f"Your complaint '{complaint.title}' has been {new_status.replace('_', ' ')}.",
                 message_ne=f"तपाईंको उजुरी '{complaint.title}' को स्थिति {new_status} मा परिवर्तन भयो।"
             )
