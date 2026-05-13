@@ -1,4 +1,5 @@
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
+import { useState } from 'react'
 import {
   MapPin,
   ThumbsUp,
@@ -7,8 +8,9 @@ import {
   Map,
   Brain,
   ArrowRight,
+  Menu,
+  X,
 } from 'lucide-react'
-
 
 const FEATURES = [
   {
@@ -31,7 +33,7 @@ const FEATURES = [
     icon: Map,
     title: 'Live Issue Map',
     description:
-      'See all reported civic problems plotted on an interactive map of the Nepal.',
+      'See all reported civic problems plotted on an interactive map of Nepal.',
     iconBg: 'bg-sky-100',
     iconColor: 'text-sky-700',
   },
@@ -61,7 +63,6 @@ const FEATURES = [
   },
 ]
 
-
 const STEPS = [
   {
     step: '01',
@@ -88,14 +89,12 @@ const STEPS = [
   },
 ]
 
-
 const STATS = [
   { value: '2,400+', label: 'Issues Reported' },
   { value: '87%', label: 'Resolution Rate' },
   { value: '14', label: 'Avg. Days to Resolve' },
   { value: '12,000+', label: 'Active Citizens' },
 ]
-
 
 const CATEGORIES = [
   {
@@ -142,11 +141,19 @@ const CATEGORIES = [
   },
 ]
 
+// ─── Smooth scroll helper ─────────────────────────────────────────────────────
+function scrollTo(id) {
+  if (!id) {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+    return
+  }
+  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
+}
 
-// ─── Shared Section Header ────────────────────────────────────────────────────
+// ─── Section Header ───────────────────────────────────────────────────────────
 function SectionHeader({ label, title, sub, light = false }) {
   return (
-    <div className="text-center max-w-4xl mx-auto">
+    <div className="text-center max-w-4xl mx-auto px-4">
       <div
         className={`inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] mb-3 ${
           light ? 'text-indigo-300' : 'text-indigo-700'
@@ -156,7 +163,7 @@ function SectionHeader({ label, title, sub, light = false }) {
         {label}
       </div>
       <h2
-        className={`text-3xl sm:text-4xl font-black tracking-tight mb-3 ${
+        className={`text-2xl sm:text-3xl md:text-4xl font-black tracking-tight mb-3 ${
           light ? 'text-slate-100' : 'text-slate-900'
         }`}
       >
@@ -164,7 +171,7 @@ function SectionHeader({ label, title, sub, light = false }) {
       </h2>
       {sub && (
         <p
-          className={`text-base font-medium ${light ? 'text-slate-500' : 'text-slate-500'}`}
+          className={`text-sm sm:text-base font-medium ${light ? 'text-slate-400' : 'text-slate-500'}`}
         >
           {sub}
         </p>
@@ -173,112 +180,147 @@ function SectionHeader({ label, title, sub, light = false }) {
   )
 }
 
-
 // ─── Navbar ───────────────────────────────────────────────────────────────────
-function Navbar({ onLogin, onRegister }) {
+function Navbar() {
+  const [mobileOpen, setMobileOpen] = useState(false)
+
+  const navLinks = [
+    { label: 'Features', id: 'features' },
+    { label: 'How it works', id: 'how-it-works' },
+    { label: 'Categories', id: 'categories' },
+  ]
+
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-[#fafaf9]/95 backdrop-blur-lg border-b border-slate-200/50">
-      <div className="max-w-6xl mx-auto px-6 h-18 flex items-center justify-between">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
         {/* Logo */}
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-[10px_3px_10px_3px] bg-indigo-700 flex items-center justify-center shadow-sm">
-            <Shield size={15} className="text-white" />
+        <button
+          onClick={() => scrollTo(null)}
+          className="flex items-center gap-3"
+        >
+          <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-[10px_3px_10px_3px] bg-indigo-700 flex items-center justify-center shadow-sm shrink-0">
+            <Shield size={14} className="text-white" />
           </div>
-          <a
-            href="#"
-            className="text-[22px] font-black tracking-tight text-slate-900 no-underline"
-          >
+          <span className="text-lg sm:text-[22px] font-black tracking-tight text-slate-900">
             Civic<span className="text-indigo-700">Aid</span>
-          </a>
-        </div>
+          </span>
+        </button>
 
-
-        {/* Links */}
-        <div className="hidden md:flex items-center gap-8">
-          {['Features', 'How it works', 'Categories'].map((item) => (
-            <a
-              key={item}
-              href={`#${item.toLowerCase().replace(/\s+/g, '-')}`}
+        {/* Desktop Links */}
+        <div className="hidden md:flex items-center gap-6 lg:gap-8">
+          {navLinks.map((item) => (
+            <button
+              key={item.id}
+              onClick={() => scrollTo(item.id)}
               className="text-[11px] font-bold uppercase tracking-[0.15em] text-slate-500 hover:text-indigo-700 transition-colors"
             >
-              {item}
-            </a>
+              {item.label}
+            </button>
           ))}
         </div>
 
-
-        {/* Actions */}
-        <div className="flex items-center gap-3">
-          <button
-            onClick={onLogin}
-            className="hidden sm:block text-xs font-bold text-slate-500 hover:text-slate-900 px-4 py-2 rounded-lg hover:bg-slate-100 transition-all"
+        {/* Desktop Actions */}
+        <div className="hidden md:flex items-center gap-3">
+          <Link
+            to="/login"
+            className="text-xs font-bold text-slate-500 hover:text-slate-900 px-4 py-2 rounded-lg hover:bg-slate-100 transition-all"
           >
             Sign in
-          </button>
-          <button
-            onClick={onRegister}
+          </Link>
+          <Link
+            to="/register"
             className="text-xs font-bold text-amber-900 bg-amber-500 hover:bg-amber-600 px-5 py-2.5 rounded-full transition-all shadow-sm"
           >
             Sign Up
+          </Link>
+        </div>
+
+        {/* Mobile: Sign Up + Hamburger */}
+        <div className="flex md:hidden items-center gap-2">
+          <Link
+            to="/register"
+            className="text-xs font-bold text-amber-900 bg-amber-500 hover:bg-amber-600 px-4 py-2 rounded-full transition-all shadow-sm"
+          >
+            Sign Up
+          </Link>
+          <button
+            onClick={() => setMobileOpen((v) => !v)}
+            className="p-2 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-all"
+            aria-label="Toggle menu"
+          >
+            {mobileOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
         </div>
       </div>
+
+      {/* Mobile Dropdown */}
+      {mobileOpen && (
+        <div className="md:hidden bg-[#fafaf9] border-t border-slate-200/50 px-4 py-4 flex flex-col gap-3">
+          {navLinks.map((item) => (
+            <button
+              key={item.id}
+              onClick={() => {
+                scrollTo(item.id)
+                setMobileOpen(false)
+              }}
+              className="text-left text-sm font-bold uppercase tracking-[0.12em] text-slate-500 hover:text-indigo-700 py-2 transition-colors"
+            >
+              {item.label}
+            </button>
+          ))}
+          <Link
+            to="/login"
+            onClick={() => setMobileOpen(false)}
+            className="text-sm font-bold text-slate-700 hover:text-slate-900 py-2 transition-colors"
+          >
+            Sign in
+          </Link>
+        </div>
+      )}
     </nav>
   )
 }
 
-
 // ─── Main Landing ─────────────────────────────────────────────────────────────
 export default function Landing() {
-  const navigate = useNavigate()
-
-
   return (
     <div className="min-h-screen bg-[#f8fafc] text-slate-900 font-sans">
-      <Navbar
-        onLogin={() => navigate('/login')}
-        onRegister={() => navigate('/register')}
-      />
-
+      <Navbar />
 
       {/* ── Hero ──────────────────────────────────────────────────────────── */}
-      <section className="relative pt-32 pb-16 px-4 sm:px-6 overflow-hidden bg-[#fafaf9]">
+      <section className="relative pt-28 sm:pt-32 pb-12 sm:pb-16 px-4 sm:px-6 overflow-hidden bg-[#fafaf9]">
         {/* Radial glow */}
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-full max-w-4xl h-96 bg-[radial-gradient(ellipse_at_center,rgba(99,102,241,0.08)_0%,transparent_70%)]" />
         </div>
 
-
         <div className="relative max-w-4xl mx-auto text-center">
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 bg-white border border-slate-200 shadow-sm text-slate-500 text-[10px] font-bold px-3 py-1.5 rounded-full mb-7 uppercase tracking-[0.18em]">
+          <div className="inline-flex items-center gap-2 bg-white border border-slate-200 shadow-sm text-slate-500 text-[10px] font-bold px-3 py-1.5 rounded-full mb-6 uppercase tracking-[0.18em]">
             <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
             Direct Civic Action • Nepal
           </div>
 
-
           {/* Heading */}
-          <h1 className="text-5xl sm:text-7xl font-black text-slate-900 tracking-tight leading-[1.08] mb-6">
-            Building a better <br />
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-slate-900 tracking-tight leading-[1.08] mb-5 sm:mb-6">
+            Building a better <br className="hidden sm:block" />
             <span className="text-indigo-700 relative inline-block">
               community, together.
-              <span className="absolute left-0 -bottom-1 w-full h-0.75 bg-amber-400 rounded opacity-70" />
+              <span className="absolute left-0 -bottom-1 w-full h-0.5 bg-amber-400 rounded opacity-70" />
             </span>
           </h1>
 
-
-          <p className="text-base sm:text-lg text-slate-500 font-medium max-w-xl mx-auto leading-relaxed mb-10">
+          <p className="text-sm sm:text-base lg:text-lg text-slate-500 font-medium max-w-xl mx-auto leading-relaxed mb-8 sm:mb-10">
             CivicAid is your direct line to local authorities. From potholes to
             power lines, report issues in seconds and watch your neighborhood
             transform.
           </p>
 
-
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <button
-              onClick={() => navigate('/register')}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
+            <Link
+              to="/register"
               className="group inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600
-                text-amber-950 font-bold px-10 py-4 rounded-full text-base
+                text-amber-950 font-bold px-8 sm:px-10 py-3.5 sm:py-4 rounded-full text-sm sm:text-base
                 transition-all shadow-lg shadow-amber-100 w-full sm:w-auto justify-center"
             >
               Report an Issue
@@ -286,87 +328,84 @@ export default function Landing() {
                 size={17}
                 className="group-hover:translate-x-1 transition-transform"
               />
-            </button>
+            </Link>
 
-
-            <button
-              onClick={() => navigate('/login')}
+            <Link
+              to="/login"
               className="inline-flex items-center gap-2 bg-transparent hover:bg-slate-100
-                text-slate-900 font-bold px-10 py-4 rounded-xl text-base
+                text-slate-900 font-bold px-8 sm:px-10 py-3.5 sm:py-4 rounded-xl text-sm sm:text-base
                 border-2 border-slate-200 transition-colors w-full sm:w-auto justify-center"
             >
               Sign In
-            </button>
+            </Link>
           </div>
         </div>
 
-
         {/* Scroll hint */}
-        <div className="flex justify-center mt-16">
-          <a
-            href="#features"
+        <div className="flex justify-center mt-12 sm:mt-16">
+          <button
+            onClick={() => scrollTo('features')}
             className="group flex flex-col items-center gap-3"
+            aria-label="Scroll to features"
           >
-            <div className="w-px h-11 bg-linear-to-b from-slate-200 to-indigo-500 relative overflow-hidden">
+            <div className="w-px h-10 sm:h-11 bg-gradient-to-b from-slate-200 to-indigo-500 relative overflow-hidden">
               <div className="absolute top-0 left-0 w-full h-full bg-indigo-500 animate-[scrollDown_2s_ease-in-out_infinite]" />
             </div>
             <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400 group-hover:text-indigo-500 transition-colors">
               Discover
             </span>
-          </a>
+          </button>
         </div>
       </section>
 
-
       {/* ── Stats ─────────────────────────────────────────────────────────── */}
-      <section className="py-16 bg-[#0f172a] relative">
-        <div className="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-slate-700 to-transparent" />
-        <div className="absolute bottom-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-slate-700 to-transparent" />
+      <section className="py-12 sm:py-16 bg-[#0f172a] relative">
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-slate-700 to-transparent" />
+        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-slate-700 to-transparent" />
 
-
-        <div className="max-w-5xl mx-auto px-6">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-y-12 gap-x-0">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-y-10 sm:gap-y-12 gap-x-0">
             {STATS.map((stat, index) => (
               <div
                 key={stat.label}
-                className="relative group px-8 border-r border-slate-800 last:border-r-0 first:pl-0"
+                className={`relative group px-4 sm:px-8 ${
+                  index !== STATS.length - 1 ? 'border-r border-slate-800' : ''
+                } ${index === 0 ? 'pl-0' : ''}`}
               >
-                <span className="absolute -top-3 left-2 text-[52px] font-black text-white/3 select-none leading-none">
+                <span className="absolute -top-3 left-2 text-[40px] sm:text-[52px] font-black text-white/[0.03] select-none leading-none">
                   0{index + 1}
                 </span>
-                <p className="text-[42px] font-black text-amber-400 tracking-tight leading-none mb-2.5">
+                <p className="text-3xl sm:text-[42px] font-black text-amber-400 tracking-tight leading-none mb-2 sm:mb-2.5">
                   {stat.value}
                 </p>
-                <div className="flex items-center gap-2">
-                  <div className="w-0.75 h-4 bg-indigo-500 rounded-full shrink-0" />
-                  <p className="text-[10px] uppercase tracking-[0.2em] text-slate-500 font-bold">
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  <div className="w-0.5 h-3 sm:h-4 bg-indigo-500 rounded-full shrink-0" />
+                  <p className="text-[9px] sm:text-[10px] uppercase tracking-[0.15em] sm:tracking-[0.2em] text-slate-500 font-bold leading-tight">
                     {stat.label}
                   </p>
                 </div>
-                <div className="mt-4 h-0.5 w-9 bg-slate-800 rounded group-hover:w-14 group-hover:bg-amber-400 transition-all duration-500" />
+                <div className="mt-3 sm:mt-4 h-0.5 w-8 sm:w-9 bg-slate-800 rounded group-hover:w-12 sm:group-hover:w-14 group-hover:bg-amber-400 transition-all duration-500" />
               </div>
             ))}
           </div>
         </div>
       </section>
 
-
       {/* ── Features ──────────────────────────────────────────────────────── */}
-      <section id="features" className="py-20 px-4 bg-white">
+      <section id="features" className="py-16 sm:py-20 px-4 bg-white">
         <SectionHeader
           label="Platform"
           title="Everything you need"
           sub="A complete platform for citizens, staff, and administrators."
         />
 
-
-        <div className="max-w-6xl mx-auto mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="max-w-6xl mx-auto mt-10 sm:mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
           {FEATURES.map((f) => {
             const Icon = f.icon
             return (
               <div
                 key={f.title}
-                className="bg-slate-50 border border-slate-200/70 rounded-2xl p-6
+                className="bg-slate-50 border border-slate-200/70 rounded-2xl p-5 sm:p-6
                   hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300"
               >
                 <div
@@ -386,9 +425,8 @@ export default function Landing() {
         </div>
       </section>
 
-
       {/* ── How it Works ──────────────────────────────────────────────────── */}
-      <section id="how-it-works" className="py-20 px-4 bg-[#0f172a]">
+      <section id="how-it-works" className="py-16 sm:py-20 px-4 bg-[#0f172a]">
         <SectionHeader
           label="Process"
           title="How it works"
@@ -396,8 +434,7 @@ export default function Landing() {
           light
         />
 
-
-        <div className="max-w-3xl mx-auto mt-14 grid grid-cols-1 sm:grid-cols-3 gap-8 relative">
+        <div className="max-w-3xl mx-auto mt-10 sm:mt-14 grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8 relative">
           <div className="hidden sm:block absolute top-8 left-[calc(16.67%+1.5rem)] right-[calc(16.67%+1.5rem)] h-px bg-slate-800" />
           {STEPS.map((s) => (
             <div
@@ -405,12 +442,12 @@ export default function Landing() {
               className="flex flex-col items-center text-center"
             >
               <div
-                className={`w-16 h-16 rounded-2xl flex items-center justify-center
-                  text-xl font-black mb-5 ring-4 ${s.ring} z-10 ${s.bg} text-white`}
+                className={`w-14 h-14 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center
+                  text-lg sm:text-xl font-black mb-4 sm:mb-5 ring-4 ${s.ring} z-10 ${s.bg} text-white`}
               >
                 {s.step}
               </div>
-              <h3 className="text-base font-black text-slate-100 mb-2">
+              <h3 className="text-sm sm:text-base font-black text-slate-100 mb-2">
                 {s.title}
               </h3>
               <p className="text-sm text-slate-500 leading-relaxed">
@@ -421,19 +458,17 @@ export default function Landing() {
         </div>
       </section>
 
-
       {/* ── How to Report ─────────────────────────────────────────────────── */}
-      <section className="py-20 px-4 bg-slate-50">
+      <section className="py-16 sm:py-20 px-4 bg-slate-50">
         <SectionHeader
           label="Tips"
           title="How to Report Effectively"
           sub="The more specific your report, the faster it gets resolved."
         />
 
-
-        <div className="max-w-4xl mx-auto mt-12 grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="max-w-4xl mx-auto mt-10 sm:mt-12 grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
           {/* Category */}
-          <div className="bg-amber-50 border border-amber-200 rounded-2xl p-6">
+          <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5 sm:p-6">
             <div className="w-10 h-10 bg-amber-100 rounded-xl flex items-center justify-center mb-4 text-lg">
               🗂️
             </div>
@@ -463,9 +498,8 @@ export default function Landing() {
             </ul>
           </div>
 
-
           {/* Description */}
-          <div className="bg-blue-50 border border-blue-200 rounded-2xl p-6">
+          <div className="bg-blue-50 border border-blue-200 rounded-2xl p-5 sm:p-6">
             <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center mb-4 text-lg">
               ✏️
             </div>
@@ -491,16 +525,15 @@ export default function Landing() {
             </div>
           </div>
 
-
           {/* Priority */}
-          <div className="bg-white border border-slate-200 rounded-2xl p-6">
+          <div className="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6">
             <div className="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center mb-4 text-lg">
               ⚠️
             </div>
             <h3 className="text-[15px] font-black text-slate-900 tracking-tight mb-3">
               Indicate Urgency
             </h3>
-            <div className="space-y-3">
+            <div className="space-y-2 sm:space-y-3">
               {[
                 {
                   emoji: '🚨',
@@ -534,9 +567,8 @@ export default function Landing() {
             </div>
           </div>
 
-
           {/* Supporting details */}
-          <div className="bg-teal-50 border border-teal-200 rounded-2xl p-6">
+          <div className="bg-teal-50 border border-teal-200 rounded-2xl p-5 sm:p-6">
             <div className="w-10 h-10 bg-teal-100 rounded-xl flex items-center justify-center mb-4 text-lg">
               📋
             </div>
@@ -566,7 +598,7 @@ export default function Landing() {
                 </li>
               ))}
             </ul>
-            <div className="mt-5 bg-teal-100 border border-teal-200 rounded-xl px-4 py-3">
+            <div className="mt-4 sm:mt-5 bg-teal-100 border border-teal-200 rounded-xl px-4 py-3">
               <p className="text-xs font-bold text-teal-800 mb-0.5">💡 Tip</p>
               <p className="text-xs text-teal-700">
                 The more specific your description, the faster and more
@@ -577,26 +609,24 @@ export default function Landing() {
         </div>
       </section>
 
-
       {/* ── Categories ────────────────────────────────────────────────────── */}
-      <section id="categories" className="py-20 px-4 bg-white">
+      <section id="categories" className="py-16 sm:py-20 px-4 bg-white">
         <SectionHeader
           label="Departments"
           title="Issue Categories"
           sub="Report problems across all civic departments."
         />
 
-
-        <div className="max-w-4xl mx-auto mt-12 grid grid-cols-2 sm:grid-cols-3 gap-4">
+        <div className="max-w-4xl mx-auto mt-10 sm:mt-12 grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
           {CATEGORIES.map((cat) => (
             <div
               key={cat.name}
-              className={`${cat.bg} border ${cat.border} rounded-2xl p-5
-                flex items-center gap-3 hover:scale-[1.02] transition-transform cursor-default`}
+              className={`${cat.bg} border ${cat.border} rounded-2xl p-4 sm:p-5
+                flex items-center gap-2 sm:gap-3 hover:scale-[1.02] transition-transform cursor-default`}
             >
-              <span className="text-2xl">{cat.emoji}</span>
+              <span className="text-xl sm:text-2xl">{cat.emoji}</span>
               <span
-                className={`text-sm font-black leading-tight tracking-tight ${cat.text}`}
+                className={`text-xs sm:text-sm font-black leading-tight tracking-tight ${cat.text}`}
               >
                 {cat.name}
               </span>
@@ -605,24 +635,23 @@ export default function Landing() {
         </div>
       </section>
 
-
       {/* ── CTA ───────────────────────────────────────────────────────────── */}
-      <section className="py-20 px-4 bg-[#0f172a] relative overflow-hidden">
+      <section className="py-16 sm:py-20 px-4 bg-[#0f172a] relative overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-150 h-150 bg-[radial-gradient(ellipse_at_center,rgba(67,56,202,0.15)_0%,transparent_70%)]" />
+          <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-[radial-gradient(ellipse_at_center,rgba(67,56,202,0.15)_0%,transparent_70%)]" />
         </div>
         <div className="relative max-w-2xl mx-auto text-center">
-          <h2 className="text-3xl sm:text-4xl font-black text-slate-100 tracking-tight mb-4">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-slate-100 tracking-tight mb-4">
             Ready to make your community better?
           </h2>
-          <p className="text-slate-500 text-base font-medium mb-10">
+          <p className="text-slate-500 text-sm sm:text-base font-medium mb-8 sm:mb-10">
             Join thousands of citizens already using CivicAid to improve Nepal.
           </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <button
-              onClick={() => navigate('/register')}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
+            <Link
+              to="/register"
               className="group inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600
-                text-amber-950 font-bold px-10 py-4 rounded-full text-base
+                text-amber-950 font-bold px-8 sm:px-10 py-3.5 sm:py-4 rounded-full text-sm sm:text-base
                 transition-all shadow-lg w-full sm:w-auto justify-center"
             >
               Create An Account
@@ -630,22 +659,21 @@ export default function Landing() {
                 size={17}
                 className="group-hover:translate-x-1 transition-transform"
               />
-            </button>
-            <button
-              onClick={() => navigate('/login')}
-              className="inline-flex items-center gap-2 bg-white/[0.07] hover:bg-white/12
-                text-slate-100 font-bold px-10 py-4 rounded-full text-base
+            </Link>
+            <Link
+              to="/login"
+              className="inline-flex items-center gap-2 bg-white/[0.07] hover:bg-white/[0.12]
+                text-slate-100 font-bold px-8 sm:px-10 py-3.5 sm:py-4 rounded-full text-sm sm:text-base
                 border border-white/20 transition-colors w-full sm:w-auto justify-center"
             >
               Sign In
-            </button>
+            </Link>
           </div>
         </div>
       </section>
 
-
       {/* ── Footer ────────────────────────────────────────────────────────── */}
-      <footer className="py-8 px-4 bg-[#020617]">
+      <footer className="py-6 sm:py-8 px-4 bg-[#020617]">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2.5">
             <div className="w-7 h-7 rounded-lg bg-indigo-700 flex items-center justify-center">
@@ -655,28 +683,25 @@ export default function Landing() {
               Civic<span className="text-indigo-400">Aid</span>
             </span>
           </div>
-          <p className="text-xs text-slate-600">
+          <p className="text-xs text-slate-600 text-center">
             © 2026 CivicAid Nepal. Built for citizens, by Binita & Shova.
           </p>
           <div className="flex items-center gap-5 text-xs text-slate-600">
-            <button
-              onClick={() => navigate('/login')}
+            <Link
+              to="/login"
               className="hover:text-slate-200 transition-colors"
             >
               Sign In
-            </button>
-            <button
-              onClick={() => navigate('/register')}
+            </Link>
+            <Link
+              to="/register"
               className="hover:text-slate-200 transition-colors"
             >
               Sign Up
-            </button>
+            </Link>
           </div>
         </div>
       </footer>
     </div>
   )
 }
-
-
-

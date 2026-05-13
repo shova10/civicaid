@@ -13,6 +13,7 @@ import {
 import { useState, useRef, useEffect } from 'react'
 import useAuth from '../hooks/useAuth'
 import toast from 'react-hot-toast'
+import Avatar from './Avatar'
 import NotificationBell from './NotificationBell'
 
 const NAV_LINKS = {
@@ -52,6 +53,7 @@ const Navbar = () => {
 
   const roleLinks = NAV_LINKS[user?.role] || []
   const isActive = (path) => location.pathname === path
+  const displayName = user?.citizen_name || user?.full_name || user?.name
 
   return (
     <nav className="sticky top-0 z-50 bg-[#fafaf9]/95 backdrop-blur-lg border-b border-slate-200/50">
@@ -87,53 +89,34 @@ const Navbar = () => {
 
           {/* Right Section */}
           <div className="hidden md:flex items-center gap-3">
-            {/* Notifications */}
             <NotificationBell />
 
             {/* Profile Dropdown */}
             <div className="relative" ref={profileRef}>
               <button
                 onClick={() => setProfileOpen((o) => !o)}
-                className="flex items-center gap-2.5 bg-slate-50 hover:bg-slate-100
-                  border border-slate-200 px-3 py-1.5 rounded-full transition-colors"
+                className="flex items-center gap-3 bg-slate-50 hover:bg-slate-100
+                  border border-slate-200 px-4 py-2.5 rounded-full transition-colors"
               >
-                <div
-                  className="w-7 h-7 bg-indigo-500 text-white flex items-center
-                  justify-center rounded-full text-xs font-black"
-                >
-                  {user?.name?.charAt(0)?.toUpperCase()}
-                </div>
-                <div className="text-sm hidden sm:block text-left">
-                  <p className="font-black text-slate-900 text-xs tracking-tight leading-none mb-0.5">
-                    {user?.name}
-                  </p>
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400  leading-none">
-                    {user?.role}
-                  </p>
-                </div>
+                <p className="font-black text-slate-900 text-sm tracking-tight leading-none uppercase">
+                  {displayName}
+                </p>
               </button>
 
               {profileOpen && (
                 <div
                   className="absolute right-0 top-full mt-2 w-64 bg-white rounded-2xl
-                  border border-slate-200 shadow-xl z-50 overflow-hidden"
+                    border border-slate-200 shadow-xl z-50 overflow-hidden"
                 >
                   {/* Header */}
                   <div className="px-4 py-4 bg-[#01104e]">
                     <div className="flex items-center gap-3">
-                      <div
-                        className="w-9 h-9 bg-indigo-700 text-white flex items-center
-                        justify-center rounded-[8px_2px_8px_2px] text-lg font-black"
-                      >
-                        {user?.name?.charAt(0)?.toUpperCase()}
-                      </div>
+                      <Avatar userId={user?.id} name={displayName} size="sm" />
                       <div>
                         <p className="font-black text-sm text-slate-100 tracking-tight">
-                          {user?.name}
+                          {displayName}
                         </p>
-                        <p className="text-xs text-slate-100 font-black">
-                          {user?.email}
-                        </p>
+                        <p className="text-xs text-slate-400">{user?.email}</p>
                       </div>
                     </div>
                   </div>

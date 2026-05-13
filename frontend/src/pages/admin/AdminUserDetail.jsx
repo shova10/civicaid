@@ -13,10 +13,9 @@ import {
   UserX,
   Hash,
 } from 'lucide-react'
+import Avatar from '../../components/Avatar'
 import toast from 'react-hot-toast'
-// import { getAdminUsers } from '../../services/auth'
 import { updateUserRole, toggleUserActive } from '../../services/auth'
-// import { getAdminIssues } from '../../services/issues'
 import api from '../../services/api'
 import StatusBadge from '../../components/StatusBadge'
 import PriorityBadge from '../../components/PriorityBadge'
@@ -207,12 +206,12 @@ export default function AdminUserDetail() {
             <div className="h-20 bg-linear-to-r from-blue-500 to-violet-500" />
             <div className="px-6 pb-6">
               <div className="-mt-8 flex items-end justify-between mb-4">
-                <div
-                  className="w-16 h-16 rounded-2xl bg-blue-50 border-4 border-white
-                  shadow-md flex items-center justify-center text-2xl font-black text-blue-600"
-                >
-                  {displayName?.[0]?.toUpperCase() ?? '?'}
-                </div>
+                <Avatar
+                  userId={user?.id}
+                  name={displayName}
+                  size="lg"
+                  className="border-4 border-white shadow-md"
+                />
                 <div className="flex items-center gap-2 mt-8">
                   <RoleBadge role={user.role} />
                   <span

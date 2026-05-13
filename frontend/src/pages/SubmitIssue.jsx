@@ -14,8 +14,8 @@ const SubmitIssue = () => {
   const fileInputRef = useRef(null)
   const [locationMode, setLocationMode] = useState(null)
   const [manualAddress, setManualAddress] = useState('')
-  const [isGeocodingAddress, setIsGeocodingAddress] = useState(false)
   const [suggestions, setSuggestions] = useState([])
+  const [locationDetails, setLocationDetails] = useState(null)
 
   const {
     register,
@@ -61,31 +61,45 @@ const SubmitIssue = () => {
     setLocationError(null)
     navigator.geolocation.getCurrentPosition(
       async (pos) => {
-        const { latitude, longitude } = pos.coords
+        const { latitude, longitude, accuracy } = pos.coords
         setLocation({ latitude, longitude })
 
         try {
           const res = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`,
+            `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json&addressdetails=1&zoom=18`,
             { headers: { 'Accept-Language': 'en' } }
           )
           const data = await res.json()
-          const place =
-            data.address?.suburb ||
-            data.address?.neighbourhood ||
-            data.address?.village ||
-            data.address?.town ||
-            data.address?.city ||
-            data.address?.county ||
-            data.display_name?.split(',')[0] ||
-            `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`
+          const a = data.address || {}
+
+          const details = {
+            houseNumber: a.house_number || '',
+            road: a.road || a.pedestrian || a.footway || a.path || '',
+            quarter: a.quarter || a.neighbourhood || a.suburb || '',
+            ward: a.ward || '', // Nominatim sometimes returns ward directly
+            city: a.city || a.town || a.village || a.municipality || '',
+            district: a.county || a.state_district || '',
+            accuracy: Math.round(accuracy),
+          }
+          setLocationDetails(details)
+
+          const parts = [
+            details.houseNumber && `${details.houseNumber},`,
+            details.road,
+            details.quarter,
+            details.ward && `Ward: ${details.ward}`,
+            details.city,
+          ].filter(Boolean)
+
+          const place = parts.length
+            ? parts.join(', ')
+            : data.display_name?.split(',').slice(0, 3).join(',')
           setLocationName(place)
-          toast.success(`Location captured: ${place}`)
+          toast.success(`Location captured (±${details.accuracy}m)`)
         } catch {
-          setLocationName(`${latitude.toFixed(4)}, ${longitude.toFixed(4)}`)
+          setLocationName(`${latitude.toFixed(6)}, ${longitude.toFixed(6)}`)
           toast.success('Location captured')
         }
-
         setLocating(false)
       },
       (err) => {
@@ -117,7 +131,7 @@ const SubmitIssue = () => {
     searchTimeout.current = setTimeout(async () => {
       try {
         const res = await fetch(
-          `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(value)}&format=json&limit=5`,
+          `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(value)}&format=json&limit=7&addressdetails=1&countrycodes=np&accept-language=en`,
           { headers: { 'Accept-Language': 'en' } }
         )
         const data = await res.json()
@@ -128,13 +142,43 @@ const SubmitIssue = () => {
     }, 400)
   }
 
-  const handleSelectSuggestion = (item) => {
-    setLocation({
-      latitude: parseFloat(item.lat),
-      longitude: parseFloat(item.lon),
-    })
-    setLocationName(item.display_name.split(',').slice(0, 3).join(','))
-    setManualAddress(item.display_name.split(',').slice(0, 3).join(','))
+  const handleSelectSuggestion = async (item) => {
+    const lat = parseFloat(item.lat)
+    const lon = parseFloat(item.lon)
+    setLocation({ latitude: lat, longitude: lon })
+
+    try {
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&addressdetails=1&zoom=18`,
+        { headers: { 'Accept-Language': 'en' } }
+      )
+      const data = await res.json()
+      const a = data.address || {}
+      const details = {
+        houseNumber: a.house_number || '',
+        road: a.road || a.pedestrian || a.footway || '',
+        quarter: a.quarter || a.neighbourhood || a.suburb || '',
+        ward: a.ward || '',
+        city: a.city || a.town || a.village || a.municipality || '',
+        district: a.county || a.state_district || '',
+        accuracy: null,
+      }
+      setLocationDetails(details)
+      const parts = [
+        details.houseNumber,
+        details.road,
+        details.quarter,
+        details.ward && `Ward: ${details.ward}`,
+        details.city,
+      ].filter(Boolean)
+      const place = parts.length
+        ? parts.join(', ')
+        : item.display_name.split(',').slice(0, 3).join(',')
+      setLocationName(place)
+    } catch {
+      setLocationDetails(null)
+      setLocationName(item.display_name.split(',').slice(0, 3).join(','))
+    }
     setSuggestions([])
     toast.success('Address selected!')
   }
@@ -143,6 +187,7 @@ const SubmitIssue = () => {
     setLocation(null)
     setLocationName(null)
     setLocationError(null)
+    setLocationDetails(null)
     setManualAddress('')
     setLocationMode(null)
   }
@@ -166,6 +211,7 @@ const SubmitIssue = () => {
       formData.append('location_lat', location.latitude)
       formData.append('location_lng', location.longitude)
       formData.append('location_name', locationName || '')
+      formData.append('location_details', JSON.stringify(locationDetails || {}))
 
       const result = await submitIssue(formData)
 
@@ -334,7 +380,6 @@ const SubmitIssue = () => {
                 Location <span className="text-red-500">*</span>
               </label>
 
-              {/* Mode toggle — only shown before a mode is chosen */}
               {!locationMode && (
                 <div className="flex gap-3">
                   <button
@@ -358,7 +403,6 @@ const SubmitIssue = () => {
                 </div>
               )}
 
-              {/* AUTO mode */}
               {locationMode === 'auto' && !location && (
                 <div className="flex items-center gap-2">
                   <button
@@ -383,7 +427,6 @@ const SubmitIssue = () => {
               )}
 
               {/* MANUAL mode */}
-              {/* MANUAL mode */}
               {locationMode === 'manual' && !location && (
                 <div className="relative space-y-2">
                   <input
@@ -395,20 +438,53 @@ const SubmitIssue = () => {
         text-sm focus:ring-2 focus:ring-blue-500/20 focus:outline-none"
                   />
                   {suggestions.length > 0 && (
-                    <ul
-                      className="absolute z-10 w-full mt-1 bg-white border border-slate-200
-        rounded-xl shadow-lg overflow-hidden"
-                    >
-                      {suggestions.map((item) => (
-                        <li
-                          key={item.place_id}
-                          onClick={() => handleSelectSuggestion(item)}
-                          className="px-4 py-2.5 text-sm text-slate-700 hover:bg-blue-50
-              cursor-pointer border-b border-slate-100 last:border-0 truncate"
-                        >
-                          📍 {item.display_name}
-                        </li>
-                      ))}
+                    <ul className="absolute z-10 w-full mt-1 bg-white border border-slate-200 rounded-xl shadow-lg overflow-hidden">
+                      {suggestions.map((item) => {
+                        const a = item.address || {}
+                        const road = a.road || a.pedestrian || a.footway || ''
+                        const ward = a.ward || ''
+                        const quarter =
+                          a.quarter || a.neighbourhood || a.suburb || ''
+                        const city =
+                          a.city || a.town || a.village || a.municipality || ''
+                        const district = a.county || a.state_district || ''
+
+                        const primaryLine =
+                          [road, quarter].filter(Boolean).join(', ') ||
+                          item.display_name.split(',')[0]
+                        const secondaryLine = [
+                          ward && `Ward ${ward}`,
+                          city,
+                          district,
+                        ]
+                          .filter(Boolean)
+                          .join(', ')
+
+                        return (
+                          <li
+                            key={item.place_id}
+                            onClick={() => handleSelectSuggestion(item)}
+                            className="px-4 py-3 hover:bg-blue-50 cursor-pointer border-b border-slate-100 last:border-0"
+                          >
+                            <div className="flex items-start gap-2">
+                              <MapPin
+                                size={14}
+                                className="text-blue-400 shrink-0 mt-0.5"
+                              />
+                              <div className="min-w-0">
+                                <p className="text-sm text-slate-700 font-medium truncate">
+                                  {primaryLine}
+                                </p>
+                                {secondaryLine && (
+                                  <p className="text-xs text-slate-400 truncate mt-0.5">
+                                    {secondaryLine}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                          </li>
+                        )
+                      })}
                     </ul>
                   )}
                   <button
@@ -421,21 +497,90 @@ const SubmitIssue = () => {
                 </div>
               )}
 
-              {/* Confirmed location (both modes) */}
               {location && (
-                <div
-                  className="flex items-center gap-2 px-4 py-2.5 border border-green-300
-      bg-green-50 rounded-xl text-sm text-green-700 font-medium"
-                >
-                  <MapPin size={16} className="text-green-600 shrink-0" />
-                  <span className="truncate">✓ {locationName}</span>
-                  <button
-                    type="button"
-                    onClick={resetLocation}
-                    className="ml-auto text-xs text-slate-400 hover:text-red-500 underline whitespace-nowrap"
-                  >
-                    Remove
-                  </button>
+                <div className="border border-green-300 bg-green-50 rounded-xl p-3 space-y-2">
+                  <div className="flex items-center gap-2 text-sm text-green-700 font-medium">
+                    <MapPin size={16} className="text-green-600 shrink-0" />
+                    <span className="truncate">✓ {locationName}</span>
+                    <button
+                      type="button"
+                      onClick={resetLocation}
+                      className="ml-auto text-xs text-slate-400 hover:text-red-500 underline whitespace-nowrap"
+                    >
+                      Remove
+                    </button>
+                  </div>
+
+                  {locationDetails && (
+                    <div className="grid grid-cols-2 gap-1.5 text-xs mt-1">
+                      {locationDetails.road && (
+                        <div className="bg-white rounded-lg px-2.5 py-1.5 border border-green-200">
+                          <span className="text-slate-400 block">Road</span>
+                          <span className="font-medium text-slate-700">
+                            {locationDetails.road}
+                          </span>
+                        </div>
+                      )}
+                      {locationDetails.quarter && (
+                        <div className="bg-white rounded-lg px-2.5 py-1.5 border border-green-200">
+                          <span className="text-slate-400 block">Area</span>
+                          <span className="font-medium text-slate-700">
+                            {locationDetails.quarter}
+                          </span>
+                        </div>
+                      )}
+                      {locationDetails.ward && (
+                        <div className="bg-white rounded-lg px-2.5 py-1.5 border border-green-200">
+                          <span className="text-slate-400 block">Ward No.</span>
+                          <span className="font-medium text-slate-700">
+                            {locationDetails.ward}
+                          </span>
+                        </div>
+                      )}
+                      {locationDetails.city && (
+                        <div className="bg-white rounded-lg px-2.5 py-1.5 border border-green-200">
+                          <span className="text-slate-400 block">
+                            Municipality
+                          </span>
+                          <span className="font-medium text-slate-700">
+                            {locationDetails.city}
+                          </span>
+                        </div>
+                      )}
+                      {locationDetails.accuracy && (
+                        <div className="col-span-2 bg-white rounded-lg px-2.5 py-1.5 border border-green-200">
+                          <span className="text-slate-400">GPS Accuracy: </span>
+                          <span
+                            className={`font-medium ${locationDetails.accuracy < 20 ? 'text-green-600' : locationDetails.accuracy < 50 ? 'text-yellow-600' : 'text-red-500'}`}
+                          >
+                            ±{locationDetails.accuracy}m{' '}
+                            {locationDetails.accuracy < 20
+                              ? '(Excellent)'
+                              : locationDetails.accuracy < 50
+                                ? '(Good)'
+                                : '(Low — try again outdoors)'}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Manual ward override */}
+                  {!locationDetails?.ward && (
+                    <div className="mt-1">
+                      <input
+                        type="text"
+                        placeholder="Ward number not detected — enter manually (optional)"
+                        className="w-full px-3 py-1.5 text-xs border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                        onChange={(e) =>
+                          setLocationDetails((prev) => ({
+                            ...(prev || {}),
+                            ward: e.target.value,
+                          }))
+                        }
+                      />
+                    </div>
+                  )}
                 </div>
               )}
 

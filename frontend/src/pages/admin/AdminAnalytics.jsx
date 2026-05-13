@@ -16,7 +16,7 @@ import {
   LineChart,
   Line,
 } from 'recharts'
-import { getAdminSummary } from '../../services/issues'
+import { getAdminSummary, getWeeklyStats } from '../../services/issues'
 
 const CATEGORY_COLORS = ['#3b82f6', '#f97316', '#10b981', '#eab308', '#8b5cf6']
 
@@ -109,21 +109,31 @@ export default function AdminAnalytics() {
     setLoading(true)
     setError(false)
     try {
-      const data = await getAdminSummary()
+      const [data, trends] = await Promise.all([
+        getAdminSummary(),
+        getWeeklyStats(),
+      ])
       setSummary(data)
 
-      // Weekly data — try to get from summary or from a separate endpoint
-      // If your backend returns weekly_counts inside summary, use that:
-      if (data?.weekly_counts) {
-        const formatted = Array.isArray(data.weekly_counts)
-          ? data.weekly_counts.map((w, i) => ({
-              week: w.week ?? w.week_start ?? `Week ${i + 1}`,
-              count: w.count ?? w.total ?? 0,
-            }))
-          : []
-        setWeeklyData(formatted)
-      }
-      // Otherwise weekly chart will show empty until backend adds the endpoint
+      const formatted = (() => {
+        const weeks = []
+        for (let i = 7; i >= 0; i--) {
+          const d = new Date()
+          d.setDate(d.getDate() - i * 7)
+          d.setDate(d.getDate() - ((d.getDay() + 6) % 7))
+          const key = d.toISOString().slice(0, 10)
+          const match = trends.find((w) => w.week === key)
+          weeks.push({
+            week: d.toLocaleDateString('en-US', {
+              month: 'short',
+              day: 'numeric',
+            }),
+            count: match?.count ?? 0,
+          })
+        }
+        return weeks
+      })()
+      setWeeklyData(formatted)
     } catch {
       setError(true)
       toast.error('Could not load analytics data.')

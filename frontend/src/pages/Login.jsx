@@ -4,7 +4,7 @@ import { useNavigate, Link } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import useAuth from '../hooks/useAuth'
 import { loginUser, getProfile } from '../services/auth'
-import { Eye, EyeOff } from 'lucide-react'
+import { Eye, EyeOff, Shield } from 'lucide-react'
 
 const Login = () => {
   const { login, isAuthenticated, user } = useAuth()
@@ -60,6 +60,18 @@ const Login = () => {
   return (
     <div className="flex items-center justify-center min-h-screen bg-[#F9FAFB]">
       <div className="w-full max-w-md p-8 bg-[#FFFFFF] rounded-2xl shadow-lg">
+        {/* Logo */}
+        <div className="flex justify-center mb-8">
+          <Link to="/" className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-[10px_3px_10px_3px] bg-indigo-700 flex items-center justify-center shadow-sm">
+              <Shield size={15} className="text-white" />
+            </div>
+            <span className="text-[22px] font-black tracking-tight text-slate-900">
+              Civic<span className="text-indigo-700">Aid</span>
+            </span>
+          </Link>
+        </div>
+
         <h1 className="text-3xl font-bold text-gray-800 mb-2">Welcome back</h1>
         <p className="text-gray-500 mb-8">Sign in to your account</p>
 
@@ -95,7 +107,6 @@ const Login = () => {
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Password
             </label>
-
             <input
               type={showPassword ? 'text' : 'password'}
               placeholder="••••••••"
@@ -110,7 +121,6 @@ const Login = () => {
                 },
               })}
             />
-
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
@@ -118,7 +128,6 @@ const Login = () => {
             >
               {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
-
             {errors.password && (
               <p className="mt-1 text-sm text-red-500">
                 {errors.password.message}
