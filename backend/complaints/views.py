@@ -365,3 +365,4 @@ class AdminUserComplaintsView(generics.ListAPIView):
         user_id = self.kwargs['pk']
         return Complaint.objects.filter(citizen__id=user_id).order_by('-created_at')
 
+
