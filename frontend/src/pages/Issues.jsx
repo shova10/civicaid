@@ -118,10 +118,10 @@ export default function IssuesPage() {
   }, {})
 
   return (
-    <div className="min-h-screen bg-linear-to-b from-slate-50 to-white">
+    <div className="min-h-screen bg-[#F6F1E8]">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10">
         
-        <div className="bg-white border border-slate-200 rounded-2xl p-6 mb-8 shadow-sm flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="bg-[#FFFDF9] border border-slate-200 rounded-2xl p-6 mb-8 shadow-sm flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold text-slate-900">All Issues</h1>
             <p className="text-sm text-slate-500 mt-1">

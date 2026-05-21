@@ -30,7 +30,6 @@ const NAV_ITEMS = [
     links: [
       { to: '/admin/users', label: 'Users', icon: Users },
       { to: '/admin/analytics', label: 'Analytics', icon: BarChart3 },
-      { to: '/admin/settings', label: 'Settings', icon: Settings },
     ],
   },
 ]
@@ -149,7 +148,7 @@ export default function AdminLayout() {
   const [mobileOpen, setMobileOpen] = useState(false)
 
   return (
-    <div className="flex h-screen bg-slate-100 overflow-hidden">
+    <div className="flex h-screen bg-[#F6F1E8] overflow-hidden">
       {/* ── Desktop sidebar ─────────────────────────────────────────────────── */}
       <aside className="hidden lg:flex lg:flex-col w-60 bg-slate-900 shrink-0">
         <SidebarContent />

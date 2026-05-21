@@ -76,7 +76,7 @@ const SubmitIssue = () => {
             houseNumber: a.house_number || '',
             road: a.road || a.pedestrian || a.footway || a.path || '',
             quarter: a.quarter || a.neighbourhood || a.suburb || '',
-            ward: a.ward || '', // Nominatim sometimes returns ward directly
+            ward: a.ward || '',
             city: a.city || a.town || a.village || a.municipality || '',
             district: a.county || a.state_district || '',
             accuracy: Math.round(accuracy),
@@ -118,6 +118,7 @@ const SubmitIssue = () => {
       { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
     )
   }
+
   const searchTimeout = useRef(null)
 
   const handleAddressInput = (e) => {
@@ -239,45 +240,58 @@ const SubmitIssue = () => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 py-8 px-4">
-      <div className="max-w-2xl mx-auto">
+    <div className="min-h-screen bg-[#F6F1E8] font-sans">
+      <div className="max-w-2xl mx-auto px-4 py-10 sm:py-14">
+        {/* ── Page Header ── */}
         <div className="mb-8 text-center">
-          <h1 className="text-3xl font-bold text-slate-800">Report an Issue</h1>
-          <p className="text-slate-500 mt-1">Help improve your community</p>
+          <div className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] mb-3 text-indigo-700">
+            <span className="inline-block w-5 h-0.5 bg-amber-400 rounded" />
+            Citizens
+          </div>
+          <h1 className="text-3xl sm:text-4xl font-black text-[#1C1A17] tracking-tight mb-2">
+            Report an Issue
+          </h1>
+          <p className="text-sm font-medium text-[#6B665E]">
+            Help improve your community
+          </p>
         </div>
 
-        {/* Citizen tip banner */}
-        <div
-          className="flex items-start gap-3 bg-blue-50 border border-blue-200
-          rounded-2xl px-5 py-4 mb-6"
-        >
-          <Info size={18} className="text-blue-500 shrink-0 mt-0.5" />
-          <div>
-            <p className="text-sm font-semibold text-blue-800 mb-0.5">
+        {/* ── Tip Banner ── */}
+        <div className="flex items-start gap-3 bg-[#FFFDF9] border border-[#E7DED1] rounded-3xl px-5 py-4 mb-6 shadow-sm">
+          <div className="w-8 h-8 rounded-xl bg-indigo-100 flex items-center justify-center shrink-0 mt-0.5">
+            <Info size={15} className="text-indigo-700" />
+          </div>
+          <div className="space-y-1">
+            <p className="text-sm font-bold text-[#1C1A17]">
               Help us resolve your issue faster
             </p>
-            <p className="text-xs text-blue-700 leading-relaxed">
-              Adding a <span className="font-semibold">photo</span> and your{' '}
-              <span className="font-semibold">location</span> helps our team
-              identify and fix the problem quickly. Issues with both are
-              prioritized and resolved sooner.
+            <p className="text-xs text-[#6B665E] leading-relaxed">
+              Adding a{' '}
+              <span className="font-semibold text-[#1C1A17]">photo</span> and
+              your{' '}
+              <span className="font-semibold text-[#1C1A17]">location</span>{' '}
+              helps our team identify and fix problems more quickly. Reports
+              with both details are prioritized.
             </p>
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-md p-6 sm:p-8">
+        {/* ── Form Card ── */}
+        <div className="bg-[#FFFDF9] border border-[#E7DED1] rounded-3xl shadow-[0_2px_10px_rgba(15,23,42,0.04)] p-6 sm:p-8">
           <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
             {/* Title */}
             <div>
-              <label className="text-sm font-medium text-slate-700 block mb-1">
-                Issue Title *
+              <label className="text-xs font-bold uppercase tracking-[0.12em] text-[#6B665E] block mb-2">
+                Issue Title <span className="text-amber-500">*</span>
               </label>
               <input
                 type="text"
                 placeholder="e.g. Broken streetlight on main road"
-                className={`w-full px-4 py-2.5 border rounded-xl focus:ring-2
-                  focus:ring-blue-500/20 focus:outline-none
-                  ${errors.title ? 'border-red-400' : 'border-slate-200'}`}
+                className={`w-full px-4 py-3 border rounded-2xl text-sm text-[#1C1A17] bg-[#F6F1E8] outline-none transition-all duration-200
+                  placeholder:text-[#B0A898]
+                  focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-300
+                  hover:border-[#D8CCBC]
+                  ${errors.title ? 'border-red-300 focus:ring-red-200' : 'border-[#E7DED1]'}`}
                 {...register('title', {
                   required: 'Title is required',
                   minLength: {
@@ -287,23 +301,25 @@ const SubmitIssue = () => {
                 })}
               />
               {errors.title && (
-                <p className="text-red-500 text-xs mt-1">
-                  {errors.title.message}
+                <p className="text-red-500 text-xs mt-1.5 flex items-center gap-1">
+                  <AlertCircle size={12} /> {errors.title.message}
                 </p>
               )}
             </div>
 
             {/* Description */}
             <div>
-              <label className="text-sm font-medium text-slate-700 block mb-1">
-                Description *
+              <label className="text-xs font-bold uppercase tracking-[0.12em] text-[#6B665E] block mb-2">
+                Description <span className="text-amber-500">*</span>
               </label>
               <textarea
                 rows={4}
-                placeholder="Describe the issue in detail — what happened, how severe it is, who is affected..."
-                className={`w-full px-4 py-2.5 border rounded-xl focus:ring-2
-                  focus:ring-blue-500/20 focus:outline-none resize-none
-                  ${errors.description ? 'border-red-400' : 'border-slate-200'}`}
+                placeholder="Describe the issue in detail — what happened, severity, and who is affected..."
+                className={`w-full px-4 py-3 border rounded-2xl text-sm text-[#1C1A17] bg-[#F6F1E8] outline-none transition-all duration-200
+                  placeholder:text-[#B0A898] resize-none
+                  focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-300
+                  hover:border-[#D8CCBC]
+                  ${errors.description ? 'border-red-300 focus:ring-red-200' : 'border-[#E7DED1]'}`}
                 {...register('description', {
                   required: 'Description is required',
                   minLength: {
@@ -313,58 +329,58 @@ const SubmitIssue = () => {
                 })}
               />
               {errors.description && (
-                <p className="text-red-500 text-xs mt-1">
-                  {errors.description.message}
+                <p className="text-red-500 text-xs mt-1.5 flex items-center gap-1">
+                  <AlertCircle size={12} /> {errors.description.message}
                 </p>
               )}
             </div>
 
             {/* Image */}
             <div>
-              <label className="text-sm font-medium text-slate-700 block mb-2">
-                Photo <span className="text-red-500">*</span>
+              <label className="text-xs font-bold uppercase tracking-[0.12em] text-[#6B665E] block mb-2">
+                Photo <span className="text-amber-500">*</span>
               </label>
+
               {!imagePreview ? (
                 <div
                   onClick={() => fileInputRef.current?.click()}
-                  className="border-2 border-dashed border-slate-300 rounded-xl p-8
-                    text-center cursor-pointer hover:border-blue-400 hover:bg-blue-50
-                    transition-colors"
+                  className="group border-2 border-dashed border-[#D8CCBC] rounded-3xl p-8 text-center cursor-pointer
+                    hover:border-indigo-300 hover:bg-indigo-50/30 transition-all duration-200 active:scale-[0.99] bg-[#F6F1E8]"
                 >
-                  <ImageIcon
-                    className="mx-auto text-slate-400 mb-2"
-                    size={28}
-                  />
-                  <p className="text-sm text-slate-500 font-medium">
+                  <div className="w-12 h-12 rounded-2xl bg-[#EFE6DA] flex items-center justify-center mx-auto mb-3 group-hover:bg-indigo-100 transition-colors">
+                    <ImageIcon
+                      size={22}
+                      className="text-[#B0A898] group-hover:text-indigo-500 transition-colors"
+                    />
+                  </div>
+                  <p className="text-sm font-bold text-[#6B665E] group-hover:text-[#1C1A17] transition-colors">
                     Click to upload image
                   </p>
-                  <p className="text-xs text-slate-400 mt-1">
+                  <p className="text-xs text-[#B0A898] mt-1">
                     PNG, JPG, WEBP up to 5MB
                   </p>
                 </div>
               ) : (
-                <div className="relative rounded-xl overflow-hidden border border-slate-200">
+                <div className="relative rounded-3xl overflow-hidden border border-[#E7DED1] group">
                   <img
                     src={imagePreview}
                     alt="Issue preview"
-                    className="w-full max-h-64 object-cover block"
+                    className="w-full max-h-64 object-cover block transition-transform duration-200 group-hover:scale-[1.01]"
                   />
                   <button
                     type="button"
                     onClick={removeImage}
-                    className="absolute top-2 right-2 bg-red-500 hover:bg-red-600
+                    className="absolute top-3 right-3 bg-black/50 hover:bg-black/70
                       text-white p-1.5 rounded-full transition-colors shadow-md"
                   >
                     <X size={14} />
                   </button>
-                  <div
-                    className="absolute bottom-2 left-2 bg-black/50 text-white
-                    text-xs px-2 py-1 rounded-lg backdrop-blur-sm"
-                  >
+                  <div className="absolute bottom-3 left-3 max-w-[80%] bg-black/50 text-white text-xs px-2.5 py-1 rounded-xl backdrop-blur-sm truncate">
                     {imageFile?.name}
                   </div>
                 </div>
               )}
+
               <input
                 ref={fileInputRef}
                 type="file"
@@ -376,57 +392,65 @@ const SubmitIssue = () => {
 
             {/* Location */}
             <div>
-              <label className="text-sm font-medium text-slate-700 block mb-2">
-                Location <span className="text-red-500">*</span>
+              <label className="text-xs font-bold uppercase tracking-[0.12em] text-[#6B665E] block mb-2">
+                Location <span className="text-amber-500">*</span>
               </label>
 
+              {/* Mode picker */}
               {!locationMode && (
-                <div className="flex gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <button
                     type="button"
                     onClick={() => setLocationMode('auto')}
-                    className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5
-          border border-slate-200 rounded-xl text-sm font-medium
-          hover:bg-blue-50 hover:border-blue-300 text-slate-600 transition-colors"
+                    className="group flex items-center justify-center gap-2 px-4 py-3
+                      border border-[#E7DED1] rounded-2xl text-sm font-bold text-[#6B665E]
+                      bg-[#F6F1E8] hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-700
+                      transition-all active:scale-[0.99]"
                   >
-                    <MapPin size={16} /> Use My Location
+                    <MapPin
+                      size={16}
+                      className="group-hover:text-indigo-500 transition-colors"
+                    />
+                    Use My Location
                   </button>
+
                   <button
                     type="button"
                     onClick={() => setLocationMode('manual')}
-                    className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5
-          border border-slate-200 rounded-xl text-sm font-medium
-          hover:bg-blue-50 hover:border-blue-300 text-slate-600 transition-colors"
+                    className="group flex items-center justify-center gap-2 px-4 py-3
+                      border border-[#E7DED1] rounded-2xl text-sm font-bold text-[#6B665E]
+                      bg-[#F6F1E8] hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-700
+                      transition-all active:scale-[0.99]"
                   >
                     ✏️ Enter Address
                   </button>
                 </div>
               )}
 
+              {/* AUTO MODE */}
               {locationMode === 'auto' && !location && (
-                <div className="flex items-center gap-2">
+                <div className="flex items-center justify-between bg-[#F6F1E8] border border-[#E7DED1] rounded-2xl px-4 py-3">
                   <button
                     type="button"
                     onClick={handleGetLocation}
                     disabled={locating}
-                    className="inline-flex items-center gap-2 px-4 py-2.5 border border-slate-200
-          rounded-xl text-sm font-medium hover:bg-slate-50 text-slate-600
-          transition-colors disabled:opacity-60"
+                    className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold
+                      bg-indigo-700 text-white hover:bg-indigo-800 disabled:opacity-60 transition-all"
                   >
-                    <MapPin size={16} />
+                    <MapPin size={15} />
                     {locating ? 'Detecting location…' : 'Detect Now'}
                   </button>
                   <button
                     type="button"
                     onClick={resetLocation}
-                    className="text-xs text-slate-400 hover:text-red-500 underline"
+                    className="text-xs text-[#B0A898] hover:text-red-500 underline transition"
                   >
                     Cancel
                   </button>
                 </div>
               )}
 
-              {/* MANUAL mode */}
+              {/* MANUAL MODE */}
               {locationMode === 'manual' && !location && (
                 <div className="relative space-y-2">
                   <input
@@ -434,124 +458,148 @@ const SubmitIssue = () => {
                     value={manualAddress}
                     onChange={handleAddressInput}
                     placeholder="Start typing an address…"
-                    className="w-full px-4 py-2.5 border border-slate-200 rounded-xl
-        text-sm focus:ring-2 focus:ring-blue-500/20 focus:outline-none"
+                    className="w-full px-4 py-3 border border-[#E7DED1] rounded-2xl text-sm text-[#1C1A17]
+                      bg-[#F6F1E8] placeholder:text-[#B0A898]
+                      focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-300 focus:outline-none transition-all"
                   />
+
                   {suggestions.length > 0 && (
-                    <ul className="absolute z-10 w-full mt-1 bg-white border border-slate-200 rounded-xl shadow-lg overflow-hidden">
-                      {suggestions.map((item) => {
-                        const a = item.address || {}
-                        const road = a.road || a.pedestrian || a.footway || ''
-                        const ward = a.ward || ''
-                        const quarter =
-                          a.quarter || a.neighbourhood || a.suburb || ''
-                        const city =
-                          a.city || a.town || a.village || a.municipality || ''
-                        const district = a.county || a.state_district || ''
+                    <div className="absolute z-20 w-full mt-1">
+                      <ul className="bg-[#FFFDF9] border border-[#E7DED1] rounded-2xl shadow-[0_10px_30px_rgba(15,23,42,0.10)] overflow-hidden">
+                        {suggestions.map((item) => {
+                          const a = item.address || {}
+                          const road = a.road || a.pedestrian || a.footway || ''
+                          const ward = a.ward || ''
+                          const quarter =
+                            a.quarter || a.neighbourhood || a.suburb || ''
+                          const city =
+                            a.city ||
+                            a.town ||
+                            a.village ||
+                            a.municipality ||
+                            ''
+                          const district = a.county || a.state_district || ''
 
-                        const primaryLine =
-                          [road, quarter].filter(Boolean).join(', ') ||
-                          item.display_name.split(',')[0]
-                        const secondaryLine = [
-                          ward && `Ward ${ward}`,
-                          city,
-                          district,
-                        ]
-                          .filter(Boolean)
-                          .join(', ')
+                          const primaryLine =
+                            [road, quarter].filter(Boolean).join(', ') ||
+                            item.display_name.split(',')[0]
 
-                        return (
-                          <li
-                            key={item.place_id}
-                            onClick={() => handleSelectSuggestion(item)}
-                            className="px-4 py-3 hover:bg-blue-50 cursor-pointer border-b border-slate-100 last:border-0"
-                          >
-                            <div className="flex items-start gap-2">
-                              <MapPin
-                                size={14}
-                                className="text-blue-400 shrink-0 mt-0.5"
-                              />
-                              <div className="min-w-0">
-                                <p className="text-sm text-slate-700 font-medium truncate">
-                                  {primaryLine}
-                                </p>
-                                {secondaryLine && (
-                                  <p className="text-xs text-slate-400 truncate mt-0.5">
-                                    {secondaryLine}
+                          const secondaryLine = [
+                            ward && `Ward ${ward}`,
+                            city,
+                            district,
+                          ]
+                            .filter(Boolean)
+                            .join(', ')
+
+                          return (
+                            <li
+                              key={item.place_id}
+                              onClick={() => handleSelectSuggestion(item)}
+                              className="px-4 py-3 cursor-pointer border-b border-[#F0EBE3] last:border-0
+                                hover:bg-[#F6F1E8] transition-colors group"
+                            >
+                              <div className="flex items-start gap-2">
+                                <MapPin
+                                  size={14}
+                                  className="text-indigo-400 mt-0.5 flex-shrink-0 group-hover:text-indigo-600 transition-colors"
+                                />
+                                <div className="min-w-0">
+                                  <p className="text-sm text-[#1C1A17] font-semibold truncate">
+                                    {primaryLine}
                                   </p>
-                                )}
+                                  {secondaryLine && (
+                                    <p className="text-xs text-[#B0A898] truncate mt-0.5">
+                                      {secondaryLine}
+                                    </p>
+                                  )}
+                                </div>
                               </div>
-                            </div>
-                          </li>
-                        )
-                      })}
-                    </ul>
+                            </li>
+                          )
+                        })}
+                      </ul>
+                    </div>
                   )}
-                  <button
-                    type="button"
-                    onClick={resetLocation}
-                    className="text-xs text-slate-400 hover:text-red-500 underline"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              )}
 
-              {location && (
-                <div className="border border-green-300 bg-green-50 rounded-xl p-3 space-y-2">
-                  <div className="flex items-center gap-2 text-sm text-green-700 font-medium">
-                    <MapPin size={16} className="text-green-600 shrink-0" />
-                    <span className="truncate">✓ {locationName}</span>
+                  <div className="flex justify-end">
                     <button
                       type="button"
                       onClick={resetLocation}
-                      className="ml-auto text-xs text-slate-400 hover:text-red-500 underline whitespace-nowrap"
+                      className="text-xs text-[#B0A898] hover:text-red-500 underline transition"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Location confirmed */}
+              {location && (
+                <div className="border border-emerald-200 bg-emerald-50/60 rounded-2xl p-4 space-y-3">
+                  <div className="flex items-center gap-2 text-sm text-emerald-700 font-bold">
+                    <div className="w-6 h-6 rounded-full bg-emerald-100 flex items-center justify-center shrink-0">
+                      <MapPin size={13} className="text-emerald-600" />
+                    </div>
+                    <span className="truncate">
+                      ✓ {locationName || 'Location selected'}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={resetLocation}
+                      className="ml-auto text-xs text-[#B0A898] hover:text-red-500 underline whitespace-nowrap font-normal"
                     >
                       Remove
                     </button>
                   </div>
 
                   {locationDetails && (
-                    <div className="grid grid-cols-2 gap-1.5 text-xs mt-1">
+                    <div className="grid grid-cols-2 gap-1.5 text-xs">
                       {locationDetails.road && (
-                        <div className="bg-white rounded-lg px-2.5 py-1.5 border border-green-200">
-                          <span className="text-slate-400 block">Road</span>
-                          <span className="font-medium text-slate-700">
+                        <div className="bg-white rounded-xl px-3 py-2 border border-emerald-100">
+                          <span className="text-[#B0A898] block">Road</span>
+                          <span className="font-semibold text-[#1C1A17]">
                             {locationDetails.road}
                           </span>
                         </div>
                       )}
                       {locationDetails.quarter && (
-                        <div className="bg-white rounded-lg px-2.5 py-1.5 border border-green-200">
-                          <span className="text-slate-400 block">Area</span>
-                          <span className="font-medium text-slate-700">
+                        <div className="bg-white rounded-xl px-3 py-2 border border-emerald-100">
+                          <span className="text-[#B0A898] block">Area</span>
+                          <span className="font-semibold text-[#1C1A17]">
                             {locationDetails.quarter}
                           </span>
                         </div>
                       )}
                       {locationDetails.ward && (
-                        <div className="bg-white rounded-lg px-2.5 py-1.5 border border-green-200">
-                          <span className="text-slate-400 block">Ward No.</span>
-                          <span className="font-medium text-slate-700">
+                        <div className="bg-white rounded-xl px-3 py-2 border border-emerald-100">
+                          <span className="text-[#B0A898] block">Ward No.</span>
+                          <span className="font-semibold text-[#1C1A17]">
                             {locationDetails.ward}
                           </span>
                         </div>
                       )}
                       {locationDetails.city && (
-                        <div className="bg-white rounded-lg px-2.5 py-1.5 border border-green-200">
-                          <span className="text-slate-400 block">
+                        <div className="bg-white rounded-xl px-3 py-2 border border-emerald-100">
+                          <span className="text-[#B0A898] block">
                             Municipality
                           </span>
-                          <span className="font-medium text-slate-700">
+                          <span className="font-semibold text-[#1C1A17]">
                             {locationDetails.city}
                           </span>
                         </div>
                       )}
-                      {locationDetails.accuracy && (
-                        <div className="col-span-2 bg-white rounded-lg px-2.5 py-1.5 border border-green-200">
-                          <span className="text-slate-400">GPS Accuracy: </span>
+                      {typeof locationDetails.accuracy === 'number' && (
+                        <div className="col-span-2 bg-white rounded-xl px-3 py-2 border border-emerald-100">
+                          <span className="text-[#B0A898]">GPS Accuracy: </span>
                           <span
-                            className={`font-medium ${locationDetails.accuracy < 20 ? 'text-green-600' : locationDetails.accuracy < 50 ? 'text-yellow-600' : 'text-red-500'}`}
+                            className={`font-semibold ${
+                              locationDetails.accuracy < 20
+                                ? 'text-emerald-600'
+                                : locationDetails.accuracy < 50
+                                  ? 'text-amber-600'
+                                  : 'text-red-500'
+                            }`}
                           >
                             ±{locationDetails.accuracy}m{' '}
                             {locationDetails.accuracy < 20
@@ -565,13 +613,13 @@ const SubmitIssue = () => {
                     </div>
                   )}
 
-                  {/* Manual ward override */}
-                  {!locationDetails?.ward && (
+                  {locationDetails && !locationDetails.ward && (
                     <div className="mt-1">
                       <input
                         type="text"
                         placeholder="Ward number not detected — enter manually (optional)"
-                        className="w-full px-3 py-1.5 text-xs border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                        className="w-full px-3 py-2 text-xs border border-[#E7DED1] rounded-xl bg-[#F6F1E8]
+                          placeholder:text-[#B0A898] focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                         onChange={(e) =>
                           setLocationDetails((prev) => ({
                             ...(prev || {}),
@@ -585,15 +633,14 @@ const SubmitIssue = () => {
               )}
 
               {locationError && (
-                <div
-                  className="mt-2 flex items-start gap-2 p-2.5 bg-red-50
-      rounded-xl border border-red-200"
-                >
+                <div className="mt-2 flex items-start gap-2 p-3 bg-red-50 rounded-2xl border border-red-200">
                   <AlertCircle
-                    size={13}
+                    size={14}
                     className="text-red-400 mt-0.5 shrink-0"
                   />
-                  <p className="text-xs text-red-600">{locationError}</p>
+                  <p className="text-xs text-red-600 leading-relaxed">
+                    {locationError}
+                  </p>
                 </div>
               )}
             </div>
@@ -602,12 +649,12 @@ const SubmitIssue = () => {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300
-                text-white font-semibold rounded-xl flex items-center justify-center gap-2
-                transition-colors"
+              className="group w-full py-3.5 bg-amber-500 hover:bg-amber-600 disabled:bg-amber-300
+                text-[#1C1A17] font-bold rounded-full flex items-center justify-center gap-2
+                transition-all duration-200 active:scale-[0.99] disabled:cursor-not-allowed shadow-sm hover:shadow-md"
             >
-              <Upload size={18} />
-              {isSubmitting ? 'Submitting…' : 'Submit Issue'}
+              <Upload size={17} className="shrink-0" />
+              <span>{isSubmitting ? 'Submitting…' : 'Submit Issue'}</span>
             </button>
           </form>
         </div>

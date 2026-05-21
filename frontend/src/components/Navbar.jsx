@@ -56,29 +56,30 @@ const Navbar = () => {
   const displayName = user?.citizen_name || user?.full_name || user?.name
 
   return (
-    <nav className="sticky top-0 z-50 bg-[#fafaf9]/95 backdrop-blur-lg border-b border-slate-200/50">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="flex items-center justify-between h-18">
+    <nav className="sticky top-0 z-50 bg-[#F6F1E8]/95 backdrop-blur-lg border-b border-[#E7DDCF]">
+      <div className="max-w-6xl mx-auto px-6">
+        <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/home" className="flex items-center gap-3 no-underline">
             <div className="w-9 h-9 rounded-[10px_3px_10px_3px] bg-indigo-700 flex items-center justify-center shadow-sm">
               <Shield size={15} className="text-white" />
             </div>
-            <span className="text-[22px] font-black tracking-tight text-slate-900">
+            <span className="text-[22px] font-black tracking-tight text-[#1C1A17]">
               Civic<span className="text-indigo-700">Aid</span>
             </span>
           </Link>
 
-          {/* Desktop Links */}
+          {/* Desktop Nav */}
           <div className="hidden md:flex items-center gap-1">
             {roleLinks.map(({ label, path, icon: LinkIcon }) => (
               <Link
                 key={path}
                 to={path}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-[11px] font-bold uppercase tracking-[0.15em] transition-all ${
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-[11px] font-bold uppercase tracking-[0.15em] transition-all duration-200 no-underline
+                ${
                   isActive(path)
-                    ? 'bg-indigo-50 text-indigo-700'
-                    : 'text-slate-500 hover:text-slate-900 hover:bg-slate-100'
+                    ? 'bg-[#EFE6DA] text-[#1C1A17] shadow-sm'
+                    : 'text-[#6B665E] hover:text-[#1C1A17] hover:bg-[#EFE6DA]'
                 }`}
               >
                 <LinkIcon size={14} />
@@ -87,68 +88,66 @@ const Navbar = () => {
             ))}
           </div>
 
-          {/* Right Section */}
+          {/* Right Side */}
           <div className="hidden md:flex items-center gap-3">
             <NotificationBell />
 
-            {/* Profile Dropdown */}
             <div className="relative" ref={profileRef}>
               <button
                 onClick={() => setProfileOpen((o) => !o)}
-                className="flex items-center gap-3 bg-slate-50 hover:bg-slate-100
-                  border border-slate-200 px-4 py-2.5 rounded-full transition-colors"
+                className="flex items-center gap-3 bg-[#FFFBF5] hover:bg-[#FFF7ED]
+                border border-[#E7DDCF] px-3 py-2 rounded-full transition-all shadow-sm"
               >
-                <p className="font-black text-slate-900 text-sm tracking-tight leading-none uppercase">
+                <Avatar userId={user?.id} name={displayName} size="sm" />
+                <p className="font-black text-[#1C1A17] text-[11px] tracking-[0.08em] uppercase leading-none">
                   {displayName}
                 </p>
               </button>
 
               {profileOpen && (
-                <div
-                  className="absolute right-0 top-full mt-2 w-64 bg-white rounded-2xl
-                    border border-slate-200 shadow-xl z-50 overflow-hidden"
-                >
+                <div className="absolute right-0 top-full mt-2 w-64 bg-[#FFFBF5] rounded-2xl border border-[#E7DDCF] shadow-xl z-50 overflow-hidden">
                   {/* Header */}
-                  <div className="px-4 py-4 bg-[#01104e]">
+                  <div className="px-4 py-4 bg-[#F6F1E8] border-b border-[#E7DDCF]">
                     <div className="flex items-center gap-3">
                       <Avatar userId={user?.id} name={displayName} size="sm" />
                       <div>
-                        <p className="font-black text-sm text-slate-100 tracking-tight">
+                        <p className="font-black text-sm text-[#1C1A17] tracking-tight">
                           {displayName}
                         </p>
-                        <p className="text-xs text-slate-400">{user?.email}</p>
+                        <p className="text-xs text-[#6B665E]">{user?.email}</p>
                       </div>
                     </div>
                   </div>
 
-                  {/* Menu items */}
+                  {/* Menu */}
                   <div className="py-2">
                     <Link
                       to="/issues"
                       onClick={() => setProfileOpen(false)}
                       className="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold
-                        text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors"
+                      text-[#6B665E] hover:bg-[#EFE6DA] hover:text-[#1C1A17] transition-colors no-underline"
                     >
-                      <ClipboardList size={14} className="text-indigo-500" />
+                      <ClipboardList size={14} className="text-indigo-600" />
                       Issues
                     </Link>
+
                     <Link
                       to="/profile"
                       onClick={() => setProfileOpen(false)}
                       className="flex items-center gap-2.5 px-4 py-2.5 text-sm font-bold
-                        text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors"
+                      text-[#6B665E] hover:bg-[#EFE6DA] hover:text-[#1C1A17] transition-colors no-underline"
                     >
-                      <User size={14} className="text-indigo-500" />
+                      <User size={14} className="text-indigo-600" />
                       Profile
                     </Link>
                   </div>
 
                   {/* Logout */}
-                  <div className="border-t border-slate-100 p-2">
+                  <div className="border-t border-[#E7DDCF] p-2">
                     <button
                       onClick={handleLogout}
                       className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm font-bold
-                        text-red-600 hover:bg-red-50 rounded-xl transition-colors"
+                      text-red-600 hover:bg-red-50 rounded-xl transition-colors"
                     >
                       <LogOut size={14} />
                       Sign out
@@ -161,7 +160,7 @@ const Navbar = () => {
 
           {/* Mobile Toggle */}
           <button
-            className="md:hidden p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors"
+            className="md:hidden p-2 text-[#6B665E] hover:text-[#1C1A17] hover:bg-[#EFE6DA] rounded-lg transition-colors"
             onClick={() => setMenuOpen(!menuOpen)}
           >
             {menuOpen ? <X size={20} /> : <Menu size={20} />}
@@ -171,33 +170,35 @@ const Navbar = () => {
 
       {/* Mobile Menu */}
       {menuOpen && (
-        <div className="md:hidden border-t border-slate-200 bg-[#fafaf9] px-4 py-3 flex flex-col gap-1">
+        <div className="md:hidden border-t border-[#E7DDCF] bg-[#F6F1E8] px-4 py-3 flex flex-col gap-1">
           {roleLinks.map(({ label, path, icon: LinkIcon }) => (
             <Link
               key={path}
               to={path}
               onClick={() => setMenuOpen(false)}
-              className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[11px] font-bold
-                uppercase tracking-[0.15em] transition-colors ${
-                  isActive(path)
-                    ? 'bg-indigo-50 text-indigo-700'
-                    : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900'
-                }`}
+              className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[11px] font-bold uppercase tracking-[0.15em] transition-all no-underline
+              ${
+                isActive(path)
+                  ? 'bg-[#EFE6DA] text-[#1C1A17]'
+                  : 'text-[#6B665E] hover:bg-[#EFE6DA] hover:text-[#1C1A17]'
+              }`}
             >
               <LinkIcon size={14} />
               {label}
             </Link>
           ))}
 
-          <div className="mt-1 px-1">
-            <NotificationBell />
+          <div className="mt-3 px-1">
+            <div className="bg-[#FFFBF5] border border-[#E7DDCF] rounded-xl p-2">
+              <NotificationBell />
+            </div>
           </div>
 
-          <div className="border-t border-slate-200 mt-1 pt-1">
+          <div className="border-t border-[#E7DDCF] mt-3 pt-2">
             <button
               onClick={handleLogout}
               className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm font-bold
-                text-red-600 hover:bg-red-50 rounded-xl transition-colors"
+              text-red-600 hover:bg-red-50 rounded-xl transition-colors"
             >
               <LogOut size={14} />
               Sign out

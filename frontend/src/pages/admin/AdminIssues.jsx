@@ -398,7 +398,7 @@ export default function AdminIssues() {
       {error ? (
         <div
           className="flex flex-col items-center justify-center py-24 rounded-2xl
-          bg-white border border-slate-200"
+          bg-[#FFFDF9] border border-slate-200"
         >
           <AlertCircle size={28} className="text-red-400 mb-3" />
           <p className="text-slate-700 font-semibold mb-1">
@@ -413,7 +413,7 @@ export default function AdminIssues() {
           </button>
         </div>
       ) : (
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <div className="bg-[#FFFDF9] rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full min-w-175">
               <thead className="border-b border-slate-100 bg-slate-50/80">

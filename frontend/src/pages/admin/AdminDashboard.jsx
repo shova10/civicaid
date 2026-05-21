@@ -27,7 +27,7 @@ function CategoryBreakdown({ data = [], loading }) {
   const navigate = useNavigate()
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
+    <div className="bg-[#F6F1E8] rounded-2xl border border-slate-200 shadow-sm p-5">
       <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-4">
         Issues by Category
       </h2>
@@ -88,7 +88,7 @@ function StatusBreakdown({ data = [], total = 0, loading }) {
   const navigate = useNavigate()
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
+    <div className="bg-[#F6F1E8] rounded-2xl border border-slate-200 shadow-sm p-5">
       <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-4">
         Issues by Status
       </h2>
