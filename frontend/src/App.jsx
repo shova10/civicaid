@@ -19,7 +19,6 @@ import AdminMap from './pages/admin/AdminMap'
 import AdminAnalytics from './pages/admin/AdminAnalytics'
 import AdminUsers from './pages/admin/AdminUsers'
 import AdminUserDetail from './pages/admin/AdminUserDetail'
-import AdminSettings from './pages/admin/AdminSettings'
 import AdminProfile from './pages/admin/AdminProfile'
 import Profile from './pages/Profile'
 import VerifyOTP from './pages/VerifyOTP'
@@ -45,7 +44,6 @@ const App = () => {
               <Route path="/admin/analytics" element={<AdminAnalytics />} />
               <Route path="/admin/users" element={<AdminUsers />} />
               <Route path="/admin/users/:id" element={<AdminUserDetail />} />
-              <Route path="/admin/settings" element={<AdminSettings />} />
               <Route path="/admin/profile" element={<AdminProfile />} />
             </Route>
             <Route path="/admin/issues/:id" element={<IssueDetail />} />

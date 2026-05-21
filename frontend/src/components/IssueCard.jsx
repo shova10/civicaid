@@ -40,12 +40,17 @@ export default function IssueCard({ issue, onClick }) {
   const { user } = useAuth()
   const isAdmin = user?.role === 'admin'
   const catStyle = CATEGORY_COLORS[issue.category] ?? CATEGORY_COLORS['other']
+  const BASE_URL = 'https://civicaid-backend-mwrq.onrender.com'
 
   function handleClick() {
     if (onClick) return onClick(issue)
     navigate(isAdmin ? `/admin/issues/${issue.id}` : `/issues/${issue.id}`)
   }
-
+  function getImageUrl(image) {
+    if (!image) return null
+    if (image.startsWith('http')) return image
+    return `${BASE_URL}${image}`
+  }
   return (
     <article
       onClick={handleClick}
@@ -53,11 +58,11 @@ export default function IssueCard({ issue, onClick }) {
       shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300
       overflow-hidden flex flex-col cursor-pointer"
     >
-      <div className="relative h-40 bg-slate-100 overflow-hidden">
+      <div className="relative h-40 bg-[#FFFBF5] overflow-hidden">
         {issue.image ? (
           <>
             <img
-              src={issue.image || null}
+              src={getImageUrl(issue.image)}
               title={issue.title}
               className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
             />
@@ -113,7 +118,7 @@ export default function IssueCard({ issue, onClick }) {
       {/* Footer */}
       <div className="border-t border-slate-100 px-4 py-2.5 flex items-center justify-between bg-slate-50">
         <div className="flex items-center gap-3 text-xs text-slate-400">
-          {issue.location && (
+          {issue.location_name && (
             <span className="flex items-center gap-1">
               <MapPin size={11} />
               <span className="truncate max-w-22">{issue.location_name}</span>

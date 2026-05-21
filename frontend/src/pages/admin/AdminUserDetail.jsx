@@ -75,8 +75,10 @@ function InfoRow({ icon: Icon, label, value }) {
 }
 
 function formatDate(d) {
-  if (!d) return '—'
-  return new Date(d).toLocaleDateString('en-US', {
+  if (!d || d === '' || d === 'null') return '—'
+  const date = new Date(d)
+  if (isNaN(date.getTime())) return '—'
+  return date.toLocaleDateString('en-US', {
     day: 'numeric',
     month: 'long',
     year: 'numeric',

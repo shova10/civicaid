@@ -20,35 +20,35 @@ const QUICK_ACTIONS = [
     description: 'Submit a new civic problem',
     path: '/submit',
     card: 'bg-amber-500 hover:bg-amber-600',
-    textColor: 'text-amber-950',
-    subColor: 'text-amber-800',
-    iconWrap: 'bg-amber-400/40',
-    iconColor: 'text-amber-950',
-    chevron: 'text-amber-900',
+    textColor: 'text-[#1C1A17]',
+    subColor: 'text-[#1C1A17]/70',
+    iconWrap: 'bg-[#FFF3D6]',
+    iconColor: 'text-[#1C1A17]',
+    chevron: 'text-[#1C1A17]/60',
   },
   {
     icon: ClipboardList,
-    label: 'Issues',
+    label: 'My Issues',
     description: 'View your submitted reports',
     path: '/issues',
-    card: 'bg-white hover:bg-slate-50 border border-slate-200',
-    textColor: 'text-slate-900',
-    subColor: 'text-slate-400',
+    card: 'bg-[#FFFBF5] border border-[#E7DDCF] hover:shadow-md',
+    textColor: 'text-[#1C1A17]',
+    subColor: 'text-[#6B665E]',
     iconWrap: 'bg-indigo-50',
-    iconColor: 'text-indigo-600',
-    chevron: 'text-slate-400',
+    iconColor: 'text-indigo-700',
+    chevron: 'text-[#6B665E]',
   },
   {
     icon: Map,
-    label: 'Map',
+    label: 'Map View',
     description: 'See all issues near you',
     path: '/map',
-    card: 'bg-white hover:bg-slate-50 border border-slate-200',
-    textColor: 'text-slate-900',
-    subColor: 'text-slate-400',
-    iconWrap: 'bg-teal-50',
-    iconColor: 'text-teal-600',
-    chevron: 'text-slate-400',
+    card: 'bg-[#FFFBF5] border border-[#E7DDCF] hover:shadow-md',
+    textColor: 'text-[#1C1A17]',
+    subColor: 'text-[#6B665E]',
+    iconWrap: 'bg-sky-50',
+    iconColor: 'text-sky-700',
+    chevron: 'text-[#6B665E]',
   },
 ]
 
@@ -57,33 +57,30 @@ const FEATURES = [
     icon: MapPin,
     title: 'Report Issues',
     description:
-      'Submit road damage, water problems, electricity failures and more with a photo and GPS location.',
+      'Submit civic problems with photo and location for faster action.',
     iconBg: 'bg-indigo-50',
-    iconColor: 'text-indigo-600',
+    iconColor: 'text-indigo-700',
   },
   {
     icon: ThumbsUp,
     title: 'Upvote & Support',
-    description:
-      'Upvote issues in your community to signal urgency to local authorities.',
+    description: 'Help prioritize issues that matter in your community.',
     iconBg: 'bg-amber-50',
-    iconColor: 'text-amber-600',
+    iconColor: 'text-amber-700',
   },
   {
     icon: Bell,
     title: 'Track Progress',
-    description:
-      'Get notified when your issue is reviewed, assigned to staff, or resolved.',
+    description: 'Get updates when your issue status changes.',
     iconBg: 'bg-sky-50',
-    iconColor: 'text-sky-600',
+    iconColor: 'text-sky-700',
   },
   {
     icon: CheckCircle2,
-    title: 'See Resolutions',
-    description:
-      'Follow the full status timeline from submission to resolution for every issue.',
+    title: 'Resolutions',
+    description: 'See full lifecycle from report to completion.',
     iconBg: 'bg-emerald-50',
-    iconColor: 'text-emerald-600',
+    iconColor: 'text-emerald-700',
   },
 ]
 
@@ -92,170 +89,145 @@ const STATUSES = [
     status: 'Reported',
     dot: 'bg-indigo-500',
     badge: 'bg-indigo-50 text-indigo-700',
-    desc: 'Your issue has been submitted and is waiting for review.',
+    desc: 'Waiting for review.',
   },
   {
     status: 'In Progress',
     dot: 'bg-amber-500',
     badge: 'bg-amber-50 text-amber-800',
-    desc: 'A staff member has been assigned and is working on it.',
+    desc: 'Being worked on.',
   },
   {
     status: 'Resolved',
     dot: 'bg-emerald-500',
     badge: 'bg-emerald-50 text-emerald-700',
-    desc: 'The issue has been fixed by the responsible authority.',
+    desc: 'Successfully fixed.',
   },
   {
     status: 'Closed',
     dot: 'bg-slate-400',
     badge: 'bg-slate-100 text-slate-600',
-    desc: 'Issue has been closed after resolution or review.',
+    desc: 'Closed after review.',
   },
 ]
 
 export default function Home() {
   const { user } = useAuth()
   const navigate = useNavigate()
+
   const handleMapNavigate = () => {
-    if (!navigator.geolocation) {
-      navigate('/map')
-      return
-    }
+    if (!navigator.geolocation) return navigate('/map')
+
     navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const { latitude, longitude } = pos.coords
-        navigate('/map', { state: { lat: latitude, lng: longitude } })
-      },
-      () => {
-        // permission denied or error — go to map anyway
-        navigate('/map')
-      },
-      { enableHighAccuracy: true, timeout: 10000 }
+      (pos) =>
+        navigate('/map', {
+          state: { lat: pos.coords.latitude, lng: pos.coords.longitude },
+        }),
+      () => navigate('/map')
     )
   }
 
-  const firstName = user?.name?.split(' ')[0] ?? 'there'
+  const firstName =
+    (user?.citizen_name || user?.full_name || user?.name)?.split(' ')[0] ??
+    'there'
+
   const hour = new Date().getHours()
   const greeting =
     hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening'
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-10 space-y-6">
-        {/* ── Welcome header ─────────────────────────────────────────────── */}
-        <div className="bg-[#0f172a] rounded-2xl p-6 sm:p-8 text-white relative overflow-hidden">
-          {/* Background decorations */}
-          <div className="absolute inset-0 pointer-events-none">
-            <div className="absolute -top-16 -right-16 w-56 h-56 bg-[radial-gradient(circle,rgba(99,102,241,0.15)_0%,transparent_70%)]" />
-            <div className="absolute -bottom-10 left-10 w-40 h-40 bg-[radial-gradient(circle,rgba(67,56,202,0.1)_0%,transparent_70%)]" />
-          </div>
+    <div className="min-h-screen bg-[#F6F1E8]">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 space-y-6">
+        {/* Hero */}
+        <div className="relative bg-[#FFFBF5] border border-[#E7DDCF] rounded-3xl p-6 sm:p-8 overflow-hidden">
+          <div className="absolute -top-20 -right-20 w-64 h-64 bg-[radial-gradient(circle,rgba(192,132,87,0.10)_0%,transparent_70%)]" />
 
-          <div className="absolute top-6 right-6 w-2 h-2 rounded-full bg-amber-400 opacity-80" />
+          <Avatar
+            userId={user?.id}
+            name={user?.citizen_name || user?.full_name || user?.name}
+            size="md"
+            className="mb-4"
+          />
 
-          <div className="relative">
-            {/* Avatar */}
-            <Avatar
-              userId={user?.id}
-              name={user?.name}
-              size="md"
-              className="mb-5"
-            />
+          <p className="text-[#6B665E] text-[10px] font-bold uppercase tracking-[0.2em] mb-1">
+            {greeting}
+          </p>
 
-            <p className="text-slate-400 text-sm font-bold uppercase tracking-[0.15em] mb-1">
-              {greeting} 👋
-            </p>
-            <h1 className="text-2xl sm:text-3xl font-black tracking-tight mb-3">
-              Welcome back, {firstName}!
-            </h1>
-            <p className="text-slate-400 text-sm leading-relaxed max-w-md">
-              Help improve your community by reporting civic issues and tracking
-              their resolution.
-            </p>
-          </div>
+          <h1 className="text-2xl sm:text-3xl font-black text-[#1C1A17] mb-2">
+            Welcome back, {firstName}
+          </h1>
+
+          <p className="text-[#6B665E] text-sm max-w-md leading-relaxed">
+            Report issues and help improve your community.
+          </p>
         </div>
 
-        {/* ── Quick actions ───────────────────────────────────────────────── */}
-        <div>
-          <div className="flex items-center gap-2 mb-3">
-            <span className="inline-block w-4 h-0.5 bg-amber-400 rounded" />
-            <h2 className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">
-              Quick Actions
-            </h2>
-          </div>
+        {/* Quick Actions */}
+        <section>
+          <p className="mb-3 text-[10px] uppercase tracking-[0.2em] text-[#6B665E] font-bold">
+            Quick Actions
+          </p>
+
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            {QUICK_ACTIONS.map((action) => {
-              const Icon = action.icon
+            {QUICK_ACTIONS.map((a) => {
+              const Icon = a.icon
+
               return (
                 <button
-                  key={action.path}
+                  key={a.path}
                   onClick={() =>
-                    action.path === '/map'
-                      ? handleMapNavigate()
-                      : navigate(action.path)
+                    a.path === '/map' ? handleMapNavigate() : navigate(a.path)
                   }
-                  className={`${action.card} rounded-2xl p-4 text-left
-                    transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md
-                    flex items-center gap-3 group`}
+                  className={`${a.card} rounded-3xl p-4 sm:p-5 flex items-center gap-3 transition-all hover:-translate-y-0.5 text-left w-full`}
                 >
                   <div
-                    className={`w-10 h-10 rounded-xl flex items-center justify-center
-                    shrink-0 ${action.iconWrap}`}
+                    className={`w-10 h-10 rounded-2xl flex items-center justify-center ${a.iconWrap}`}
                   >
-                    <Icon size={18} className={action.iconColor} />
+                    <Icon size={18} className={a.iconColor} />
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p
-                      className={`text-sm font-black tracking-tight ${action.textColor}`}
-                    >
-                      {action.label}
+
+                  <div className="flex-1">
+                    <p className={`text-sm font-black ${a.textColor}`}>
+                      {a.label}
                     </p>
-                    <p
-                      className={`text-xs mt-0.5 font-medium ${action.subColor}`}
-                    >
-                      {action.description}
+                    <p className={`text-[11px] ${a.subColor}`}>
+                      {a.description}
                     </p>
                   </div>
-                  <ChevronRight
-                    size={16}
-                    className={`shrink-0 opacity-50 group-hover:opacity-100
-                      group-hover:translate-x-0.5 transition-all ${action.chevron}`}
-                  />
+
+                  <ChevronRight size={16} className={`${a.chevron}`} />
                 </button>
               )
             })}
           </div>
-        </div>
+        </section>
 
-        {/* ── What you can do ─────────────────────────────────────────────── */}
-        <div>
-          <div className="flex items-center gap-2 mb-3">
-            <span className="inline-block w-4 h-0.5 bg-amber-400 rounded" />
-            <h2 className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">
-              What You Can Do
-            </h2>
-          </div>
+        {/* Features */}
+        <section>
+          <p className="mb-3 text-[10px] uppercase tracking-[0.2em] text-[#6B665E] font-bold">
+            What You Can Do
+          </p>
+
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {FEATURES.map((f) => {
               const Icon = f.icon
+
               return (
                 <div
                   key={f.title}
-                  className="bg-white rounded-2xl border border-slate-200 p-5
-                    flex items-start gap-4 hover:shadow-md hover:-translate-y-0.5
-                    transition-all duration-200"
+                  className="bg-[#FFFBF5] border border-[#E7DDCF] rounded-3xl p-5 sm:p-6 flex gap-4 hover:-translate-y-0.5 transition-all"
                 >
                   <div
-                    className={`w-10 h-10 rounded-xl ${f.iconBg} flex items-center
-                    justify-center shrink-0 mt-0.5`}
+                    className={`w-10 h-10 rounded-2xl ${f.iconBg} flex items-center justify-center`}
                   >
                     <Icon size={18} className={f.iconColor} />
                   </div>
+
                   <div>
-                    <p className="text-sm font-black tracking-tight text-slate-900 mb-1">
+                    <p className="font-black text-[#1C1A17] text-sm mb-1">
                       {f.title}
                     </p>
-                    <p className="text-xs text-slate-500 leading-relaxed">
+                    <p className="text-[12px] text-[#6B665E]">
                       {f.description}
                     </p>
                   </div>
@@ -263,47 +235,37 @@ export default function Home() {
               )
             })}
           </div>
-        </div>
+        </section>
 
-        {/* ── Status guide ────────────────────────────────────────────────── */}
-        <div className="bg-white rounded-2xl border border-slate-200 p-5">
-          <div className="flex items-center gap-2 mb-4">
-            <span className="inline-block w-4 h-0.5 bg-amber-400 rounded" />
-            <h2 className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">
-              Issue Status Guide
-            </h2>
-          </div>
+        {/* Status Guide */}
+        <section className="bg-[#FFFBF5] border border-[#E7DDCF] rounded-3xl p-5 sm:p-6">
+          <p className="mb-4 text-[10px] uppercase tracking-[0.15em] text-[#6B665E] font-bold">
+            Status Guide
+          </p>
+
           <div className="space-y-3">
-            {STATUSES.map((item) => (
-              <div key={item.status} className="flex items-start gap-3">
+            {STATUSES.map((s) => (
+              <div key={s.status} className="flex items-center gap-3">
+                <span className={`w-2 h-2 rounded-full ${s.dot}`} />
+
                 <span
-                  className={`w-2 h-2 rounded-full ${item.dot} mt-1.5 shrink-0`}
-                />
-                <div className="flex items-baseline gap-2 flex-wrap">
-                  <span
-                    className={`text-xs font-black px-2 py-0.5 rounded-md tracking-tight ${item.badge}`}
-                  >
-                    {item.status}
-                  </span>
-                  <span className="text-xs text-slate-500">{item.desc}</span>
-                </div>
+                  className={`text-xs px-2.5 py-1 rounded-lg font-black ${s.badge}`}
+                >
+                  {s.status}
+                </span>
+
+                <span className="text-xs text-[#6B665E]">{s.desc}</span>
               </div>
             ))}
           </div>
-        </div>
+        </section>
 
-        {/* ── Pro tip ─────────────────────────────────────────────────────── */}
-        <div className="flex items-start gap-3 bg-[#0f172a] border border-slate-800 rounded-2xl p-4">
-          <div
-            className="w-7 h-7 rounded-lg bg-amber-500/20 border border-amber-500/20
-            flex items-center justify-center shrink-0 mt-0.5"
-          >
-            <Clock size={14} className="text-amber-400" />
-          </div>
-          <p className="text-xs text-slate-400 leading-relaxed">
-            <span className="font-black text-amber-400">Pro tip:</span> The more
-            detail you add when reporting — photos, GPS location, and a clear
-            description — the faster your issue gets resolved.
+        {/* Tip */}
+        <div className="bg-[#1C1A17] rounded-3xl p-4 sm:p-5 flex gap-3">
+          <Clock size={14} className="text-amber-400 mt-0.5" />
+          <p className="text-xs text-[#A8A29E]">
+            <span className="text-amber-400 font-black">Pro tip:</span> Add
+            photos and precise location for faster resolution.
           </p>
         </div>
       </div>
