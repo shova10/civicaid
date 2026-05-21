@@ -1,16 +1,41 @@
-import { useState } from 'react'
-import {
-  Save,
-  Globe,
-  Bell,
-  Tag,
-  Shield,
-  ChevronRight,
-  Plus,
-  X,
-  Check,
-} from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Save, Globe, Bell, Tag, Shield, Plus, X } from 'lucide-react'
 import toast from 'react-hot-toast'
+
+const STORAGE_KEY = 'civicaid_settings'
+
+const DEFAULTS = {
+  siteName: 'CivicAid Nepal',
+  siteEmail: 'support@civicaid.np',
+  sitePhone: '+977-1-4444444',
+  maxUpload: '5',
+  emailOnNew: true,
+  emailOnResolve: true,
+  emailOnAssign: false,
+  smsAlerts: false,
+  mapEnabled: true,
+  upvoteEnabled: true,
+  aiClassify: false,
+  publicIssues: false,
+  categories: [
+    'Road & Transport',
+    'Water & Drainage',
+    'Electricity',
+    'Waste Management',
+    'Public Safety',
+    'Parks & Green',
+    'Other',
+  ],
+}
+
+function loadSettings() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY)
+    return raw ? { ...DEFAULTS, ...JSON.parse(raw) } : DEFAULTS
+  } catch {
+    return DEFAULTS
+  }
+}
 
 // ─── Section wrapper ──────────────────────────────────────────────────────────
 function SettingsSection({ icon: Icon, title, description, children }) {
@@ -32,7 +57,6 @@ function SettingsSection({ icon: Icon, title, description, children }) {
   )
 }
 
-// ─── Text field ───────────────────────────────────────────────────────────────
 function SettingsField({ label, value, onChange, placeholder, type = 'text' }) {
   return (
     <div>
@@ -52,7 +76,6 @@ function SettingsField({ label, value, onChange, placeholder, type = 'text' }) {
   )
 }
 
-// ─── Toggle ───────────────────────────────────────────────────────────────────
 function Toggle({ label, description, value, onChange }) {
   return (
     <div className="flex items-center justify-between gap-4">
@@ -78,60 +101,61 @@ function Toggle({ label, description, value, onChange }) {
   )
 }
 
-// ─── Main page ────────────────────────────────────────────────────────────────
 export default function AdminSettings() {
-  // Platform settings
-  const [siteName, setSiteName] = useState('CivicAid Nepal')
-  const [siteEmail, setSiteEmail] = useState('support@civicaid.np')
-  const [sitePhone, setSitePhone] = useState('+977-1-4444444')
-  const [maxUpload, setMaxUpload] = useState('5')
-
-  // Notification settings
-  const [emailOnNew, setEmailOnNew] = useState(true)
-  const [emailOnResolve, setEmailOnResolve] = useState(true)
-  const [emailOnAssign, setEmailOnAssign] = useState(false)
-  const [smsAlerts, setSmsAlerts] = useState(false)
-
-  // Feature toggles
-  const [mapEnabled, setMapEnabled] = useState(true)
-  const [upvoteEnabled, setUpvoteEnabled] = useState(true)
-  const [aiClassify, setAiClassify] = useState(false)
-  const [publicIssues, setPublicIssues] = useState(false)
-
-  // Categories
-  const [categories, setCategories] = useState([
-    'Road & Transport',
-    'Water & Drainage',
-    'Electricity',
-    'Waste Management',
-    'Public Safety',
-    'Parks & Green',
-    'Other',
-  ])
+  const [settings, setSettings] = useState(loadSettings)
   const [newCategory, setNewCategory] = useState('')
-
   const [saving, setSaving] = useState(false)
+  const [dirty, setDirty] = useState(false)
+
+  // Track unsaved changes
+  useEffect(() => {
+    setDirty(true)
+  }, [settings])
+
+  function set(key) {
+    return (value) => setSettings((prev) => ({ ...prev, [key]: value }))
+  }
 
   function handleAddCategory() {
     const trimmed = newCategory.trim()
-    if (!trimmed || categories.includes(trimmed)) return
-    setCategories((prev) => [...prev, trimmed])
+    if (!trimmed || settings.categories.includes(trimmed)) return
+    setSettings((prev) => ({
+      ...prev,
+      categories: [...prev.categories, trimmed],
+    }))
     setNewCategory('')
   }
 
   function handleRemoveCategory(cat) {
-    if (categories.length <= 1) {
+    if (settings.categories.length <= 1) {
       toast.error('At least one category is required.')
       return
     }
-    setCategories((prev) => prev.filter((c) => c !== cat))
+    setSettings((prev) => ({
+      ...prev,
+      categories: prev.categories.filter((c) => c !== cat),
+    }))
   }
 
-  async function handleSave() {
+  function handleSave() {
     setSaving(true)
-    await new Promise((r) => setTimeout(r, 800)) // simulate API call
-    setSaving(false)
-    toast.success('Settings saved successfully.')
+    setTimeout(() => {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(settings))
+        setDirty(false)
+        toast.success('Settings saved.')
+      } catch {
+        toast.error('Could not save settings.')
+      } finally {
+        setSaving(false)
+      }
+    }, 400)
+  }
+
+  function handleReset() {
+    setSettings(DEFAULTS)
+    localStorage.removeItem(STORAGE_KEY)
+    toast.success('Settings reset to defaults.')
   }
 
   return (
@@ -146,27 +170,33 @@ export default function AdminSettings() {
             Platform configuration
           </p>
         </div>
-        <button
-          onClick={handleSave}
-          disabled={saving}
-          className="inline-flex items-center gap-2 text-sm font-semibold text-white
-            bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300
-            px-4 py-2.5 rounded-xl transition-colors"
-        >
-          {saving ? (
-            <>
-              <span
-                className="w-3.5 h-3.5 border-2 border-white/30 border-t-white
-              rounded-full animate-spin"
-              />{' '}
-              Saving…
-            </>
-          ) : (
-            <>
-              <Save size={14} /> Save Changes
-            </>
-          )}
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleReset}
+            className="text-xs font-semibold text-slate-400 hover:text-slate-600
+              px-3 py-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors"
+          >
+            Reset defaults
+          </button>
+          <button
+            onClick={handleSave}
+            disabled={saving}
+            className="inline-flex items-center gap-2 text-sm font-semibold text-white
+              bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300
+              px-4 py-2.5 rounded-xl transition-colors"
+          >
+            {saving ? (
+              <>
+                <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                Saving…
+              </>
+            ) : (
+              <>
+                <Save size={14} /> Save{dirty ? ' *' : ''}
+              </>
+            )}
+          </button>
+        </div>
       </div>
 
       <div className="space-y-5">
@@ -178,27 +208,27 @@ export default function AdminSettings() {
         >
           <SettingsField
             label="Platform Name"
-            value={siteName}
-            onChange={setSiteName}
+            value={settings.siteName}
+            onChange={set('siteName')}
             placeholder="CivicAid Nepal"
           />
           <SettingsField
             label="Support Email"
-            value={siteEmail}
-            onChange={setSiteEmail}
+            value={settings.siteEmail}
+            onChange={set('siteEmail')}
             placeholder="support@civicaid.np"
             type="email"
           />
           <SettingsField
             label="Support Phone"
-            value={sitePhone}
-            onChange={setSitePhone}
+            value={settings.sitePhone}
+            onChange={set('sitePhone')}
             placeholder="+977-1-4444444"
           />
           <SettingsField
             label="Max Image Upload Size (MB)"
-            value={maxUpload}
-            onChange={setMaxUpload}
+            value={settings.maxUpload}
+            onChange={set('maxUpload')}
             placeholder="5"
             type="number"
           />
@@ -213,29 +243,29 @@ export default function AdminSettings() {
           <Toggle
             label="Email on new issue"
             description="Send email to admin when a new issue is submitted"
-            value={emailOnNew}
-            onChange={setEmailOnNew}
+            value={settings.emailOnNew}
+            onChange={set('emailOnNew')}
           />
           <div className="h-px bg-slate-100" />
           <Toggle
             label="Email on issue resolved"
             description="Notify citizen when their issue is marked resolved"
-            value={emailOnResolve}
-            onChange={setEmailOnResolve}
+            value={settings.emailOnResolve}
+            onChange={set('emailOnResolve')}
           />
           <div className="h-px bg-slate-100" />
           <Toggle
             label="Email on staff assignment"
             description="Notify staff when an issue is assigned to them"
-            value={emailOnAssign}
-            onChange={setEmailOnAssign}
+            value={settings.emailOnAssign}
+            onChange={set('emailOnAssign')}
           />
           <div className="h-px bg-slate-100" />
           <Toggle
             label="SMS alerts"
             description="Send SMS for critical priority issues (requires Twilio)"
-            value={smsAlerts}
-            onChange={setSmsAlerts}
+            value={settings.smsAlerts}
+            onChange={set('smsAlerts')}
           />
         </SettingsSection>
 
@@ -248,29 +278,29 @@ export default function AdminSettings() {
           <Toggle
             label="Issue Map"
             description="Show the interactive Leaflet map for all users"
-            value={mapEnabled}
-            onChange={setMapEnabled}
+            value={settings.mapEnabled}
+            onChange={set('mapEnabled')}
           />
           <div className="h-px bg-slate-100" />
           <Toggle
             label="Upvoting"
             description="Allow citizens to upvote issues"
-            value={upvoteEnabled}
-            onChange={setUpvoteEnabled}
+            value={settings.upvoteEnabled}
+            onChange={set('upvoteEnabled')}
           />
           <div className="h-px bg-slate-100" />
           <Toggle
             label="AI Auto-classification"
             description="Use AI to suggest categories when submitting issues"
-            value={aiClassify}
-            onChange={setAiClassify}
+            value={settings.aiClassify}
+            onChange={set('aiClassify')}
           />
           <div className="h-px bg-slate-100" />
           <Toggle
             label="Public issue list"
             description="Allow non-logged-in users to browse issues"
-            value={publicIssues}
-            onChange={setPublicIssues}
+            value={settings.publicIssues}
+            onChange={set('publicIssues')}
           />
         </SettingsSection>
 
@@ -281,7 +311,7 @@ export default function AdminSettings() {
           description="Manage the categories citizens can select when submitting"
         >
           <div className="flex flex-wrap gap-2">
-            {categories.map((cat) => (
+            {settings.categories.map((cat) => (
               <span
                 key={cat}
                 className="inline-flex items-center gap-1.5 text-xs font-semibold
@@ -297,7 +327,6 @@ export default function AdminSettings() {
               </span>
             ))}
           </div>
-
           <div className="flex items-center gap-2 pt-1">
             <input
               type="text"
@@ -316,18 +345,16 @@ export default function AdminSettings() {
                 text-white bg-blue-600 hover:bg-blue-700 disabled:bg-blue-200
                 px-3 py-2 rounded-xl transition-colors"
             >
-              <Plus size={12} />
-              Add
+              <Plus size={12} /> Add
             </button>
           </div>
         </SettingsSection>
       </div>
 
-      {/* Connect backend note */}
       <p className="text-xs text-slate-300 text-center mt-6">
-        Demo only — connect to{' '}
+        Saved locally in your browser · connect to{' '}
         <code className="font-mono">GET /api/admin/settings/</code> to persist
-        changes
+        server-side
       </p>
     </div>
   )

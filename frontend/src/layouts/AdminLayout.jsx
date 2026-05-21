@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 import { useState } from 'react'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
+import Avatar from '../components/Avatar'
 import {
   LayoutDashboard,
   ClipboardList,
@@ -116,22 +117,19 @@ function SidebarContent({ onLinkClick }) {
 
       {/* User + logout */}
       <div className="px-3 py-4 border-t border-white/10">
-        <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-white/5 mb-2">
-          <div
-            className="w-7 h-7 rounded-full bg-blue-500/20 border border-blue-500/30
-            flex items-center justify-center shrink-0"
-          >
-            <span className="text-xs font-bold text-blue-400">
-              {user?.name?.[0]?.toUpperCase() ?? 'A'}
-            </span>
-          </div>
+        <button
+          onClick={() => navigate('/admin/profile')}
+          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl bg-white/5
+    hover:bg-white/10 transition-colors mb-2 text-left"
+        >
+          <Avatar userId={user?.id} name={user?.name} size="sm" />
           <div className="min-w-0">
             <p className="text-sm font-semibold text-white truncate">
               {user?.name ?? 'Admin'}
             </p>
             <p className="text-[10px] text-slate-500 truncate">{user?.email}</p>
           </div>
-        </div>
+        </button>
         <button
           onClick={handleLogout}
           className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl

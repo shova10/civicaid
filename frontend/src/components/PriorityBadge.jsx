@@ -70,11 +70,7 @@ const PRIORITY_CONFIG = {
 
 const DEFAULT = PRIORITY_CONFIG.none
 
-/**
- * PriorityBadge
- * @param {string} priority - one of: critical | high | medium | low | none
- * @param {string} size     - "sm" | "md" (default "md")
- */
+
 export default function PriorityBadge({ priority, size = 'md' }) {
   const cfg = PRIORITY_CONFIG[priority] ?? DEFAULT
   const { Icon } = cfg

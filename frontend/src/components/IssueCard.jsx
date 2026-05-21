@@ -39,7 +39,7 @@ export default function IssueCard({ issue, onClick }) {
   const navigate = useNavigate()
   const { user } = useAuth()
   const isAdmin = user?.role === 'admin'
-  const catStyle = CATEGORY_COLORS[issue.category] ?? CATEGORY_COLORS['Other']
+  const catStyle = CATEGORY_COLORS[issue.category] ?? CATEGORY_COLORS['other']
 
   function handleClick() {
     if (onClick) return onClick(issue)
@@ -68,8 +68,7 @@ export default function IssueCard({ issue, onClick }) {
             <ImageOff size={22} className="text-slate-300" />
             <span className="text-xs text-slate-300 font-medium">No photo</span>
           </div>
-        )
-        }
+        )}
 
         {/* Category */}
         <span
