@@ -22,9 +22,18 @@ class ComplaintCreateSerializer(serializers.ModelSerializer):
         
 class ComplaintListSerializer(serializers.ModelSerializer):
     citizen_name = serializers.CharField(source='citizen.full_name', default='Unknown')
+    image = serializers.SerializerMethodField()
+
+    def get_image(self, obj):
+        if obj.image:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.image.url)
+        return None
+
     class Meta:
         model = Complaint
-        fields = ['title', 'id', 'category', 'status', 'priority', 'created_at', 'upvote_count', 'citizen_name']
+        fields = ['title', 'id', 'category', 'status', 'priority', 'created_at', 'upvote_count', 'citizen_name', 'image']
 
 class StatusHistorySerializer(serializers.ModelSerializer):
     changed_by = serializers.StringRelatedField()
