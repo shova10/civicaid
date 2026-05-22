@@ -106,6 +106,11 @@ class MyComplaintListView(generics.ListAPIView):
     def get_queryset(self):
         return Complaint.objects.filter(citizen=self.request.user).order_by('-created_at')
 
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context['request'] = self.request
+        return context
+
 class UpvoteToggleView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -135,6 +140,11 @@ class AdminComplaintListView(generics.ListAPIView):
     permission_classes = [IsAuthenticated, IsAdmin]
     serializer_class = ComplaintListSerializer
     queryset = Complaint.objects.all()
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context['request'] = self.request
+        return context
 
 class AdminComplaintDetailView(generics.RetrieveAPIView):  # new
     permission_classes = [IsAuthenticated, IsAdmin]
