@@ -42,7 +42,7 @@ const TREND_DATA = [
 function ChartTooltip({ active, payload, label }) {
   if (!active || !payload?.length) return null
   return (
-    <div className="bg-white border border-slate-200 rounded-xl shadow-lg px-3 py-2.5">
+    <div className="bg-[#F6F1E8] border border-slate-200 rounded-xl shadow-lg px-3 py-2.5">
       {label && (
         <p className="text-xs font-bold text-slate-500 mb-1">{label}</p>
       )}

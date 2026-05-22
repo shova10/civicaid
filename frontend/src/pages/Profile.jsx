@@ -152,7 +152,6 @@ function AvatarPicker({ userId, onClose }) {
   )
 }
 
-// Editable wrapper used only on the Profile page
 function EditableAvatar({ displayName, userId }) {
   const [pickerOpen, setPickerOpen] = useState(false)
 
@@ -186,7 +185,7 @@ function EditableAvatar({ displayName, userId }) {
 function InfoRow({ icon: Icon, label, value }) {
   return (
     <div className="flex items-start gap-3 py-3 border-b border-slate-100 last:border-0">
-      <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center shrink-0 mt-0.5">
+      <div className="w-8 h-8 rounded-lg bg-[#F6F1E8] flex items-center justify-center shrink-0 mt-0.5">
         <Icon size={14} className="text-slate-500" />
       </div>
       <div>
@@ -241,7 +240,7 @@ export default function Profile() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 py-8 px-4">
+      <div className="min-h-screen bg-[#F6F1E8] py-8 px-4">
         <div className="max-w-5xl mx-auto space-y-5 animate-pulse">
           <div className="h-36 bg-white rounded-2xl border border-slate-200" />
           <div className="grid grid-cols-3 gap-4">
@@ -259,15 +258,15 @@ export default function Profile() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 py-8 px-4">
+    <div className="min-h-screen bg-[#F6F1E8] py-8 px-4">
       <div className="max-w-5xl mx-auto space-y-6">
         {/* Profile header */}
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <div className="bg-[#FFFDF9] rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
           <div className="h-20 bg-gradient-to-r from-blue-500 to-blue-600" />
           <div className="px-6 pb-6">
             <div className="-mt-8 flex items-end justify-between mb-4">
               <EditableAvatar displayName={displayName} userId={userId} />
-              <span className="text-xs font-bold uppercase tracking-wider text-blue-600 bg-blue-50 border border-blue-200 px-3 py-1 rounded-full">
+              <span className="text-xs font-bold uppercase tracking-wider text-blue-600 bg-blue-30 border border-blue-200 px-3 py-1 rounded-full">
                 {user?.role ?? 'Citizen'}
               </span>
             </div>
@@ -281,7 +280,7 @@ export default function Profile() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Personal info */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
+            <div className="bg-[#FFFDF9] rounded-2xl border border-slate-200 shadow-sm p-5">
               <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
                 Personal Information
               </h2>
@@ -311,7 +310,7 @@ export default function Profile() {
               ].map((s) => (
                 <div
                   key={s.label}
-                  className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 text-center"
+                  className="bg-[#FFFDF9] rounded-2xl border border-slate-200 shadow-sm p-4 text-center"
                 >
                   <p className={`text-2xl font-black ${s.color}`}>{s.value}</p>
                   <p className="text-xs text-slate-400 font-medium mt-0.5">
@@ -321,7 +320,7 @@ export default function Profile() {
               ))}
             </div>
 
-            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
+            <div className="bg-[#FFFDF9] rounded-2xl border border-slate-200 shadow-sm p-5">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400">
                   My Issues
