@@ -303,7 +303,6 @@ export default function AdminUsers() {
         ))}
       </div>
 
-      {/* Filters */}
       <div className="flex flex-wrap items-center gap-2 mb-4">
         <div className="relative flex-1 min-w-45 max-w-xs">
           <Search
@@ -347,14 +346,11 @@ export default function AdminUsers() {
       {/* Table */}
       <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full min-w-150">
+          <table className="w-full min-w-150 table-fixed">
             <thead className="border-b border-slate-100 bg-slate-50/80">
               <tr>
-                <th className="px-4 py-3 w-10 text-[11px] font-bold uppercase tracking-wider text-slate-400 text-left">
-                  #
-                </th>
-                <Th col="name" label="Name" />
-                <th className="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                <Th col="name" label="Name" className="w-60 pl-16" />
+                <th className="w-28 px-4 py-3 pl-8 text-left text-[11px] font-bold uppercase tracking-wider text-slate-400">
                   Role
                 </th>
                 <Th col="issues" label="Issues" className="w-20" />
@@ -370,9 +366,6 @@ export default function AdminUsers() {
                 Array.from({ length: 5 }).map((_, i) => (
                   <tr key={i} className="animate-pulse">
                     <td className="px-4 py-3">
-                      <div className="h-3 w-6 bg-slate-100 rounded" />
-                    </td>
-                    <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
                         <div className="w-8 h-8 rounded-full bg-slate-100" />
                         <div className="space-y-1.5">
@@ -381,12 +374,11 @@ export default function AdminUsers() {
                         </div>
                       </div>
                     </td>
-                    {[1, 2, 3, 4].map((j) => (
+                    {[1, 2, 3, 4, 5].map((j) => (
                       <td key={j} className="px-4 py-3">
                         <div className="h-3 w-16 bg-slate-100 rounded" />
                       </td>
                     ))}
-                    <td className="px-4 py-3" />
                   </tr>
                 ))
               ) : processed.length === 0 ? (
@@ -408,11 +400,6 @@ export default function AdminUsers() {
                       className="hover:bg-slate-50 transition-colors group cursor-pointer"
                     >
                       <td className="px-4 py-3">
-                        <span className="text-xs font-mono text-slate-300">
-                          #{user.id}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3">
                         <div className="flex items-center gap-3">
                           <Avatar userId={user?.id} name={name} size="sm" />
                           <div>
@@ -430,7 +417,7 @@ export default function AdminUsers() {
                       </td>
                       <td className="px-4 py-3">
                         <span className="text-sm font-semibold text-slate-600">
-                          {user.issues_count ?? user.issues ?? 0}
+                          {user.complaint_count ?? user.issues ?? 0}
                         </span>
                       </td>
                       <td className="px-4 py-3">

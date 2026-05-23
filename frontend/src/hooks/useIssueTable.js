@@ -10,6 +10,7 @@ export default function useIssueTable(issues) {
   const [status, setStatus] = useState(ALL)
   const [priority, setPriority] = useState(ALL)
   const [category, setCategory] = useState(ALL)
+  const [duplicate, setDuplicate] = useState(false)
 
   const [sortKey, setSortKey] = useState('created_at')
   const [sortDir, setSortDir] = useState('desc') // 'asc' | 'desc'
@@ -32,6 +33,7 @@ export default function useIssueTable(issues) {
     setStatus(ALL)
     setPriority(ALL)
     setCategory(ALL)
+    setDuplicate(false)
     setPage(1)
   }
 
@@ -40,6 +42,7 @@ export default function useIssueTable(issues) {
     status !== ALL,
     priority !== ALL,
     category !== ALL,
+    duplicate === true,
   ].filter(Boolean).length
 
   const processed = useMemo(() => {
@@ -58,6 +61,7 @@ export default function useIssueTable(issues) {
     if (status !== ALL) result = result.filter((i) => i.status === status)
     if (priority !== ALL) result = result.filter((i) => i.priority === priority)
     if (category !== ALL) result = result.filter((i) => i.category === category)
+    if (duplicate) result = result.filter((i) => i.is_duplicate === true)
 
     // Sort
     result.sort((a, b) => {
@@ -95,7 +99,7 @@ export default function useIssueTable(issues) {
     })
 
     return result
-  }, [issues, search, status, priority, category, sortKey, sortDir])
+  }, [issues, search, status, priority, category, duplicate, sortKey, sortDir])
 
   const totalPages = Math.max(1, Math.ceil(processed.length / pageSize))
   const safePage = Math.min(page, totalPages)
@@ -128,6 +132,8 @@ export default function useIssueTable(issues) {
     setPriority: wrappedSetPriority,
     category,
     setCategory: wrappedSetCategory,
+    duplicate,
+    setDuplicate,
     activeFilters,
     resetFilters,
 
