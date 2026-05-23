@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import {
   Search,
-  ArrowLeft, 
+  ArrowLeft,
   X,
   ChevronUp,
   ChevronDown,
@@ -231,6 +231,7 @@ export default function AdminIssues() {
     setPriority,
     category,
     setCategory,
+    setDuplicate,
     activeFilters,
     resetFilters,
     sortKey,
@@ -262,10 +263,12 @@ export default function AdminIssues() {
   useEffect(() => {
     const statusParam = searchParams.get('status')
     const categoryParam = searchParams.get('category')
+    const duplicateParam = searchParams.get('duplicate')
 
     if (statusParam) setStatus(statusParam)
     if (categoryParam) setCategory(categoryParam)
-  }, [searchParams, setCategory, setStatus])
+    if (duplicateParam === 'true') setDuplicate(true)
+  }, [searchParams, setCategory, setStatus, setDuplicate])
 
   useEffect(() => {
     fetchIssues()

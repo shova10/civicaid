@@ -315,7 +315,7 @@ export default function Landing() {
         {/* Soft radial glow */}
         <div className="absolute inset-0 pointer-events-none">
           <div
-            className="absolute -top-32 left-1/2 -translate-x-1/2 w-full max-w-5xl h-[28rem]
+            className="absolute -top-32 left-1/2 -translate-x-1/2 w-full max-w-5xl h-112
       bg-[radial-gradient(ellipse_at_center,rgba(99,102,241,0.06)_0%,transparent_72%)]"
           />
         </div>
@@ -342,7 +342,7 @@ export default function Landing() {
             <span className="relative inline-block text-indigo-700">
               community, together.
               <span
-                className="absolute left-0 -bottom-1.5 w-full h-[3px]
+                className="absolute left-0 -bottom-1.5 w-full h-0.75
           bg-amber-400/70 rounded-full"
               />
             </span>
@@ -400,7 +400,7 @@ export default function Landing() {
         <div className="max-w-5xl mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-y-10 sm:gap-y-12">
             {STATS.map((stat, index) => (
-              <div
+              <divs
                 key={stat.label}
                 className={`relative px-4 sm:px-6 ${
                   index !== STATS.length - 1
@@ -446,7 +446,7 @@ export default function Landing() {
             group-hover:bg-amber-500
             transition-all duration-300"
                 />
-              </div>
+              </divs>
             ))}
           </div>
         </div>
@@ -501,7 +501,7 @@ export default function Landing() {
                 <div
                   className="
               mt-6
-              h-[2px]
+              h-0.5
               w-10
               bg-[#D6C2A8]
               rounded-full
@@ -522,7 +522,7 @@ export default function Landing() {
         className="py-20 sm:py-24 px-4 bg-[#1E1B18] relative overflow-hidden"
       >
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[300px] bg-[radial-gradient(circle,rgba(192,132,87,0.08)_0%,transparent_70%)]" />
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-175 h-75 bg-[radial-gradient(circle,rgba(192,132,87,0.08)_0%,transparent_70%)]" />
         </div>
 
         <SectionHeader
@@ -576,7 +576,7 @@ export default function Landing() {
                 {s.description}
               </p>
 
-              <div className="mt-6 w-10 h-[2px] mx-auto rounded-full bg-[#C08457]" />
+              <div className="mt-6 w-10 h-0.5 mx-auto rounded-full bg-[#C08457]" />
             </div>
           ))}
         </div>
@@ -766,7 +766,7 @@ export default function Landing() {
       {/* ── CTA ───────────────────────────────────────────────────────────── */}
       <section className="py-20 sm:py-24 px-4 bg-[#1E1B18] relative overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-[radial-gradient(circle,rgba(192,132,87,0.10)_0%,transparent_70%)]" />
+          <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-150 h-150 bg-[radial-gradient(circle,rgba(192,132,87,0.10)_0%,transparent_70%)]" />
         </div>
 
         <div className="relative max-w-2xl mx-auto text-center">
