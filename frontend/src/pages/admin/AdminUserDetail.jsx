@@ -6,6 +6,7 @@ import {
   Phone,
   MapPin,
   Calendar,
+  Cake,
   Shield,
   User,
   Wrench,
@@ -15,7 +16,7 @@ import {
 } from 'lucide-react'
 import Avatar from '../../components/Avatar'
 import toast from 'react-hot-toast'
-import { updateUserRole, toggleUserActive } from '../../services/auth'
+import { toggleUserActive } from '../../services/auth'
 import api from '../../services/api'
 import StatusBadge from '../../components/StatusBadge'
 import PriorityBadge from '../../components/PriorityBadge'
@@ -28,13 +29,7 @@ const ROLE_CONFIG = {
     border: 'border-violet-200',
     Icon: Shield,
   },
-  staff: {
-    label: 'Staff',
-    bg: 'bg-blue-50',
-    text: 'text-blue-700',
-    border: 'border-blue-200',
-    Icon: Wrench,
-  },
+
   citizen: {
     label: 'Citizen',
     bg: 'bg-slate-50',
@@ -147,16 +142,6 @@ export default function AdminUserDetail() {
     }
   }
 
-  async function handleRoleChange(newRole) {
-    try {
-      await updateUserRole(user.id, newRole)
-      setUser((prev) => ({ ...prev, role: newRole }))
-      toast.success(`Role updated to ${newRole}`)
-    } catch {
-      toast.error('Could not update user role.')
-    }
-  }
-
   const filteredIssues = statusFilter
     ? issues.filter((i) => i.status === statusFilter)
     : issues
@@ -170,7 +155,6 @@ export default function AdminUserDetail() {
 
   return (
     <div className="p-6 sm:p-8 max-w-5xl mx-auto">
-      {/* Back button */}
       <button
         onClick={() => navigate('/admin/users')}
         className="inline-flex items-center gap-2 text-sm text-slate-500
@@ -203,7 +187,6 @@ export default function AdminUserDetail() {
         </div>
       ) : (
         <div className="space-y-6">
-          {/* Profile header */}
           <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
             <div className="h-20 bg-linear-to-r from-blue-500 to-violet-500" />
             <div className="px-6 pb-6">
@@ -242,9 +225,7 @@ export default function AdminUserDetail() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Left column */}
             <div className="space-y-5">
-              {/* Personal info */}
               <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
                 <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
                   Personal Information
@@ -253,13 +234,21 @@ export default function AdminUserDetail() {
                 <InfoRow icon={Phone} label="Phone" value={user.phone} />
                 <InfoRow icon={MapPin} label="Address" value={user.address} />
                 <InfoRow
+                  icon={Cake}
+                  label="Date of Birth"
+                  value={
+                    user.date_of_birth
+                      ? formatDate(user.date_of_birth)
+                      : 'Not provided'
+                  }
+                />
+                <InfoRow
                   icon={Calendar}
                   label="Joined"
                   value={formatDate(user.date_joined)}
                 />
               </div>
 
-              {/* Admin controls */}
               {user.role !== 'admin' && (
                 <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
                   <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">
@@ -291,7 +280,6 @@ export default function AdminUserDetail() {
               )}
             </div>
 
-            {/* Right column */}
             <div className="lg:col-span-2 space-y-5">
               {/* Stats */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
