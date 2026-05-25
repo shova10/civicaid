@@ -254,11 +254,6 @@ export default function AdminUserDetail() {
                 <InfoRow icon={MapPin} label="Address" value={user.address} />
                 <InfoRow
                   icon={Calendar}
-                  label="Date of Birth"
-                  value={formatDate(user.date_of_birth)}
-                />
-                <InfoRow
-                  icon={Calendar}
                   label="Joined"
                   value={formatDate(user.date_joined)}
                 />
@@ -271,21 +266,6 @@ export default function AdminUserDetail() {
                     Admin Controls
                   </h2>
                   <div className="space-y-2">
-                    <button
-                      onClick={() =>
-                        handleRoleChange(
-                          user.role === 'staff' ? 'citizen' : 'staff'
-                        )
-                      }
-                      className="w-full text-left text-xs font-semibold px-3 py-2.5
-                        rounded-xl border border-slate-200 hover:bg-slate-50
-                        text-slate-700 transition-colors flex items-center gap-2"
-                    >
-                      <Wrench size={12} />
-                      {user.role === 'staff'
-                        ? 'Demote to Citizen'
-                        : 'Promote to Staff'}
-                    </button>
                     <button
                       onClick={handleToggleActive}
                       className={`w-full text-left text-xs font-semibold px-3 py-2.5
