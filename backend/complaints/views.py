@@ -139,12 +139,27 @@ class UpvoteToggleView(APIView):
 class AdminComplaintListView(generics.ListAPIView):
     permission_classes = [IsAuthenticated, IsAdmin]
     serializer_class = ComplaintListSerializer
-    queryset = Complaint.objects.all()
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
         context['request'] = self.request
         return context
+
+    def get_queryset(self):
+        qs = Complaint.objects.all().order_by('-created_at')
+
+        status = self.request.query_params.get('status')
+        category = self.request.query_params.get('category')
+        duplicate = self.request.query_params.get('duplicate')
+
+        if status:
+            qs = qs.filter(status=status)
+        if category:
+            qs = qs.filter(category=category)
+        if duplicate == 'true':
+            qs = qs.filter(is_duplicate=True)
+
+        return qs
 
 class AdminComplaintDetailView(generics.RetrieveAPIView):  # new
     permission_classes = [IsAuthenticated, IsAdmin]
@@ -221,6 +236,7 @@ class AdminSummaryView(APIView):
 
     def get(self, request):
         total = Complaint.objects.count()
+        duplicates = Complaint.objects.filter(is_duplicate=True).count()
 
         by_status = {
             item['status']: item['count']
@@ -238,7 +254,8 @@ class AdminSummaryView(APIView):
         }
 
         return Response({
-            "total_complaints": total,
+            "total": total,              
+            "duplicates": duplicates,   
             "by_status": by_status,
             "by_priority": by_priority,
             "by_category": by_category,
