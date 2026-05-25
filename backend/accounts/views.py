@@ -5,7 +5,7 @@ from sib_api_v3_sdk.rest import ApiException
 from rest_framework import generics
 from rest_framework.permissions import AllowAny
 from .models import CustomUser, OTPVerification
-from .serializers import RegisterSerializer, CivicAidTokenSerializer, UserProfileSerializer, ForgotPasswordSerializer, ChangePasswordSerializer
+from .serializers import RegisterSerializer, CivicAidTokenSerializer, UserProfileSerializer, ForgotPasswordSerializer, ChangePasswordSerializer, ResetPasswordSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -18,8 +18,8 @@ from rest_framework import status
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
-from django.core.mail import send_mail
-from django.contrib.auth import get_user_model
+from django.utils.http import urlsafe_base64_decode
+from django.utils.encoding import force_str
 
 User = get_user_model()
 
@@ -178,7 +178,6 @@ class ResendOTPView(APIView):
             status=200
         )
 
-
 class ForgotPasswordView(APIView):
     permission_classes = [AllowAny]
 
@@ -189,17 +188,15 @@ class ForgotPasswordView(APIView):
 
         try:
             user = User.objects.get(email=email)
-            token_generator = PasswordResetTokenGenerator()
-            token = token_generator.make_token(user)
+            token = PasswordResetTokenGenerator().make_token(user)
             uid = urlsafe_base64_encode(force_bytes(user.pk))
             reset_link = f"https://civicaid-sooty.vercel.app/reset-password/?uid={uid}&token={token}"
 
-            send_mail(
-                subject="CivicAid Password Reset",
-                message=f"Click the link to reset your password: {reset_link}",
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[email],
-                fail_silently=True,
+            send_otp_email(
+                to_email=user.email,
+                otp=None,
+                subject="CivicAid - Reset Your Password",
+                message=f"Hi {user.full_name},\n\nClick the link below to reset your password:\n{reset_link}\n\nThis link expires in 1 hour."
             )
         except User.DoesNotExist:
             pass
@@ -234,3 +231,28 @@ class ChangePasswordView(APIView):
             {"message": "Password changed successfully."},
             status=status.HTTP_200_OK
         )
+
+class ResetPasswordView(APIView):
+    permission_classes = []
+
+    def post(self, request):
+        serializer = ResetPasswordSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        uid = serializer.validated_data['uid']
+        token = serializer.validated_data['token']
+        new_password = serializer.validated_data['new_password']
+
+        try:
+            user_pk = force_str(urlsafe_base64_decode(uid))
+            user = CustomUser.objects.get(pk=user_pk)
+        except (TypeError, ValueError, CustomUser.DoesNotExist):
+            return Response({"error": "Invalid reset link."}, status=400)
+
+        if not PasswordResetTokenGenerator().check_token(user, token):
+            return Response({"error": "Reset link is invalid or has expired."}, status=400)
+
+        user.set_password(new_password)
+        user.save()
+
+        return Response({"message": "Password reset successfully. You can now log in."})
