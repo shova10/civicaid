@@ -341,7 +341,6 @@ export default function AdminProfile() {
               Account &amp; Security
             </h2>
             <InfoRow icon={Shield} label="Role" value="Administrator" />
-            <InfoRow icon={Key} label="User ID" value={`#${userId}`} />
             <InfoRow icon={CheckCircle} label="Account Status" value="Active" />
             <InfoRow icon={Lock} label="Password" value="••••••••••••" />
           </div>
