@@ -13,7 +13,7 @@ import {
 import Avatar from '../components/Avatar'
 import useAuth from '../hooks/useAuth'
 
-const QUICK_ACTIONS = [
+const QUICK_ACTIONS = [                           
   {
     icon: Plus,
     label: 'Report an Issue',
@@ -22,14 +22,14 @@ const QUICK_ACTIONS = [
     card: 'bg-amber-500 hover:bg-amber-600',
     textColor: 'text-[#1C1A17]',
     subColor: 'text-[#1C1A17]/70',
-    iconWrap: 'bg-[#FFF3D6]',
+    iconWrap: 'bg-[#FFF3D6]',                                                   
     iconColor: 'text-[#1C1A17]',
     chevron: 'text-[#1C1A17]/60',
   },
   {
     icon: ClipboardList,
-    label: 'My Issues',
-    description: 'View your submitted reports',
+    label: 'Issues',
+    description: 'View all submitted reports',
     path: '/issues',
     card: 'bg-[#FFFBF5] border border-[#E7DDCF] hover:shadow-md',
     textColor: 'text-[#1C1A17]',
@@ -260,7 +260,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Tip */}
         <div className="bg-[#1C1A17] rounded-3xl p-4 sm:p-5 flex gap-3">
           <Clock size={14} className="text-amber-400 mt-0.5" />
           <p className="text-xs text-[#A8A29E]">

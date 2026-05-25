@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import {
   Search,
-  ArrowLeft, 
+  ArrowLeft,
   X,
   ChevronUp,
   ChevronDown,
@@ -231,6 +231,7 @@ export default function AdminIssues() {
     setPriority,
     category,
     setCategory,
+    setDuplicate,
     activeFilters,
     resetFilters,
     sortKey,
@@ -262,10 +263,12 @@ export default function AdminIssues() {
   useEffect(() => {
     const statusParam = searchParams.get('status')
     const categoryParam = searchParams.get('category')
+    const duplicateParam = searchParams.get('duplicate')
 
     if (statusParam) setStatus(statusParam)
     if (categoryParam) setCategory(categoryParam)
-  }, [searchParams, setCategory, setStatus])
+    if (duplicateParam === 'true') setDuplicate(true)
+  }, [searchParams, setCategory, setStatus, setDuplicate])
 
   useEffect(() => {
     fetchIssues()
@@ -457,16 +460,15 @@ export default function AdminIssues() {
                     </td>
                   </tr>
                 ) : (
-                  rows.map((issue) => (
+                  rows.map((issue, index) => (
                     <tr
                       key={issue.id}
                       onClick={() => navigate(`/admin/issues/${issue.id}`)}
                       className="hover:bg-slate-50 cursor-pointer transition-colors group"
                     >
-                      {/* ID */}
                       <td className="px-4 py-3">
                         <span className="text-xs font-mono font-bold text-slate-400">
-                          #{issue.id}
+                          #{index + 1}{' '}
                         </span>
                       </td>
 

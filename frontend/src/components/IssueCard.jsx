@@ -82,11 +82,6 @@ export default function IssueCard({ issue, onClick }) {
         >
           {issue.category}
         </span>
-
-        {/* ID */}
-        <span className="absolute top-3 right-3 text-[11px] font-mono px-2 py-0.5 rounded-full bg-black/40 text-white backdrop-blur-sm">
-          #{issue.id}
-        </span>
       </div>
 
       {/*  Content */}

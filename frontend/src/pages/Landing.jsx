@@ -12,136 +12,6 @@ import {
   X,
 } from 'lucide-react'
 
-const FEATURES = [
-  {
-    icon: MapPin,
-    title: 'Report Issues',
-    description:
-      'Submit civic problems with photos, GPS location, and detailed descriptions. AI classifies your report instantly.',
-    iconBg: 'bg-indigo-100',
-    iconColor: 'text-indigo-700',
-  },
-  {
-    icon: Brain,
-    title: 'AI-Powered',
-    description:
-      'Our AI engine automatically categorizes issues, detects duplicates, and suggests priority levels.',
-    iconBg: 'bg-blue-100',
-    iconColor: 'text-blue-700',
-  },
-  {
-    icon: Map,
-    title: 'Live Issue Map',
-    description:
-      'See all reported civic problems plotted on an interactive map of Nepal.',
-    iconBg: 'bg-sky-100',
-    iconColor: 'text-sky-700',
-  },
-  {
-    icon: ThumbsUp,
-    title: 'Upvote Issues',
-    description:
-      'Support important issues in your community. Higher upvotes signal greater urgency to authorities.',
-    iconBg: 'bg-amber-100',
-    iconColor: 'text-amber-700',
-  },
-  {
-    icon: Bell,
-    title: 'Track Progress',
-    description:
-      'Get notified when your issue is reviewed, assigned, or resolved. Full status timeline.',
-    iconBg: 'bg-emerald-100',
-    iconColor: 'text-emerald-700',
-  },
-  {
-    icon: Shield,
-    title: 'Admin Dashboard',
-    description:
-      'Powerful tools for authorities to manage, assign, and resolve civic issues efficiently.',
-    iconBg: 'bg-slate-100',
-    iconColor: 'text-slate-600',
-  },
-]
-
-const STEPS = [
-  {
-    step: '01',
-    title: 'Report',
-    description: 'Snap a photo, add a description, and drop a pin on the map.',
-    bg: 'bg-teal-700',
-    ring: 'ring-teal-900',
-  },
-  {
-    step: '02',
-    title: 'Review',
-    description:
-      'AI classifies your issue and authorities are notified immediately.',
-    bg: 'bg-blue-700',
-    ring: 'ring-blue-900',
-  },
-  {
-    step: '03',
-    title: 'Resolve',
-    description:
-      'Track status updates in real time until your issue is resolved.',
-    bg: 'bg-emerald-700',
-    ring: 'ring-emerald-900',
-  },
-]
-
-const STATS = [
-  { value: '2,400+', label: 'Issues Reported' },
-  { value: '87%', label: 'Resolution Rate' },
-  { value: '14', label: 'Avg. Days to Resolve' },
-  { value: '12,000+', label: 'Active Citizens' },
-]
-
-const CATEGORIES = [
-  {
-    name: 'Road & Transport',
-    emoji: '🛣️',
-    bg: 'bg-amber-50',
-    border: 'border-amber-200',
-    text: 'text-amber-800',
-  },
-  {
-    name: 'Water & Drainage',
-    emoji: '💧',
-    bg: 'bg-sky-50',
-    border: 'border-sky-200',
-    text: 'text-sky-800',
-  },
-  {
-    name: 'Electricity',
-    emoji: '⚡',
-    bg: 'bg-yellow-50',
-    border: 'border-yellow-200',
-    text: 'text-yellow-800',
-  },
-  {
-    name: 'Waste Management',
-    emoji: '♻️',
-    bg: 'bg-emerald-50',
-    border: 'border-emerald-200',
-    text: 'text-emerald-800',
-  },
-  {
-    name: 'Public Safety',
-    emoji: '🛡️',
-    bg: 'bg-red-50',
-    border: 'border-red-200',
-    text: 'text-red-800',
-  },
-  {
-    name: 'Parks & Green',
-    emoji: '🌿',
-    bg: 'bg-teal-50',
-    border: 'border-teal-200',
-    text: 'text-teal-800',
-  },
-]
-
-// ─── Smooth scroll helper ─────────────────────────────────────────────────────
 function scrollTo(id) {
   if (!id) {
     window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -150,7 +20,6 @@ function scrollTo(id) {
   document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
 }
 
-// ─── Section Header ───────────────────────────────────────────────────────────
 function SectionHeader({ label, title, sub, light = false }) {
   return (
     <div className="text-center max-w-4xl mx-auto px-4">
@@ -171,7 +40,7 @@ function SectionHeader({ label, title, sub, light = false }) {
       </h2>
       {sub && (
         <p
-          className={`text-sm sm:text-base font-medium ${light ? 'text-slate-400' : 'text-slate-500'}`}
+          className={`text-sm sm:text-base font-medium ${light ? 'text-amber-200/80' : 'text-slate-500'}`}
         >
           {sub}
         </p>
@@ -180,7 +49,7 @@ function SectionHeader({ label, title, sub, light = false }) {
   )
 }
 
-// ─── Navbar ───────────────────────────────────────────────────────────────────
+//Navbar
 function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false)
 
@@ -304,24 +173,144 @@ function Navbar() {
   )
 }
 
-// ─── Main Landing ─────────────────────────────────────────────────────────────
+const FEATURES = [
+  {
+    icon: MapPin,
+    title: 'Report Issues',
+    description:
+      'Submit civic problems with photos, GPS location, and detailed descriptions. AI classifies your report instantly.',
+    iconBg: 'bg-indigo-100',
+    iconColor: 'text-indigo-700',
+  },
+  {
+    icon: Brain,
+    title: 'AI-Powered',
+    description:
+      'Our AI engine automatically categorizes issues, detects duplicates, and suggests priority levels.',
+    iconBg: 'bg-blue-100',
+    iconColor: 'text-blue-700',
+  },
+  {
+    icon: Map,
+    title: 'Live Issue Map',
+    description:
+      'See all reported civic problems plotted on an interactive map of Nepal.',
+    iconBg: 'bg-sky-100',
+    iconColor: 'text-sky-700',
+  },
+  {
+    icon: ThumbsUp,
+    title: 'Upvote Issues',
+    description:
+      'Support important issues in your community. Higher upvotes signal greater urgency to authorities.',
+    iconBg: 'bg-amber-100',
+    iconColor: 'text-amber-700',
+  },
+  {
+    icon: Bell,
+    title: 'Track Progress',
+    description:
+      'Get notified when your issue is reviewed, assigned, or resolved. Full status timeline.',
+    iconBg: 'bg-emerald-100',
+    iconColor: 'text-emerald-700',
+  },
+  {
+    icon: Shield,
+    title: 'Admin Dashboard',
+    description:
+      'Powerful tools for authorities to manage, assign, and resolve civic issues efficiently.',
+    iconBg: 'bg-slate-100',
+    iconColor: 'text-slate-600',
+  },
+]
+
+const STEPS = [
+  {
+    step: '01',
+    title: 'Report',
+    description: 'Snap a photo, add a description, and drop a pin on the map.',
+    bg: 'bg-teal-700',
+    ring: 'ring-teal-900',
+  },
+  {
+    step: '02',
+    title: 'Review',
+    description:
+      'AI classifies your issue and authorities are notified immediately.',
+    bg: 'bg-blue-700',
+    ring: 'ring-blue-900',
+  },
+  {
+    step: '03',
+    title: 'Resolve',
+    description:
+      'Track status updates in real time until your issue is resolved.',
+    bg: 'bg-emerald-700',
+    ring: 'ring-emerald-900',
+  },
+]
+
+const CATEGORIES = [
+  {
+    name: 'Road & Transport',
+    emoji: '🛣️',
+    bg: 'bg-amber-50',
+    border: 'border-amber-200',
+    text: 'text-amber-800',
+  },
+  {
+    name: 'Water & Drainage',
+    emoji: '💧',
+    bg: 'bg-sky-50',
+    border: 'border-sky-200',
+    text: 'text-sky-800',
+  },
+  {
+    name: 'Electricity',
+    emoji: '⚡',
+    bg: 'bg-yellow-50',
+    border: 'border-yellow-200',
+    text: 'text-yellow-800',
+  },
+  {
+    name: 'Waste Management',
+    emoji: '♻️',
+    bg: 'bg-emerald-50',
+    border: 'border-emerald-200',
+    text: 'text-emerald-800',
+  },
+  {
+    name: 'Public Safety',
+    emoji: '🛡️',
+    bg: 'bg-red-50',
+    border: 'border-red-200',
+    text: 'text-red-800',
+  },
+  {
+    name: 'Parks & Green',
+    emoji: '🌿',
+    bg: 'bg-teal-50',
+    border: 'border-teal-200',
+    text: 'text-teal-800',
+  },
+]
+
+//Main
 export default function Landing() {
   return (
     <div className="min-h-screen bg-[#F0F2F5] text-slate-900 font-sans">
       <Navbar />
 
-      {/* ── Hero ──────────────────────────────────────────────────────────── */}
+      {/*Hero*/}
       <section className="relative pt-28 sm:pt-32 pb-16 sm:pb-20 px-4 sm:px-6 overflow-hidden bg-[#F6F1E8]">
-        {/* Soft radial glow */}
         <div className="absolute inset-0 pointer-events-none">
           <div
-            className="absolute -top-32 left-1/2 -translate-x-1/2 w-full max-w-5xl h-[28rem]
+            className="absolute -top-32 left-1/2 -translate-x-1/2 w-full max-w-5xl h-112
       bg-[radial-gradient(ellipse_at_center,rgba(99,102,241,0.06)_0%,transparent_72%)]"
           />
         </div>
 
         <div className="relative max-w-4xl mx-auto text-center">
-          {/* Badge */}
           <div
             className="inline-flex items-center gap-2 bg-[#FFFBF5]
       border border-[#E7DDCF] text-[#6B665E]
@@ -329,10 +318,9 @@ export default function Landing() {
       uppercase tracking-[0.18em] shadow-sm"
           >
             <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-            Direct Civic Action • Nepal
+            CivicAid Nepal
           </div>
 
-          {/* Heading */}
           <h1
             className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl
       font-black text-[#1C1A17]
@@ -341,10 +329,6 @@ export default function Landing() {
             Building a better <br className="hidden sm:block" />
             <span className="relative inline-block text-indigo-700">
               community, together.
-              <span
-                className="absolute left-0 -bottom-1.5 w-full h-[3px]
-          bg-amber-400/70 rounded-full"
-              />
             </span>
           </h1>
 
@@ -395,64 +379,7 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ── Stats ─────────────────────────────────────────────────────────── */}
-      <section className="py-14 sm:py-18 bg-[#EFE6DA] border-y border-[#E7DDCF]">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-y-10 sm:gap-y-12">
-            {STATS.map((stat, index) => (
-              <div
-                key={stat.label}
-                className={`relative px-4 sm:px-6 ${
-                  index !== STATS.length - 1
-                    ? 'lg:border-r lg:border-[#DDD2C3]'
-                    : ''
-                }`}
-              >
-                <span
-                  className="absolute -top-4 left-2
-            text-[42px] sm:text-[56px]
-            font-black text-[#D8CCBC]
-            select-none leading-none"
-                >
-                  0{index + 1}
-                </span>
-
-                <p
-                  className="relative text-3xl sm:text-[42px]
-            font-black text-[#B7791F]
-            tracking-tight leading-none mb-2"
-                >
-                  {stat.value}
-                </p>
-
-                <div className="flex items-center gap-2">
-                  <div className="w-0.5 h-4 bg-indigo-600 rounded-full shrink-0" />
-
-                  <p
-                    className="text-[10px]
-              uppercase tracking-[0.18em]
-              text-[#6B665E]
-              font-bold leading-tight"
-                  >
-                    {stat.label}
-                  </p>
-                </div>
-
-                <div
-                  className="mt-4 h-0.5 w-8
-            bg-[#D8CCBC]
-            rounded-full
-            group-hover:w-12
-            group-hover:bg-amber-500
-            transition-all duration-300"
-                />
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── Features ──────────────────────────────────────────────────────── */}
+      {/* Features*/}
       <section id="features" className="py-20 sm:py-24 px-4 bg-[#F6F1E8]">
         <SectionHeader
           label="Platform"
@@ -463,7 +390,6 @@ export default function Landing() {
         <div className="max-w-6xl mx-auto mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {FEATURES.map((f) => {
             const Icon = f.icon
-
             return (
               <div
                 key={f.title}
@@ -501,13 +427,13 @@ export default function Landing() {
                 <div
                   className="
               mt-6
-              h-[2px]
+              h-0.5
               w-10
               bg-[#D6C2A8]
               rounded-full
               transition-all duration-300
               group-hover:w-16
-              group-hover:bg-[#C08457]
+              
             "
                 />
               </div>
@@ -516,74 +442,73 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ── How it Works ──────────────────────────────────────────────────── */}
+      {/* How it Works*/}
       <section
         id="how-it-works"
-        className="py-20 sm:py-24 px-4 bg-[#1E1B18] relative overflow-hidden"
+        className="py-20 sm:py-24 px-4 bg-[#EFE9DE] relative overflow-hidden"
       >
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[300px] bg-[radial-gradient(circle,rgba(192,132,87,0.08)_0%,transparent_70%)]" />
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-175 h-75 bg-[radial-gradient(circle,rgba(192,132,87,0.08)_0%,transparent_70%)]" />
         </div>
 
         <SectionHeader
           label="Process"
           title="How it works"
           sub="Three simple steps from problem to resolution."
-          light
         />
 
         <div className="relative max-w-5xl mx-auto mt-14 grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8">
-          <div className="hidden sm:block absolute top-10 left-[18%] right-[18%] h-px bg-[#3A342D]" />
+          <div className="hidden sm:block absolute top-10 left-[18%] right-[18%] h-px bg-[#D6CBB8]" />
 
           {STEPS.map((s) => (
             <div
               key={s.step}
               className="
-          relative z-10
-          bg-[#26221E]
-          border border-[#3A342D]
-          rounded-3xl
-          p-7
-          text-center
-          transition-all duration-300
-          hover:-translate-y-1
-          hover:border-[#C08457]/40
-          hover:shadow-[0_10px_30px_rgba(0,0,0,0.18)]
-        "
+        relative z-10
+        bg-[#FFFDF9]
+        border border-[#E7DED1]
+        rounded-3xl
+        p-7
+        text-center
+        transition-all duration-300
+        hover:-translate-y-1
+        hover:border-[#C08457]/40
+        hover:shadow-[0_10px_30px_rgba(15,23,42,0.06)]
+      "
             >
               <div
                 className={`
-            mx-auto
-            w-16 h-16
-            rounded-2xl
-            flex items-center justify-center
-            text-lg font-black
-            mb-5
-            ring-4
-            ${s.ring}
-            ${s.bg}
-            text-white
-          `}
+          mx-auto
+          w-16 h-16
+          rounded-2xl
+          flex items-center justify-center
+          text-lg font-black
+          mb-5
+          ring-4
+          ${s.ring}
+          ${s.bg}
+          text-white
+        `}
               >
                 {s.step}
               </div>
 
-              <h3 className="text-lg font-extrabold text-[#F8F4EE] mb-3 tracking-tight">
+              <h3 className="text-lg font-extrabold text-[#1C1A17] mb-3 tracking-tight">
                 {s.title}
               </h3>
 
-              <p className="text-sm leading-7 text-[#A8A29E]">
+              <p className="text-sm leading-7 text-[#5B5A56]">
                 {s.description}
               </p>
 
-              <div className="mt-6 w-10 h-[2px] mx-auto rounded-full bg-[#C08457]" />
+              <div className="mt-6 w-10 h-0.5 mx-auto rounded-full bg-[#C08457]" />
             </div>
           ))}
         </div>
       </section>
 
-      {/* ── How to Report ─────────────────────────────────────────────────── */}
-      <section className="py-20 sm:py-24 px-4 bg-[#F6F1E8]">
+      {/*How to Report */}
+      <section id="tips" className="py-20 sm:py-24 px-4 bg-[#F6F1E8]">
         <SectionHeader
           label="Tips"
           title="How to Report Effectively"
@@ -592,28 +517,19 @@ export default function Landing() {
 
         <div className="max-w-5xl mx-auto mt-12 grid grid-cols-1 sm:grid-cols-2 gap-6">
           <div className="bg-[#FFFDF9] border border-[#E7DED1] rounded-3xl p-6 sm:p-7">
-            <div className="w-11 h-11 bg-[#F3E7D3] rounded-2xl flex items-center justify-center mb-5 text-lg">
-              🗂️
-            </div>
-
             <h3 className="text-lg font-extrabold text-[#1F2937] mb-4">
               Choose the Right Category
             </h3>
 
             <ul className="space-y-2 text-sm text-[#6B7280]">
               {[
-                ['🛣️', 'Road', 'potholes, broken footpaths, unsafe bridges'],
-                ['💧', 'Water', 'no supply, leakage, contaminated water'],
-                ['⚡', 'Electricity', 'outages, faulty poles, exposed wires'],
-                ['♻️', 'Sanitation', 'garbage, drainage, sewage overflow'],
-                [
-                  '🏛️',
-                  'Public Property',
-                  'damaged parks, broken benches, vandalism',
-                ],
-              ].map(([emoji, name, desc]) => (
+                ['Road', 'potholes, broken footpaths, unsafe bridges'],
+                ['Water', 'no supply, leakage, contaminated water'],
+                ['Electricity', 'outages, faulty poles, exposed wires'],
+                ['Sanitation', 'garbage, drainage, sewage overflow'],
+                ['Public Parks', 'damaged parks, broken benches, vandalism'],
+              ].map(([name, desc]) => (
                 <li key={name} className="flex gap-2">
-                  <span>{emoji}</span>
                   <span>
                     <span className="font-semibold text-[#374151]">{name}</span>{' '}
                     — {desc}
@@ -624,10 +540,6 @@ export default function Landing() {
           </div>
 
           <div className="bg-[#FFFDF9] border border-[#E7DED1] rounded-3xl p-6 sm:p-7">
-            <div className="w-11 h-11 bg-[#DCE8F7] rounded-2xl flex items-center justify-center mb-5 text-lg">
-              ✏️
-            </div>
-
             <h3 className="text-lg font-extrabold text-[#1F2937] mb-3">
               Describe Clearly
             </h3>
@@ -653,10 +565,6 @@ export default function Landing() {
           </div>
 
           <div className="bg-[#FFFDF9] border border-[#E7DED1] rounded-3xl p-6 sm:p-7">
-            <div className="w-11 h-11 bg-[#EFE6DA] rounded-2xl flex items-center justify-center mb-5 text-lg">
-              ⚠️
-            </div>
-
             <h3 className="text-lg font-extrabold text-[#1F2937] mb-4">
               Indicate Urgency
             </h3>
@@ -697,10 +605,6 @@ export default function Landing() {
           </div>
 
           <div className="bg-[#FFFDF9] border border-[#E7DED1] rounded-3xl p-6 sm:p-7">
-            <div className="w-11 h-11 bg-[#E7F3EE] rounded-2xl flex items-center justify-center mb-5 text-lg">
-              📋
-            </div>
-
             <h3 className="text-lg font-extrabold text-[#1F2937] mb-4">
               Add Supporting Details
             </h3>
@@ -731,7 +635,7 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ── Categories ────────────────────────────────────────────────────── */}
+      {/*Categories*/}
       <section id="categories" className="py-20 sm:py-24 px-4 bg-[#F6F1E8]">
         <SectionHeader
           label="Departments"
@@ -743,15 +647,15 @@ export default function Landing() {
           {CATEGORIES.map((cat) => (
             <div
               key={cat.name}
-              className="
-          bg-[#FFFDF9]
-          border border-[#E7DED1]
-          rounded-3xl
-          p-5 sm:p-6
-          flex items-center gap-3
-          transition-all duration-300
-          hover:-translate-y-1 hover:shadow-[0_10px_25px_rgba(15,23,42,0.08)]
-        "
+              className={`
+      ${cat.bg} 
+      border ${cat.border} 
+      rounded-3xl
+      p-5 sm:p-6
+      flex items-center gap-3
+      transition-all duration-300
+      hover:-translate-y-1 hover:shadow-[0_10px_25px_rgba(15,23,42,0.08)]
+    `}
             >
               <span className="text-2xl">{cat.emoji}</span>
 
@@ -763,10 +667,9 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ── CTA ───────────────────────────────────────────────────────────── */}
       <section className="py-20 sm:py-24 px-4 bg-[#1E1B18] relative overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-[radial-gradient(circle,rgba(192,132,87,0.10)_0%,transparent_70%)]" />
+          <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-150 h-150 bg-[radial-gradient(circle,rgba(192,132,87,0.10)_0%,transparent_70%)]" />
         </div>
 
         <div className="relative max-w-2xl mx-auto text-center">
@@ -783,8 +686,8 @@ export default function Landing() {
               to="/register"
               className="
           inline-flex items-center justify-center gap-2
-          bg-[#C08457] hover:bg-[#A86E3B]
-          text-white font-bold
+           bg-amber-500 hover:bg-amber-600
+        text-[#1C1A17] font-bold
           px-8 sm:px-10 py-3.5 sm:py-4
           rounded-full
           transition-all
@@ -816,7 +719,7 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ── Footer ────────────────────────────────────────────────────────── */}
+      {/*Footer */}
       <footer className="py-10 px-4 bg-[#1E1B18] border-t border-[#3A342D]">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-3">

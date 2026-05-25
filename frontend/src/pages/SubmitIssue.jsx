@@ -22,7 +22,7 @@ const SubmitIssue = () => {
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
-  } = useForm()
+  } = useForm({ mode: 'onBlur' })
 
   const navigate = useNavigate()
   const [locationName, setLocationName] = useState(null)
@@ -244,10 +244,6 @@ const SubmitIssue = () => {
       <div className="max-w-2xl mx-auto px-4 py-10 sm:py-14">
         {/* ── Page Header ── */}
         <div className="mb-8 text-center">
-          <div className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] mb-3 text-indigo-700">
-            <span className="inline-block w-5 h-0.5 bg-amber-400 rounded" />
-            Citizens
-          </div>
           <h1 className="text-3xl sm:text-4xl font-black text-[#1C1A17] tracking-tight mb-2">
             Report an Issue
           </h1>
@@ -271,7 +267,8 @@ const SubmitIssue = () => {
               your{' '}
               <span className="font-semibold text-[#1C1A17]">location</span>{' '}
               helps our team identify and fix problems more quickly. Reports
-              with both details are prioritized.
+              with both details are prioritized. Also describe the problem in
+              detail to help our team know the urgency of the problem.
             </p>
           </div>
         </div>
@@ -326,6 +323,9 @@ const SubmitIssue = () => {
                     value: 20,
                     message: 'Please describe in at least 20 characters',
                   },
+                  validate: (value) =>
+                    value.trim().length >= 20 ||
+                    'Please describe in at least 20 characters',
                 })}
               />
               {errors.description && (
@@ -502,7 +502,7 @@ const SubmitIssue = () => {
                               <div className="flex items-start gap-2">
                                 <MapPin
                                   size={14}
-                                  className="text-indigo-400 mt-0.5 flex-shrink-0 group-hover:text-indigo-600 transition-colors"
+                                  className="text-indigo-400 mt-0.5 shrink-0 group-hover:text-indigo-600 transition-colors"
                                 />
                                 <div className="min-w-0">
                                   <p className="text-sm text-[#1C1A17] font-semibold truncate">

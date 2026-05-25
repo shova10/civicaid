@@ -92,7 +92,7 @@ const Navbar = () => {
           <div className="hidden md:flex items-center gap-3">
             <NotificationBell />
 
-            <div className="relative" ref={profileRef}>
+            <div className="hidden md:block relative" ref={profileRef}>
               <button
                 onClick={() => setProfileOpen((o) => !o)}
                 className="flex items-center gap-3 bg-[#FFFBF5] hover:bg-[#FFF7ED]
@@ -187,6 +187,14 @@ const Navbar = () => {
               {label}
             </Link>
           ))}
+          <Link
+            to="/profile"
+            onClick={() => setMenuOpen(false)}
+            className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[11px] font-bold uppercase tracking-[0.15em] transition-all no-underline text-[#6B665E] hover:bg-[#EFE6DA] hover:text-[#1C1A17]"
+          >
+            <User size={14} />
+            Profile
+          </Link>
 
           <div className="mt-3 px-1">
             <div className="bg-[#FFFBF5] border border-[#E7DDCF] rounded-xl p-2">
