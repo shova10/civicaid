@@ -262,13 +262,10 @@ export default function Profile() {
       <div className="max-w-5xl mx-auto space-y-6">
         {/* Profile header */}
         <div className="bg-[#FFFDF9] rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-          <div className="h-20 bg-gradient-to-r from-blue-500 to-blue-600" />
+          <div className="h-20 bg-linear-to-r from-blue-500 to-blue-600" />
           <div className="px-6 pb-6">
             <div className="-mt-8 flex items-end justify-between mb-4">
               <EditableAvatar displayName={displayName} userId={userId} />
-              <span className="text-xs font-bold uppercase tracking-wider text-blue-600 bg-blue-30 border border-blue-200 px-3 py-1 rounded-full">
-                {user?.role ?? 'Citizen'}
-              </span>
             </div>
             <h1 className="text-xl font-black text-slate-900 mb-0.5">
               {displayName}

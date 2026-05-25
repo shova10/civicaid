@@ -38,7 +38,6 @@ export default function VerifyOTP() {
     newOtp[index] = value.slice(-1) // only last character
     setOtp(newOtp)
 
-    // Auto-advance to next input
     if (value && index < 5) {
       inputRefs.current[index + 1]?.focus()
     }
@@ -181,7 +180,6 @@ export default function VerifyOTP() {
             </button>
           </div>
 
-          {/* Back */}
           <button
             onClick={() => navigate('/register')}
             className="mt-5 text-xs text-slate-400 hover:text-slate-600 flex
