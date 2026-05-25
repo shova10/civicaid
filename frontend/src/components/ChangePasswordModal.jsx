@@ -31,7 +31,8 @@ export default function ChangePasswordModal({ onClose }) {
       onClose()
     } catch (err) {
       toast.error(
-        err.response?.data?.old_password?.[0] ||
+        err.response?.data?.error ||
+          err.response?.data?.old_password?.[0] ||
           err.response?.data?.detail ||
           err.response?.data?.message ||
           'Failed to change password.'
