@@ -18,6 +18,7 @@ from accounts.serializers import UserProfileSerializer
 from accounts.models import CustomUser
 from django.core.cache import cache
 
+
 def send_status_email(to_email, citizen_name, complaint_title, new_status):
     try:
         configuration = sib_api_v3_sdk.Configuration()

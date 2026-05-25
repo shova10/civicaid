@@ -2,7 +2,9 @@ from rest_framework import serializers
 from .models import CustomUser
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.db.models import Count
+from django.contrib.auth import get_user_model
 
+User = get_user_model()
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
@@ -56,3 +58,19 @@ class UserProfileSerializer(serializers.ModelSerializer):
         model = CustomUser
         fields = ['id', 'username', 'email', 'full_name', 'phone', 'address', 'date_of_birth', 'language', 'role', 'created_at', 'is_active', 'date_joined', 'complaint_count',]
         read_only_fields = ['id', 'email', 'role', 'created_at']
+
+
+
+
+class ForgotPasswordSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+
+class ChangePasswordSerializer(serializers.Serializer):
+    old_password = serializers.CharField()
+    new_password = serializers.CharField()
+    confirm_password = serializers.CharField()
+
+    def validate(self, data):
+        if data['new_password'] != data['confirm_password']:
+            raise serializers.ValidationError({"error": "New passwords do not match."})
+        return data
