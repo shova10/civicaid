@@ -21,6 +21,7 @@ import AdminUsers from './pages/admin/AdminUsers'
 import AdminUserDetail from './pages/admin/AdminUserDetail'
 import AdminProfile from './pages/admin/AdminProfile'
 import Profile from './pages/Profile'
+import ForgotPassword from './pages/ForgotPassword'
 import VerifyOTP from './pages/VerifyOTP'
 import Landing from './pages/Landing'
 
@@ -59,6 +60,7 @@ const App = () => {
           </Route>
           <Route path="/issues/:id" element={<IssueDetail />} />
         </Route>
+        <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/verify-otp" element={<VerifyOTP />} />
 
         <Route path="*" element={<NotFound />} />

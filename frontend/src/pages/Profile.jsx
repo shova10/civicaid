@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from 'react'
 import { Phone, MapPin, Mail, User, Camera } from 'lucide-react'
 import toast from 'react-hot-toast'
+import ChangePasswordModal from '../components/ChangePasswordModal'
 import IssueCard from '../components/IssueCard'
 import Avatar from '../components/Avatar'
 import useAuth from '../hooks/useAuth'
@@ -204,6 +205,7 @@ export default function Profile() {
   const [issues, setIssues] = useState([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState('')
+  const [pwdModalOpen, setPwdModalOpen] = useState(false)
 
   useEffect(() => {
     async function fetchAll() {
@@ -266,6 +268,12 @@ export default function Profile() {
           <div className="px-6 pb-6">
             <div className="-mt-8 flex items-end justify-between mb-4">
               <EditableAvatar displayName={displayName} userId={userId} />
+              <button
+                onClick={() => setPwdModalOpen(true)}
+                className="text-xs font-semibold text-blue-600 border border-blue-200 bg-blue-50 px-3 py-1 rounded-full hover:bg-blue-100 transition-colors"
+              >
+                Change Password
+              </button>
             </div>
             <h1 className="text-xl font-black text-slate-900 mb-0.5">
               {displayName}
@@ -351,6 +359,9 @@ export default function Profile() {
           </div>
         </div>
       </div>
+      {pwdModalOpen && (
+        <ChangePasswordModal onClose={() => setPwdModalOpen(false)} />
+      )}
     </div>
   )
 }
