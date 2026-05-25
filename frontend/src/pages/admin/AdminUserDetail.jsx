@@ -249,7 +249,6 @@ export default function AdminUserDetail() {
                 <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
                   Personal Information
                 </h2>
-                <InfoRow icon={Hash} label="User ID" value={`#${user.id}`} />
                 <InfoRow icon={Mail} label="Email" value={user.email} />
                 <InfoRow icon={Phone} label="Phone" value={user.phone} />
                 <InfoRow icon={MapPin} label="Address" value={user.address} />
