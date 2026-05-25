@@ -19,6 +19,7 @@ from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 from django.core.mail import send_mail
+from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
@@ -201,7 +202,7 @@ class ForgotPasswordView(APIView):
                 fail_silently=True,
             )
         except User.DoesNotExist:
-            pass  # Silent — don't reveal if email exists
+            pass
 
         return Response(
             {"message": "If this email is registered, a reset link has been sent."},
