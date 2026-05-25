@@ -4,7 +4,7 @@ import toast from 'react-hot-toast'
 import { Eye, EyeOff, Lock } from 'lucide-react'
 import { changePassword } from '../services/auth'
 
-export default function ChangePasswordmodal({ onClose }) {
+export default function ChangePasswordModal({ onClose }) {
   const [show, setShow] = useState({ old: false, new: false, confirm: false })
 
   const {

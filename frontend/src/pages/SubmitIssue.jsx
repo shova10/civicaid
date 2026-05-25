@@ -502,7 +502,7 @@ const SubmitIssue = () => {
                               <div className="flex items-start gap-2">
                                 <MapPin
                                   size={14}
-                                  className="text-indigo-400 mt-0.5 flex-shrink-0 group-hover:text-indigo-600 transition-colors"
+                                  className="text-indigo-400 mt-0.5 shrink-0 group-hover:text-indigo-600 transition-colors"
                                 />
                                 <div className="min-w-0">
                                   <p className="text-sm text-[#1C1A17] font-semibold truncate">
