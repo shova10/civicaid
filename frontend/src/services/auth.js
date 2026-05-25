@@ -24,12 +24,10 @@ export const toggleUserActive = async (userId, isActive) => {
   })
   return res.data
 }
+
 export const forgotPassword = (email) =>
   api.post('/auth/forgot-password/', { email })
 
-// to change password while logged in
 export const changePassword = (data) => api.post('/auth/change-password/', data)
 
-
-
-
+export const resetPassword = (data) => api.post('/auth/reset-password/', data)
