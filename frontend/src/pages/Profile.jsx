@@ -262,7 +262,7 @@ export default function Profile() {
   return (
     <div className="min-h-screen bg-[#F6F1E8] py-8 px-4">
       <div className="max-w-5xl mx-auto space-y-6">
-        {/* Profile header */}
+        
         <div className="bg-[#FFFDF9] rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
           <div className="h-20 bg-linear-to-r from-blue-500 to-blue-600" />
           <div className="px-6 pb-6">
@@ -283,7 +283,7 @@ export default function Profile() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Personal info */}
+          
           <div className="lg:col-span-1">
             <div className="bg-[#FFFDF9] rounded-2xl border border-slate-200 shadow-sm p-5">
               <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
