@@ -59,11 +59,13 @@ function InfoRow({ icon: Icon, label, value }) {
       <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center shrink-0 mt-0.5">
         <Icon size={14} className="text-slate-500" />
       </div>
-      <div>
+      <div className="min-w-0 flex-1">
         <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">
           {label}
         </p>
-        <p className="text-sm font-semibold text-slate-700">{value || '—'}</p>
+        <p className="text-sm font-semibold text-slate-700 break-words">
+          {value || '—'}
+        </p>
       </div>
     </div>
   )
@@ -226,7 +228,7 @@ export default function AdminUserDetail() {
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="space-y-5">
-              <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
+              <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 overflow-hidden">
                 <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
                   Personal Information
                 </h2>
