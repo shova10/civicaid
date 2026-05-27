@@ -170,6 +170,15 @@ class AdminComplaintDetailView(generics.RetrieveDestroyAPIView):
 class StatusUpdateView(APIView):
     permission_classes = [IsAuthenticated, IsAdmin]
 
+    ALLOWED_TRANSITIONS = {
+        'reported':    ['pending'],
+        'pending':     ['verified'],
+        'verified':    ['in_progress', 'rejected'],
+        'in_progress': ['resolved', 'rejected'],
+        'resolved':    [],
+        'rejected':    [],
+    }
+
     def patch(self, request, pk):
         complaint = get_object_or_404(Complaint, id=pk)
         previous_status = complaint.status
@@ -182,10 +191,10 @@ class StatusUpdateView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        valid_statuses = ['reported', 'pending', 'verified', 'in_progress', 'resolved', 'rejected']
-        if new_status not in valid_statuses:
+        allowed = self.ALLOWED_TRANSITIONS.get(previous_status, [])
+        if new_status not in allowed:
             return Response(
-                {"error": f"Invalid status. Choose from: {valid_statuses}"},
+                {"error": f"Cannot transition from '{previous_status}' to '{new_status}'."},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
@@ -207,7 +216,6 @@ class StatusUpdateView(APIView):
             message=f"Your complaint '{complaint.title}' has been {new_status.replace('_', ' ')}.",
             message_ne=f"तपाईंको उजुरी '{complaint.title}' को स्थिति {new_status} मा परिवर्तन भयो।"
         )
-        
 
         if new_status in ['in_progress', 'resolved', 'rejected']:
             send_status_email(
