@@ -468,11 +468,16 @@ export default function AdminIssues() {
                     </td>
                   </tr>
                 ) : (
-                  rows.map((issue) => (
-                    <tr>
+                  rows.map((issue, index) => (
+                    <tr
+                      key={issue.id}
+                      onClick={() => navigate(`/admin/issues/${issue.id}`)}
+                      className="hover:bg-slate-50 cursor-pointer transition-colors group"
+                    >
                       <td className="px-4 py-3">
                         <span className="text-xs font-mono font-bold text-slate-400">
-                          {'1'}
+                          {(page - 1) * pageSize + index + 1}{' '}
+                          {/* ✅ page-aware number */}
                         </span>
                       </td>
 
