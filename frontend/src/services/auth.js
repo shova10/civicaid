@@ -26,8 +26,10 @@ export const toggleUserActive = async (userId, isActive) => {
 }
 
 export const forgotPassword = (email) =>
-  api.post('/auth/forgot-password/', { email })
+  api.post('/api/auth/forgot-password/', { email })
 
-export const changePassword = (data) => api.post('/auth/change-password/', data)
+export const changePassword = (data) =>
+  api.post('/api/auth/change-password/', data)
 
-export const resetPassword = (data) => api.post('/auth/reset-password/', data)
+export const resetPassword = (data) =>
+  api.post('/api/auth/reset-password/', data)
