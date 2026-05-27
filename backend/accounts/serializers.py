@@ -14,6 +14,11 @@ class RegisterSerializer(serializers.ModelSerializer):
         model = CustomUser
         fields = ['username', 'full_name', 'email', 'password', 'password2', 'phone', 'address', 'date_of_birth']
 
+    def validate_full_name(self, value):
+        if len(value.strip().split()) < 2:
+            raise serializers.ValidationError("Please enter your full name (first and last name).")
+        return value.strip()
+
     def validate(self, attrs):
         if attrs['password'] != attrs['password2']:
             raise serializers.ValidationError("Password do not match")
