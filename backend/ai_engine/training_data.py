@@ -45,6 +45,34 @@ CATEGORY_TRAINING_DATA = [
     ("The road shoulder has eroded and vehicles fall off the edge", "road"),
     ("Our colony road has not been repaired since it was first built", "road"),
     ("The road to the cremation ground is full of potholes and unusable", "road"),
+    ("pot holes on the main road have been ignored by the department for so long", "road"),
+    ("riders and drivers are facing problems due to pot holes on main road", "road"),
+    ("the department is ignoring the pot holes and no action is being taken", "road"),
+    ("it has been a long time since the road was repaired and nobody cares", "road"),
+    ("vehicles are getting damaged due to pot holes that have existed for months", "road"),
+    ("the road condition is very bad and authorities are not paying attention", "road"),
+    ("pot holes have been on this road for a very long time with no repair", "road"),
+    ("many people are suffering because of the bad road and ignored complaints", "road"),
+    ("the road has been in terrible condition for months and nobody is fixing it", "road"),
+    ("every day i ride my bike on this broken road and it damages my vehicle", "road"),
+    ("the authorities have been ignoring our road problem for a very long time", "road"),
+    ("our road has not seen any maintenance work in years", "road"),
+    ("commuters are suffering daily because of the terrible road condition", "road"),
+    ("the road problem has been reported many times but no action is taken", "road"),
+    ("people have complained about this road so many times but nothing happens", "road"),
+    ("the condition of the road is getting worse every day with no repair", "road"),
+    ("road damage is causing accidents and the department does not care", "road"),
+    ("we have been tolerating this bad road for too long now please fix it", "road"),
+    ("the road to our area is so damaged that even walking is difficult", "road"),
+    ("despite many complaints the road repair has not started yet", "road"),
+    ("this road has been damaged since last year and still not repaired", "road"),
+    ("the local authority keeps promising to fix the road but never does", "road"),
+    ("daily commuters are facing hardship due to the unrepaired road", "road"),
+    ("the road is in such bad shape that vehicles avoid using it", "road"),
+    ("we are tired of waiting for the road to be fixed by the department", "road"),
+    ("the road issue has been pending for so long and we need urgent action", "road"),
+    ("motorists are struggling every day because of this broken road", "road"),
+    ("the road repair was promised after last election but still not done", "road"),
 
 
     # --------------------------------------------------------
@@ -92,6 +120,21 @@ CATEGORY_TRAINING_DATA = [
     ("The overhead tank overflows every day wasting large amounts of water", "water"),
     ("Children have to carry water from far because local supply is broken", "water"),
     ("Water supply was promised for our area two years ago but never came", "water"),
+    ("we have been struggling without proper water supply for weeks", "water"),
+    ("the water situation in our area is getting worse every day", "water"),
+    ("nobody from the water department has come to fix the pipe issue", "water"),
+    ("we are forced to buy water because the supply has been cut", "water"),
+    ("water comes for only a few minutes a day and it is not enough", "water"),
+    ("the water supply problem has been ignored by the department for long", "water"),
+    ("our taps have been dry for days and we need immediate help", "water"),
+    ("water leaking from the pipe has been wasting water for weeks now", "water"),
+    ("we have complained about the water issue many times with no response", "water"),
+    ("families in our area are suffering due to lack of clean water supply", "water"),
+    ("the water we receive is not clean and we cannot drink it safely", "water"),
+    ("water supply was fine before but since last month nothing comes", "water"),
+    ("the broken pipe has been leaking for two weeks and nobody fixed it", "water"),
+    ("we have no water for cooking or drinking and need urgent supply", "water"),
+    ("water department is not responding to our repeated complaints", "water"),
 
     # --------------------------------------------------------
     # electricity complaints
@@ -138,6 +181,21 @@ CATEGORY_TRAINING_DATA = [
     ("The street has ten lights but eight of them are not working", "electricity"),
     ("The electric pole is cracked at the base and could fall any time", "electricity"),
     ("Load shedding schedule is not followed and we have no power all day", "electricity"),
+    ("we have been sitting in darkness for days with no electricity", "electricity"),
+    ("the power cut problem in our area has been going on for too long", "electricity"),
+    ("nobody from the electricity department is responding to our issue", "electricity"),
+    ("we keep calling the electricity office but nobody comes to fix it", "electricity"),
+    ("the transformer problem has not been solved for several days now", "electricity"),
+    ("our area is always the last to get power restored after outage", "electricity"),
+    ("electricity goes off every night and we are tired of complaining", "electricity"),
+    ("students cannot study because there is no electricity in the evening", "electricity"),
+    ("small businesses are suffering huge losses due to frequent power cuts", "electricity"),
+    ("the electricity issue in our locality has been reported many times", "electricity"),
+    ("we have been without power since the storm and nobody has come", "electricity"),
+    ("the electric wire issue is dangerous and the department is ignoring it", "electricity"),
+    ("power supply is so unreliable that we cannot depend on it at all", "electricity"),
+    ("we are spending money on candles because electricity never comes", "electricity"),
+    ("the electricity department promised to fix it but never showed up", "electricity"),
 
     # --------------------------------------------------------
     # sanitation complaints
@@ -184,6 +242,22 @@ CATEGORY_TRAINING_DATA = [
     ("The drain is so blocked that even light rain causes flooding", "sanitation"),
     ("Chemical waste is being dumped into the local drain by a factory", "sanitation"),
     ("Our area has no proper drainage and water stagnates after every rain", "sanitation"),
+    ("garbage has been piling up for so long and the smell is unbearable", "sanitation"),
+    ("no sanitation worker has visited our street in weeks", "sanitation"),
+    ("the garbage truck stopped coming and our area is becoming a dump", "sanitation"),
+    ("we have complained about the drainage issue many times with no result", "sanitation"),
+    ("the blocked drain is causing health problems in our neighborhood", "sanitation"),
+    ("our area smells terrible because of the uncollected waste", "sanitation"),
+    ("nobody is cleaning the public areas and the situation is getting worse", "sanitation"),
+    ("the sanitation department is completely ignoring our ward", "sanitation"),
+    ("we cannot open our windows because of the smell from the open drain", "sanitation"),
+    ("garbage is everywhere and flies and mosquitoes are increasing daily", "sanitation"),
+    ("the drainage problem was reported long ago but still not resolved", "sanitation"),
+    ("waste collection in our area is completely irregular and unreliable", "sanitation"),
+    ("the open drain near our house is a health hazard for our children", "sanitation"),
+    ("despite multiple complaints the garbage situation has not improved", "sanitation"),
+    ("the public toilet near the market is disgraceful and needs cleaning", "sanitation"),
+
 
 
     # --------------------------------------------------------
@@ -230,6 +304,16 @@ CATEGORY_TRAINING_DATA = [
     ("Park benches are so broken that nobody can sit on them anymore", "park"),
     ("The public garden has no toilet facility for visitors", "park"),
     ("Children cannot play in the park because equipment is all damaged", "park"),
+    ("the park has been neglected for so long it is now unusable", "park"),
+    ("children cannot play safely because the park equipment is all broken", "park"),
+    ("nobody is maintaining the public garden and it looks completely abandoned", "park"),
+    ("the park near our area has become unsafe because of poor maintenance", "park"),
+    ("we have been asking for park repairs for months with no response", "park"),
+    ("the public garden is in a terrible state and residents are unhappy", "park"),
+    ("park lights have been broken for months and it is unsafe at night", "park"),
+    ("the playground has been closed because equipment is too dangerous", "park"),
+    ("our community park has been ignored by the municipality for years", "park"),
+    ("the park wall collapsed months ago and still has not been repaired", "park"),
 
 
      # SAFETY complaints
@@ -316,6 +400,14 @@ PRIORITY_TRAINING_DATA = [
     ("A large portion of the hillside is sliding toward our houses", "high"),
     ("The bridge is shaking badly when vehicles cross it", "high"),
     ("There is a live wire on the wet road and nobody has cordoned it off", "high"),
+    ("the road is so dangerous that accidents are happening regularly", "high"),
+    ("people are getting injured because this issue has been ignored too long", "high"),
+    ("this problem has become an emergency and needs immediate attention", "high"),
+    ("the situation is critical and residents are in danger every day", "high"),
+    ("urgent action needed as the problem is causing serious harm to people", "high"),
+    ("multiple accidents have already happened due to this unresolved issue", "high"),
+    ("children and elderly people are at serious risk because of this problem", "high"),
+
 
     # --------------------------------------------------------
     # medium priority
@@ -342,6 +434,20 @@ PRIORITY_TRAINING_DATA = [
     ("The road to the market is always muddy and very inconvenient", "medium"),
     ("Sewage drain is partially clogged and overflows during heavy rain", "medium"),
     ("Street sign is damaged and difficult to read", "medium"),
+    ("pot holes have been ignored for a long time and vehicles keep getting damaged", "medium"),
+    ("the department is not responding and the road condition keeps getting worse", "medium"),
+    ("riders are facing danger daily due to pot holes ignored by authorities", "medium"),
+    ("the problem has been going on for months and is affecting daily life", "medium"),
+    ("despite many complaints the issue remains unresolved and is worsening", "medium"),
+    ("the department is ignoring our complaints and the situation is getting bad", "medium"),
+    ("residents are suffering daily inconvenience due to this unresolved issue", "medium"),
+    ("we have been tolerating this problem for too long and need action now", "medium"),
+    ("the issue is not an emergency but it is seriously affecting our routine", "medium"),
+    ("daily life has been disrupted by this problem that nobody is fixing", "medium"),
+    ("this has been a persistent problem that the authority keeps ignoring", "medium"),
+    ("riders and commuters face this problem every single day", "medium"),
+    ("the problem was reported long ago and still no action has been taken", "medium"),
+
 
     # --------------------------------------------------------
     # low priority
@@ -368,4 +474,10 @@ PRIORITY_TRAINING_DATA = [
     ("Minor water discoloration occasionally but clears after running tap", "low"),
     ("The public clock is running a few minutes slow", "low"),
     ("electricity meter box cover is slightly broken but meter works fine", "low"),
+    ("the area could be improved with some attention from the municipality", "low"),
+    ("this is a minor issue but it would be good if it could be fixed", "low"),
+    ("not very urgent but this problem should be addressed eventually", "low"),
+    ("the issue is small but has been there for a while and should be noted", "low"),
+    ("this is a suggestion for improvement rather than an urgent complaint", "low"),
+    ("the problem is manageable for now but needs attention in the future", "low"),
 ]
