@@ -10,7 +10,7 @@ urlpatterns = [
     path('token/refresh/', TokenRefreshView.as_view(), name='tokenrefresh'),
     path('verify-otp/', VerifyOTPView.as_view(), name='verify-otp'),
     path('resend-otp/', ResendOTPView.as_view(), name='resend-otp'),
-    path('auth/forgot-password/', ForgotPasswordView.as_view(), name='forgot-password'),
-    path('auth/change-password/', ChangePasswordView.as_view(), name='change-password'),
+    path('forgot-password/', ForgotPasswordView.as_view(), name='forgot-password'),
+    path('change-password/', ChangePasswordView.as_view(), name='change-password'),
     path('reset-password/', ResetPasswordView.as_view(), name='reset-password'),
 ]
