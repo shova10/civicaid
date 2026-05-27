@@ -3,14 +3,12 @@ import { SlidersHorizontal, ChevronDown, X } from 'lucide-react'
 import { CATEGORIES, PRIORITIES, STATUSES } from '../hooks/useMapFilters'
 
 const PRIORITY_LABELS = {
-  critical: 'Critical',
   high: 'High',
   medium: 'Medium',
   low: 'Low',
 }
 
 const PRIORITY_COLORS = {
-  critical: 'text-red-600 bg-red-50 border-red-200',
   high: 'text-orange-600 bg-orange-50 border-orange-200',
   medium: 'text-yellow-600 bg-yellow-50 border-yellow-200',
   low: 'text-slate-500 bg-slate-50 border-slate-200',
@@ -49,9 +47,9 @@ function FilterSelect({ label, value, options, onChange, renderOption }) {
 
       {open && (
         <>
-          {/* Backdrop */}
+          
           <div className="fixed inset-0 z-999" onClick={() => setOpen(false)} />
-          {/* Dropdown */}
+          
           <div
             className="absolute top-full mt-1.5 left-0 z-1000 bg-white rounded-xl
             border border-slate-200 shadow-lg py-1 min-w-40"
@@ -89,17 +87,6 @@ function FilterSelect({ label, value, options, onChange, renderOption }) {
   )
 }
 
-/**
- * MapFilters
- * @param {object}   filters     - { category, priority, status }
- * @param {function} setCategory
- * @param {function} setPriority
- * @param {function} setStatus
- * @param {function} reset       - clears all filters
- * @param {number}   activeCount - number of active filters
- * @param {number}   total       - total issues before filtering
- * @param {number}   showing     - issues after filtering
- */
 export default function MapFilters({
   filters,
   setCategory,

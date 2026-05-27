@@ -1,14 +1,6 @@
 import { ArrowUp, ArrowRight, ArrowDown, Minus } from 'lucide-react'
 
 const PRIORITY_CONFIG = {
-  critical: {
-    label: 'Critical',
-    bg: 'bg-red-50',
-    text: 'text-red-700',
-    border: 'border-red-200',
-    Icon: ArrowUp,
-    iconColor: 'text-red-500',
-  },
   high: {
     label: 'High',
     bg: 'bg-orange-50',
@@ -41,7 +33,7 @@ const PRIORITY_CONFIG = {
     Icon: Minus,
     iconColor: 'text-gray-400',
   },
-  // Add AI title case versions
+
   High: {
     label: 'High',
     bg: 'bg-orange-50',
@@ -69,7 +61,6 @@ const PRIORITY_CONFIG = {
 }
 
 const DEFAULT = PRIORITY_CONFIG.none
-
 
 export default function PriorityBadge({ priority, size = 'md' }) {
   const cfg = PRIORITY_CONFIG[priority] ?? DEFAULT

@@ -16,7 +16,7 @@ import {
 } from 'lucide-react'
 import Avatar from '../../components/Avatar'
 import toast from 'react-hot-toast'
-import { toggleUserActive } from '../../services/auth'
+import { toggleUserActive, changeUserRole } from '../../services/auth'
 import api from '../../services/api'
 import StatusBadge from '../../components/StatusBadge'
 import PriorityBadge from '../../components/PriorityBadge'
@@ -141,6 +141,16 @@ export default function AdminUserDetail() {
       toast.success(user.is_active ? 'User deactivated' : 'User activated')
     } catch {
       toast.error('Could not update user status.')
+    }
+  }
+  async function handleChangeRole() {
+    const newRole = user.role === 'citizen' ? 'admin' : 'citizen'
+    try {
+      await changeUserRole(user.id, newRole)
+      setUser((prev) => ({ ...prev, role: newRole }))
+      toast.success(`Role changed to ${newRole}`)
+    } catch {
+      toast.error('Could not update user role.')
     }
   }
 
@@ -278,6 +288,16 @@ export default function AdminUserDetail() {
                       )}
                     </button>
                   </div>
+
+                  <button
+                    onClick={handleChangeRole}
+                    className="w-full text-left text-xs font-semibold px-3 py-2.5
+          rounded-xl border transition-colors flex items-center gap-2
+          border-violet-200 text-violet-600 hover:bg-violet-50"
+                  >
+                    <Shield size={12} />
+                    Make {user.role === 'citizen' ? 'Admin' : 'Citizen'}
+                  </button>
                 </div>
               )}
             </div>

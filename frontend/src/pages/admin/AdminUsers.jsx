@@ -13,12 +13,13 @@ import {
   ChevronDown,
   ChevronsUpDown,
   RefreshCw,
+  Trash2,
 } from 'lucide-react'
 import Avatar from '../../components/Avatar'
 import toast from 'react-hot-toast'
 import {
   getAdminUsers,
-  updateUserRole,
+  deleteAdminUser,
   toggleUserActive,
 } from '../../services/auth'
 
@@ -73,7 +74,7 @@ function formatDate(d) {
   })
 }
 
-function ActionMenu({ user, onToggleActive, onChangeRole }) {
+function ActionMenu({ user, onToggleActive, onChangeRole, onDelete }) {
   const [open, setOpen] = useState(false)
   return (
     <div className="relative">
@@ -89,31 +90,15 @@ function ActionMenu({ user, onToggleActive, onChangeRole }) {
       {open && (
         <>
           <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
-          <div
-            className="absolute right-0 top-full mt-1 z-20 bg-white rounded-xl
-            border border-slate-200 shadow-lg py-1 min-w-40"
-          >
-            {user.role !== 'admin' && (
-              <>
-                <button
-                  onClick={() => {
-                    onChangeRole(user.id, user.role === 'citizen')
-                    setOpen(false)
-                  }}
-                  className="w-full text-left text-xs px-3 py-2 hover:bg-slate-50
-                    text-slate-700 font-medium transition-colors"
-                ></button>
-                <div className="h-px bg-slate-100 my-1" />
-              </>
-            )}
+          <div className="absolute right-0 top-full mt-1 z-20 bg-white rounded-xl border border-slate-200 shadow-lg py-1 min-w-40">
             <button
               onClick={() => {
                 onToggleActive(user.id, user.is_active)
                 setOpen(false)
               }}
               className={`w-full text-left text-xs px-3 py-2 hover:bg-slate-50
-                font-medium transition-colors flex items-center gap-2
-                ${user.is_active ? 'text-red-500' : 'text-emerald-600'}`}
+          font-medium transition-colors flex items-center gap-2
+          ${user.is_active ? 'text-red-500' : 'text-emerald-600'}`}
             >
               {user.is_active ? (
                 <>
@@ -124,6 +109,19 @@ function ActionMenu({ user, onToggleActive, onChangeRole }) {
                   <UserCheck size={11} /> Activate
                 </>
               )}
+            </button>
+
+            <div className="h-px bg-slate-100 my-1" />
+
+            <button
+              onClick={() => {
+                onDelete(user.id)
+                setOpen(false)
+              }}
+              className="w-full text-left text-xs px-3 py-2 hover:bg-red-50
+          text-red-500 font-medium transition-colors flex items-center gap-2"
+            >
+              <Trash2 size={11} /> Delete user
             </button>
           </div>
         </>
@@ -155,6 +153,17 @@ export default function AdminUsers() {
       setLoading(false)
     }
   }
+  async function handleDeleteUser(id) {
+    if (!window.confirm('Permanently delete this user and all their data?'))
+      return
+    try {
+      await deleteAdminUser(id)
+      setUsers((prev) => prev.filter((u) => u.id !== id))
+      toast.success('User deleted')
+    } catch {
+      toast.error('Could not delete user.')
+    }
+  }
 
   useEffect(() => {
     fetchUsers()
@@ -179,18 +188,6 @@ export default function AdminUsers() {
       toast.success(currentlyActive ? 'User deactivated' : 'User activated')
     } catch {
       toast.error('Could not update user status.')
-    }
-  }
-
-  async function handleChangeRole(id, newRole) {
-    try {
-      await updateUserRole(id, newRole)
-      setUsers((prev) =>
-        prev.map((u) => (u.id === id ? { ...u, role: newRole } : u))
-      )
-      toast.success(`Role updated to ${newRole}`)
-    } catch {
-      toast.error('Could not update user role.')
     }
   }
 
@@ -442,14 +439,11 @@ export default function AdminUsers() {
                         </span>
                       </td>
                       <td className="px-4 py-3">
-                        <div
-                          onClick={(e) => e.stopPropagation()}
-                          className="opacity-0 group-hover:opacity-100 transition-opacity"
-                        >
+                        <div onClick={(e) => e.stopPropagation()}>
                           <ActionMenu
                             user={user}
                             onToggleActive={handleToggleActive}
-                            onChangeRole={handleChangeRole}
+                            onDelete={handleDeleteUser}
                           />
                         </div>
                       </td>

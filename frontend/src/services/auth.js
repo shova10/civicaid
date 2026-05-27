@@ -25,6 +25,18 @@ export const toggleUserActive = async (userId, isActive) => {
   return res.data
 }
 
+export async function deleteAdminUser(id) {
+  const res = await api.delete(`/api/admin/users/${id}/`)
+  return res.data
+}
+
+export async function changeUserRole(userId, newRole) {
+  const response = await api.patch(`/api/admin/users/${userId}/`, {
+    role: newRole,
+  })
+  return response.data
+}
+
 export const forgotPassword = (email) =>
   api.post('/api/auth/forgot-password/', { email })
 

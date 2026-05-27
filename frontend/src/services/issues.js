@@ -78,3 +78,7 @@ export async function getMyOwnIssues() {
   const response = await api.get('/api/complaints/mine/')
   return response.data
 }
+export async function deleteAdminIssue(id) {
+  const res = await api.delete(`/api/admin/complaints/${id}/`)
+  return res.data
+}
