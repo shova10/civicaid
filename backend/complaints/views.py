@@ -162,7 +162,7 @@ class AdminComplaintListView(generics.ListAPIView):
 
         return qs
 
-class AdminComplaintDetailView(generics.RetrieveAPIView):  # new
+class AdminComplaintDetailView(generics.RetrieveDestroyAPIView):
     permission_classes = [IsAuthenticated, IsAdmin]
     serializer_class = ComplaintDetailSerializer
     queryset = Complaint.objects.all()
@@ -384,6 +384,24 @@ class AdminUserUpdateView(APIView):
             },
             status=status.HTTP_200_OK
         )
+    
+    def delete(self, request, pk):
+        user = get_object_or_404(CustomUser, pk=pk)
+    
+        if user.id == request.user.id:
+            return Response(
+                {"detail": "You cannot delete your own account."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+    
+        if user.role == 'admin':
+            return Response(
+                {"detail": "Cannot delete another admin."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+    
+        user.delete()
+        return Response({"detail": "User deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
 
 class AdminUserComplaintsView(generics.ListAPIView):
     serializer_class = ComplaintListSerializer
