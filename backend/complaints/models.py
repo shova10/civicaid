@@ -5,8 +5,8 @@ class Complaint(models.Model):
 
     citizen = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        on_delete=models.SET_NULL,
-        null=True)
+        on_delete=models.CASCADE,
+        )
     duplicate_of = models.ForeignKey(
         'self',
         blank=True,

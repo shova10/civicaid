@@ -373,6 +373,11 @@ class AdminUserUpdateView(APIView):
             )
 
         if role is not None:
+            if role == 'admin' and not request.user.is_superuser:
+                return Response(
+                    {"detail": "Only superuser can promote users to admin."},
+                    status=status.HTTP_403_FORBIDDEN
+                )
             user.role = role
 
         if is_active is not None:
