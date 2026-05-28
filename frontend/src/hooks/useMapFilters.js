@@ -1,26 +1,21 @@
 const ALL = 'all'
 
 export const CATEGORIES = [
-  'Road & Transport',
-  'Water & Drainage',
-  'Electricity',
-  'Waste Management',
-  'Public Safety',
-  'Parks & Green',
-  'Other',
+  'road',
+  'water',
+  'electricity',
+  'sanitation',
+  'park',
+  'safety',
+  'other',
 ]
 
-export const PRIORITIES = ['critical', 'high', 'medium', 'low']
+export const PRIORITIES = ['high', 'medium', 'low']
 
 export const STATUSES = ['pending', 'open', 'in_progress', 'resolved', 'closed']
 
 import { useState, useMemo } from 'react'
 
-/**
- * useMapFilters
- * Manages filter state and returns filtered issues + active filter count.
- * @param {array} issues - raw issues array from API
- */
 export default function useMapFilters(issues) {
   const [category, setCategory] = useState(ALL)
   const [priority, setPriority] = useState(ALL)
