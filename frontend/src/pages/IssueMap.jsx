@@ -12,7 +12,6 @@ import MarkerClusterGroup from 'react-leaflet-markercluster'
 import { getHeatmapData, getAllIssues } from '../services/issues'
 
 const PRIORITY_STYLE = {
-  
   high: { color: '#f97316', fillColor: '#f97316', radius: 11 },
   medium: { color: '#eab308', fillColor: '#eab308', radius: 9 },
   low: { color: '#64748b', fillColor: '#64748b', radius: 7 },
@@ -23,7 +22,6 @@ const PRIORITY_STYLE = {
 }
 
 const LEGEND_ITEMS = [
- 
   { priority: 'high', label: 'High', color: '#f97316' },
   { priority: 'medium', label: 'Medium', color: '#eab308' },
   { priority: 'low', label: 'Low', color: '#64748b' },
@@ -144,7 +142,7 @@ export default function IssueMap() {
               Issue Map
             </h1>
             <p className="text-sm text-slate-400 mt-0.5">
-              Live civic issues across the Kathmandu Valley
+              Live civic issues 
             </p>
           </div>
           {!loading && !error && <StatsBar issues={issues} />}
