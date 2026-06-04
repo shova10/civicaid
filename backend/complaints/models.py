@@ -54,7 +54,8 @@ class Complaint(models.Model):
     category = models.CharField(
         max_length=20,
         choices=Category.choices,
-        default=Category.OTHER
+        default=Category.OTHER,
+        db_index=True
     )
 
     priority = models.CharField(
@@ -66,7 +67,8 @@ class Complaint(models.Model):
     status = models.CharField(
         max_length=12,
         choices=Status.choices,
-        default=Status.REPORTED
+        default=Status.REPORTED,
+        db_index=True
     )
 
     ai_category = models.CharField(blank=True, max_length=20)
@@ -80,7 +82,7 @@ class Complaint(models.Model):
         null=True,
         blank=True
     )
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     updated_at = models.DateTimeField(auto_now=True)
     resolved_at = models.DateTimeField(
         null=True,
