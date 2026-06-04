@@ -1,7 +1,7 @@
 import { CheckCircle2, Circle, Clock, XCircle, Loader2 } from 'lucide-react'
 import { useState } from 'react'
 
-// The canonical order statuses flow through
+
 const TIMELINE_STEPS = [
   {
     key: 'reported',
@@ -93,7 +93,7 @@ export default function StatusTimeline({
     }
   }
 
-  // ── Rejected special case ───────────────────────────────────────────────────
+  //  Rejected special case 
   if (status === 'rejected') {
     return (
       <div className="flex items-start gap-3 p-4 rounded-xl bg-red-50 border border-red-100">
@@ -136,7 +136,7 @@ export default function StatusTimeline({
                   ${isAdmin && !isCurrentStep && !loadingKey ? 'relative' : ''}
                 `}
               >
-                {/* Subtle ring hint for admins on hover */}
+                
                 {clickable && (
                   <span
                     className="absolute inset-0 rounded-full ring-0 group-hover:ring-2
@@ -159,7 +159,7 @@ export default function StatusTimeline({
               )}
             </div>
 
-            {/* Right column: text (also clickable for admin) */}
+           
             <div
               onClick={() => clickable && handleStepClick(step.key)}
               className={`pb-5 group ${clickable ? 'cursor-pointer' : ''}`}
@@ -187,7 +187,7 @@ export default function StatusTimeline({
                   </span>
                 )}
 
-                {/* Admin affordance: show "Set →" hint on hover */}
+                
                 {clickable && (
                   <span
                     className="ml-2 text-[10px] font-bold uppercase tracking-widest

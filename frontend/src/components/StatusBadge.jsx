@@ -59,7 +59,6 @@ const DEFAULT = {
   dot: 'bg-gray-400',
 }
 
-
 export default function StatusBadge({ status, size = 'md' }) {
   const cfg = STATUS_CONFIG[status] ?? DEFAULT
 

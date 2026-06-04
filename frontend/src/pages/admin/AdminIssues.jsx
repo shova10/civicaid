@@ -14,13 +14,15 @@ import {
   ThumbsUp,
   MapPin,
   Calendar,
+  Trash2,
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import StatusBadge from '../../components/StatusBadge'
 import PriorityBadge from '../../components/PriorityBadge'
 import useIssueTable from '../../hooks/useIssueTable'
-import { getAdminIssues } from '../../services/issues'
-// ─── Constants ────────────────────────────────────────────────────────────────
+import { getAdminIssues, deleteAdminIssue } from '../../services/issues'
+
+// Constants
 const STATUSES = ['reported', 'in_progress', 'resolved', 'closed', 'rejected']
 const PRIORITIES = ['critical', 'high', 'medium', 'low']
 const CATEGORIES = [
@@ -47,7 +49,7 @@ const PRIORITY_LABELS = {
   low: 'Low',
 }
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+//Helpers
 function formatDate(d) {
   if (!d) return '—'
   return new Date(d).toLocaleDateString('en-US', {
@@ -57,7 +59,6 @@ function formatDate(d) {
   })
 }
 
-// ─── Sort icon ────────────────────────────────────────────────────────────────
 function SortIcon({ col, sortKey, sortDir }) {
   if (sortKey !== col)
     return <ChevronsUpDown size={12} className="text-slate-300" />
@@ -68,7 +69,6 @@ function SortIcon({ col, sortKey, sortDir }) {
   )
 }
 
-// ─── Filter select ────────────────────────────────────────────────────────────
 function FilterSelect({ value, onChange, options, placeholder }) {
   return (
     <select
@@ -92,7 +92,6 @@ function FilterSelect({ value, onChange, options, placeholder }) {
   )
 }
 
-// ─── Skeleton row ─────────────────────────────────────────────────────────────
 function SkeletonRow() {
   return (
     <tr className="animate-pulse border-b border-slate-100">
@@ -105,7 +104,6 @@ function SkeletonRow() {
   )
 }
 
-// ─── Pagination ───────────────────────────────────────────────────────────────
 function Pagination({
   page,
   totalPages,
@@ -118,7 +116,6 @@ function Pagination({
   const start = (page - 1) * pageSize + 1
   const end = Math.min(page * pageSize, totalFiltered)
 
-  // Build page number array with ellipsis
   function getPages() {
     if (totalPages <= 7)
       return Array.from({ length: totalPages }, (_, i) => i + 1)
@@ -260,6 +257,19 @@ export default function AdminIssues() {
       setLoading(false)
     }
   }
+
+  async function handleDeleteIssue(e, issueId) {
+    e.stopPropagation()
+    if (!window.confirm('Delete this issue? This cannot be undone.')) return
+    try {
+      await deleteAdminIssue(issueId)
+      setIssues((prev) => prev.filter((i) => i.id !== issueId))
+      toast.success('Issue deleted')
+    } catch {
+      toast.error('Could not delete issue.')
+    }
+  }
+
   useEffect(() => {
     const statusParam = searchParams.get('status')
     const categoryParam = searchParams.get('category')
@@ -293,7 +303,6 @@ export default function AdminIssues() {
 
   return (
     <div className="p-6 sm:p-8 max-w-7xl mx-auto">
-      {/* ── Header ─────────────────────────────────────────────────────────── */}
       <div className="flex items-center justify-between mb-6">
         <div>
           {cameFromDashboard && (
@@ -328,7 +337,6 @@ export default function AdminIssues() {
         </button>
       </div>
 
-      {/* ── Filters bar ────────────────────────────────────────────────────── */}
       <div className="flex flex-wrap items-center gap-2 mb-4">
         {/* Search */}
         <div className="relative flex-1 min-w-45 max-w-xs">
@@ -397,7 +405,6 @@ export default function AdminIssues() {
         )}
       </div>
 
-      {/* ── Table card ─────────────────────────────────────────────────────── */}
       {error ? (
         <div
           className="flex flex-col items-center justify-center py-24 rounded-2xl
@@ -421,7 +428,7 @@ export default function AdminIssues() {
             <table className="w-full min-w-175">
               <thead className="border-b border-slate-100 bg-slate-50/80">
                 <tr>
-                  <Th col="id" label="#" className="w-14" />
+                  <Th col="id" label="S.N." className="w-14" />
                   <Th col="title" label="Title" />
                   <th className="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-slate-400 whitespace-nowrap w-36">
                     Citizen
@@ -436,6 +443,7 @@ export default function AdminIssues() {
                   </th>
                   <Th col="upvotes" label="Upvotes" className="w-20" />
                   <Th col="created_at" label="Date" className="w-28" />
+                  <th className="px-4 py-3 w-10" />
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-50">
@@ -468,7 +476,8 @@ export default function AdminIssues() {
                     >
                       <td className="px-4 py-3">
                         <span className="text-xs font-mono font-bold text-slate-400">
-                          #{index + 1}{' '}
+                          {(page - 1) * pageSize + index + 1}{' '}
+                          {/* ✅ page-aware number */}
                         </span>
                       </td>
 
@@ -487,7 +496,7 @@ export default function AdminIssues() {
                           </p>
                         )}
                       </td>
-                      {/* Citizen — ADD THIS */}
+
                       <td className="px-4 py-3">
                         <span className="text-xs text-slate-600 font-medium">
                           {issue.citizen_name ?? '—'}
@@ -528,6 +537,17 @@ export default function AdminIssues() {
                           <Calendar size={10} />
                           {formatDate(issue.created_at)}
                         </span>
+                      </td>
+
+                      <td className="px-4 py-3 w-10">
+                        <button
+                          onClick={(e) => handleDeleteIssue(e, issue.id)}
+                          className="
+              p-1.5 rounded-lg text-slate-300 hover:text-red-500
+      hover:bg-red-50 "
+                        >
+                          <Trash2 size={13} />
+                        </button>
                       </td>
                     </tr>
                   ))
