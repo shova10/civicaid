@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
-import { useState } from 'react'
-import { NavLink, Outlet, useNavigate } from 'react-router-dom'
-import Avatar from '../components/Avatar'
+import { useState } from "react";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import Avatar from "../components/Avatar";
 import {
   LayoutDashboard,
   ClipboardList,
@@ -14,25 +14,25 @@ import {
   X,
   ShieldCheck,
   ChevronRight,
-} from 'lucide-react'
-import useAuth from '../hooks/useAuth'
+} from "lucide-react";
+import useAuth from "../hooks/useAuth";
 const NAV_ITEMS = [
   {
-    section: 'Overview',
+    section: "Overview",
     links: [
-      { to: '/admin', label: 'Dashboard', icon: LayoutDashboard, end: true },
-      { to: '/admin/issues', label: 'Issues', icon: ClipboardList },
-      { to: '/admin/map', label: 'Map', icon: Map },
+      { to: "/admin", label: "Dashboard", icon: LayoutDashboard, end: true },
+      { to: "/admin/issues", label: "Issues", icon: ClipboardList },
+      { to: "/admin/map", label: "Map", icon: Map },
     ],
   },
   {
-    section: 'Management',
+    section: "Management",
     links: [
-      { to: '/admin/users', label: 'Users', icon: Users },
-      { to: '/admin/analytics', label: 'Analytics', icon: BarChart3 },
+      { to: "/admin/users", label: "Users", icon: Users },
+      { to: "/admin/analytics", label: "Analytics", icon: BarChart3 },
     ],
   },
-]
+];
 
 function SidebarLink({ to, label, icon: Icon, end, onClick }) {
   return (
@@ -45,8 +45,8 @@ function SidebarLink({ to, label, icon: Icon, end, onClick }) {
         transition-all duration-150
         ${
           isActive
-            ? 'bg-white/10 text-white'
-            : 'text-slate-400 hover:text-white hover:bg-white/5'
+            ? "bg-white/10 text-white"
+            : "text-slate-400 hover:text-white hover:bg-white/5"
         }`
       }
     >
@@ -54,7 +54,7 @@ function SidebarLink({ to, label, icon: Icon, end, onClick }) {
         <>
           <Icon
             size={17}
-            className={`shrink-0 transition-colors ${isActive ? 'text-blue-400' : 'text-slate-500 group-hover:text-slate-300'}`}
+            className={`shrink-0 transition-colors ${isActive ? "text-blue-400" : "text-slate-500 group-hover:text-slate-300"}`}
           />
           <span className="flex-1">{label}</span>
           {isActive && (
@@ -63,17 +63,17 @@ function SidebarLink({ to, label, icon: Icon, end, onClick }) {
         </>
       )}
     </NavLink>
-  )
+  );
 }
 
-// ─── Sidebar content (shared between desktop + mobile) ────────────────────────
+// Sidebar content (shared between desktop + mobile)
 function SidebarContent({ onLinkClick }) {
-  const { user, logout } = useAuth()
-  const navigate = useNavigate()
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
 
   function handleLogout() {
-    logout()
-    navigate('/login')
+    logout();
+    navigate("/login");
   }
 
   return (
@@ -117,14 +117,14 @@ function SidebarContent({ onLinkClick }) {
       {/* User + logout */}
       <div className="px-3 py-4 border-t border-white/10">
         <button
-          onClick={() => navigate('/admin/profile')}
+          onClick={() => navigate("/admin/profile")}
           className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl bg-white/5
     hover:bg-white/10 transition-colors mb-2 text-left"
         >
           <Avatar userId={user?.id} name={user?.name} size="sm" />
           <div className="min-w-0">
             <p className="text-sm font-semibold text-white truncate">
-              {user?.name ?? 'Admin'}
+              {user?.name ?? "Admin"}
             </p>
             <p className="text-[10px] text-slate-500 truncate">{user?.email}</p>
           </div>
@@ -140,12 +140,12 @@ function SidebarContent({ onLinkClick }) {
         </button>
       </div>
     </div>
-  )
+  );
 }
 
 // ─── Main layout ──────────────────────────────────────────────────────────────
 export default function AdminLayout() {
-  const [mobileOpen, setMobileOpen] = useState(false)
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
     <div className="flex h-screen bg-[#F6F1E8] overflow-hidden">
@@ -210,5 +210,5 @@ export default function AdminLayout() {
         </main>
       </div>
     </div>
-  )
+  );
 }

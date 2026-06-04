@@ -1,62 +1,60 @@
-import { useEffect, useState } from 'react'
-import { X, Save, MessageSquare, AlertTriangle, Loader2 } from 'lucide-react'
-import toast from 'react-hot-toast'
-import StatusBadge from '../StatusBadge'
-import PriorityBadge from '../PriorityBadge'
-import { adminUpdateIssue } from '../../services/issues'
+import { useEffect, useState } from "react";
+import { X, Save, MessageSquare, AlertTriangle, Loader2 } from "lucide-react";
+import toast from "react-hot-toast";
+import StatusBadge from "../StatusBadge";
+import PriorityBadge from "../PriorityBadge";
+import { adminUpdateIssue } from "../../services/issues";
 
 const STATUSES = [
-  { value: 'reported', label: 'Reported' },
-  { value: 'in_progress', label: 'In Progress' },
-  { value: 'resolved', label: 'Resolved' },
-  { value: 'closed', label: 'Closed' },
-  { value: 'rejected', label: 'Rejected' },
-]
+  { value: "reported", label: "Reported" },
+  { value: "in_progress", label: "In Progress" },
+  { value: "resolved", label: "Resolved" },
+  { value: "closed", label: "Closed" },
+  { value: "rejected", label: "Rejected" },
+];
 
 export default function IssueManagementPanel({ issue, onClose, onSaved }) {
-  const [status, setStatus] = useState('')
-  const [remark, setRemark] = useState('')
-  const [saving, setSaving] = useState(false)
+  const [status, setStatus] = useState("");
+  const [remark, setRemark] = useState("");
+  const [saving, setSaving] = useState(false);
 
   // Populate form when issue changes
   useEffect(() => {
-    if (!issue) return
+    if (!issue) return;
 
-    setStatus(issue.status ?? 'reported')
-    setRemark('')
-  }, [issue])
+    setStatus(issue.status ?? "reported");
+    setRemark("");
+  }, [issue]);
 
   async function handleSave() {
-    // Optional validation for closed/rejected issues
-    if ((status === 'closed' || status === 'rejected') && !remark.trim()) {
-      toast.error('Please add a remark before closing/rejecting.')
-      return
+    if ((status === "closed" || status === "rejected") && !remark.trim()) {
+      toast.error("Please add a remark before closing/rejecting.");
+      return;
     }
 
-    setSaving(true)
+    setSaving(true);
 
     try {
       const updated = await adminUpdateIssue(issue.id, {
         status,
         remark: remark.trim() || null,
-      })
+      });
 
-      toast.success('Issue updated successfully.')
+      toast.success("Issue updated successfully.");
 
-      onSaved?.(updated)
-      onClose()
+      onSaved?.(updated);
+      onClose();
     } catch (err) {
-      toast.error(err?.response?.data?.message ?? 'Failed to update issue.')
+      toast.error(err?.response?.data?.message ?? "Failed to update issue.");
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
   }
 
-  const open = !!issue
+  const open = !!issue;
 
   return (
     <>
-      {/* Backdrop */}
       {open && (
         <div
           className="fixed inset-0 z-40 bg-black/30 backdrop-blur-sm"
@@ -68,7 +66,7 @@ export default function IssueManagementPanel({ issue, onClose, onSaved }) {
       <div
         className={`fixed top-0 right-0 bottom-0 z-50 w-full max-w-md bg-white shadow-2xl
           flex flex-col transition-transform duration-300 ease-in-out
-          ${open ? 'translate-x-0' : 'translate-x-full'}`}
+          ${open ? "translate-x-0" : "translate-x-full"}`}
       >
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
@@ -79,7 +77,7 @@ export default function IssueManagementPanel({ issue, onClose, onSaved }) {
 
             <p className="text-sm font-semibold text-slate-800 mt-0.5">
               #{issue?.id} — {issue?.title?.slice(0, 40)}
-              {(issue?.title?.length ?? 0) > 40 ? '…' : ''}
+              {(issue?.title?.length ?? 0) > 40 ? "…" : ""}
             </p>
           </div>
 
@@ -134,7 +132,7 @@ export default function IssueManagementPanel({ issue, onClose, onSaved }) {
           {/* Remark */}
           <div>
             <label
-              className="block text-xs font-bold uppercase tracking-wider
+              className="text-xs font-bold uppercase tracking-wider
               text-slate-500 mb-2 flex items-center gap-1.5"
             >
               <MessageSquare size={11} />
@@ -153,7 +151,7 @@ export default function IssueManagementPanel({ issue, onClose, onSaved }) {
           </div>
 
           {/* Warning */}
-          {(status === 'rejected' || status === 'closed') && (
+          {(status === "rejected" || status === "closed") && (
             <div
               className="flex items-start gap-2.5 p-3 bg-amber-50 rounded-xl
               border border-amber-200"
@@ -203,5 +201,5 @@ export default function IssueManagementPanel({ issue, onClose, onSaved }) {
         </div>
       </div>
     </>
-  )
+  );
 }

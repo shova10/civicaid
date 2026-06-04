@@ -51,7 +51,7 @@ class ComplaintListCreateView(generics.ListCreateAPIView):
         return ComplaintListSerializer
 
     def get_queryset(self):
-        return Complaint.objects.all().order_by('-created_at')  # changed
+        return Complaint.objects.select_related('citizen').order_by('-created_at') 
 
     def create(self, request, *args, **kwargs):
         user_id = request.user.id
@@ -105,7 +105,9 @@ class MyComplaintListView(generics.ListAPIView):
     serializer_class = ComplaintListSerializer
 
     def get_queryset(self):
-        return Complaint.objects.filter(citizen=self.request.user).order_by('-created_at')
+        return Complaint.objects.select_related('citizen').filter(
+            citizen=self.request.user
+        ).order_by('-created_at')
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
@@ -147,7 +149,7 @@ class AdminComplaintListView(generics.ListAPIView):
         return context
 
     def get_queryset(self):
-        qs = Complaint.objects.all().order_by('-created_at')
+        qs = Complaint.objects.select_related('citizen').order_by('-created_at')
 
         status = self.request.query_params.get('status')
         category = self.request.query_params.get('category')
@@ -422,6 +424,6 @@ class AdminUserComplaintsView(generics.ListAPIView):
 
     def get_queryset(self):
         user_id = self.kwargs['pk']
-        return Complaint.objects.filter(citizen__id=user_id).order_by('-created_at')
+        return Complaint.objects.select_related('citizen').filter(citizen__id=user_id).order_by('-created_at')
 
 
